@@ -1,5 +1,5 @@
-import collections.abc
 import functools
+import textwrap
 
 from blqs import _stack
 
@@ -54,8 +54,9 @@ class Block:
         self._target_set.update(targets)
 
     def __str__(self):
-        indents = "  " * self._level
-        return "\n".join(indents + str(e) for e in self._elements)
+        return textwrap.indent(
+            "\n".join(str(e) for e in self._elements), "  " * self._level
+        )
 
 
 class _BlockStack(_stack.ThreadLocalStack):

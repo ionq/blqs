@@ -1,14 +1,9 @@
-from blqs import block
+from blqs import statement
 
 
-class Instruction:
+class Instruction(statement.Statement):
     def __init__(self, operand, *targets):
-        if (current_block := block.get_current_block()) is not None:
-            current_block.append(self)
-            current_block.add_targets(*targets)
-            self._block = current_block
-        else:
-            raise ValueError("Instructions cannot be created outside of a block.")
+        super().__init__()
         self._operand = operand
         self._targets = targets
 

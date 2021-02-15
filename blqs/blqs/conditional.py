@@ -24,3 +24,12 @@ class If(statement.Statement):
         if_str = f"if {self._condition}:\n{self._if_block}\n"
         else_str = f"else:\n{self._else_block}"
         return if_str + else_str if self._else_block else if_str
+
+    def __eq__(self, other):
+        if not isinstance(other, type(self)):
+            return NotImplemented
+        return (
+            self._condition == other._condition
+            and self._if_block == other._if_block
+            and self._else_block == other._else_block
+        )

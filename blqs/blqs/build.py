@@ -10,7 +10,7 @@ import sys
 import types
 import tempfile
 
-from blqs import conditional
+from blqs import conditional, _template
 
 
 def build(func):
@@ -30,6 +30,7 @@ def build(func):
         transformed_source_code = astunparse.unparse(root_ast).strip()
 
         # Write a temp file with the new source code.
+        # TODO: do we need to clean up?
         with tempfile.NamedTemporaryFile(
             mode="w", suffix=".py", delete=False, encoding="utf-8"
         ) as f:
@@ -45,7 +46,7 @@ def build(func):
 
         # TODO: we need to capture the closure correctly?
         # I think the problem is that this wrapper executes on definition of the function,
-        # we really need to capture closure and globals when function is called.
+        # we really need to capture closure and globals when function is called?
 
         # Define a function with the same globals as the original function.
         new_func = types.FunctionType(
@@ -65,8 +66,6 @@ class Build(gast.NodeTransformer):
     def visit_FunctionDef(self, node):
         if node.name == self._func_name:
             new_decorators = []
-            # Remove the decorator
-            # How do we know the id is correct, what happens if someone does "import x as y"?
             for attribute in node.decorator_list:
                 if (
                     attribute.value
@@ -75,28 +74,16 @@ class Build(gast.NodeTransformer):
                 ):
                     continue
                 new_decorators.append(attribute)
-            # Wrap body in block, return block
-            # TODO: a simple templating system.
             template = (
                 "with blqs.Block() as __return_block:\n"
                 "    placeholder\n"
                 "return __return_block"
             )
+
             old_body = self.generic_visit(node).body
-            new_body = gast.parse(template)
 
-            class ReplacePlaceholder(gast.NodeTransformer):
-                def visit_With(self, node):
-                    if (
-                        node.body
-                        and isinstance(node.body[0], gast.Expr)
-                        and node.body[0].value.id == "placeholder"
-                    ):
-                        node.body = old_body
-                    return node
-
-            replace_placeholder = ReplacePlaceholder()
-            node.body = replace_placeholder.visit(new_body)
+            new_body = _template.replace(template, placeholder=old_body)
+            node.body = new_body
 
         node.decorator_list = new_decorators
         return node
@@ -109,24 +96,7 @@ class Build(gast.NodeTransformer):
             "with __if.else_block():\n"
             "  else_body\n"
         )
-        new_node = gast.parse(template)
-        node = self.generic_visit(node)
-        old_test = node.test
-        old_body = node.body
-        old_orelse = node.orelse
-
-        class ReplacePlaceholders(gast.NodeTransformer):
-            def visit_Name(self, node):
-                if node.id == "test":
-                    return old_test
-                return node
-
-            def visit_Expr(self, node):
-                if node.value.id == "if_body":
-                    return old_body
-                elif node.value.id == "else_body":
-                    return old_orelse
-                return node
-
-        replace_placeholders = ReplacePlaceholders()
-        return replace_placeholders.visit(new_node)
+        new_body = _template.replace(
+            template, test=node.test, if_body=node.body, else_body=node.orelse
+        )
+        return new_body

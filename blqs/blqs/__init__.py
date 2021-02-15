@@ -4,7 +4,9 @@ from blqs.block_stack import (
     push_new_block,
 )
 
-from blqs.block import Block
+from blqs.block import (
+    Block,
+)
 
 from blqs.build import (
     build,

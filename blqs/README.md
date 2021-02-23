@@ -2,7 +2,7 @@
 # blqs: Building Blocks
 
 The idea here is to explore a simple framework for supporting new languages in
-idiomatic Python.  The inspiration for this is the autograph functionality of 
+idiomatic Python.  The inspiration for this is the autograph functionality of
 TensorFlow 2.0.
 
 For example one should be able to write

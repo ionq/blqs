@@ -22,4 +22,4 @@ class Instruction(statement.Statement):
         return self._operand == other._operand and self._targets == other._targets
 
     def __hash__(self):
-        return hash(self._operand, *self._targets)
+        return hash((self._operand, *self._targets))

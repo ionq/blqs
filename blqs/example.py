@@ -1,4 +1,5 @@
 import blqs
+import gast
 
 H = blqs.Operand("H")
 CX = blqs.Operand("CX")
@@ -11,8 +12,9 @@ def example():
     H(0)
     CX(0, 1)
     sub_block()
-    M(1, "a")
-    if "a":
+    m = M(1, "a")
+    m.has_value = True
+    if m:
         H(0)
     else:
         H(1)

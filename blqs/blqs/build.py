@@ -18,6 +18,7 @@ def build(func):
     def wrapper(*args, **kwargs):
         # Get source
         source_code = inspect.getsource(func)
+
         # Parse it
         root = gast.parse(source_code)
 
@@ -44,7 +45,7 @@ def build(func):
         spec.loader.exec_module(module)
         sys.modules[module_name] = module
 
-        # TODO: we need to capture the closure correctly?
+        # TODO: we need to capture the closure correctly.
         # I think the problem is that this wrapper executes on definition of the function,
         # we really need to capture closure and globals when function is called?
 
@@ -67,17 +68,11 @@ class Build(gast.NodeTransformer):
         if node.name == self._func_name:
             new_decorators = []
             for attribute in node.decorator_list:
-                if (
-                    attribute.value
-                    and attribute.value.id == "blqs"
-                    and attribute.attr == "build"
-                ):
+                if attribute.value and attribute.value.id == "blqs" and attribute.attr == "build":
                     continue
                 new_decorators.append(attribute)
             template = (
-                "with blqs.Block() as __return_block:\n"
-                "    placeholder\n"
-                "return __return_block"
+                "with blqs.Block() as __return_block:\n" "    placeholder\n" "return __return_block"
             )
 
             old_body = self.generic_visit(node).body
@@ -90,11 +85,17 @@ class Build(gast.NodeTransformer):
 
     def visit_If(self, node):
         template = (
-            "__if = blqs.If(test)\n"
-            "with __if.if_block():\n"
-            "  if_body\n"
-            "with __if.else_block():\n"
-            "  else_body\n"
+            "if hasattr(test, 'has_value'):\n"
+            "    __if = blqs.If(test)\n"
+            "    with __if.if_block():\n"
+            "        if_body\n"
+            "    with __if.else_block():\n"
+            "        else_body\n"
+            "else:\n"
+            "    if test:\n"
+            "        if_body\n"
+            "    else:\n"
+            "        else_body\n"
         )
         new_body = _template.replace(
             template, test=node.test, if_body=node.body, else_body=node.orelse

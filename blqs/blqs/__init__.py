@@ -16,8 +16,18 @@ from blqs.conditional import (
     If,
 )
 
-from blqs.instruction import Instruction
+from blqs.instruction import (
+    Instruction,
+)
 
-from blqs.operand import Operand
+from blqs.loops import (
+    For,
+)
 
-from blqs.statement import Statement
+from blqs.operand import (
+    Operand,
+)
+
+from blqs.statement import (
+    Statement,
+)

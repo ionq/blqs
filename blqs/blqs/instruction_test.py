@@ -1,3 +1,5 @@
+import pymore
+
 import blqs
 
 
@@ -8,6 +10,7 @@ def test_str():
 
 
 def test_eq():
-    assert blqs.Instruction(blqs.Operand("a"), 0) == blqs.Instruction(blqs.Operand("a"), 0)
-    assert blqs.Instruction(blqs.Operand("a"), 1) == blqs.Instruction(blqs.Operand("a"), 1)
-    assert blqs.Instruction(blqs.Operand("b"), 1) == blqs.Instruction(blqs.Operand("b"), 1)
+    tester = pymore.EqualsTester()
+    tester.make_equality_group(lambda: blqs.Instruction(blqs.Operand("a"), 0))
+    tester.make_equality_group(lambda: blqs.Instruction(blqs.Operand("b"), 0))
+    tester.make_equality_group(lambda: blqs.Instruction(blqs.Operand("b"), 1, 2))

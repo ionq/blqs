@@ -48,7 +48,7 @@ class Block(statement.Statement):
         which is also converted over to appropriate blqs constructions.
 
     Once constructed, `blqs.Block`s maybe interated over and accessed by index or slice.
-    `blqs.Block`s cannot, however have their elements mutated (though if those elements are
+    `blqs.Block`s do not support mutation of their elements (though if those elements are
     references, the objects these reference refer to can be mutated).
     """
 

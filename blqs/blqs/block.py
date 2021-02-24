@@ -8,7 +8,7 @@ from blqs import statement
 class Block(statement.Statement):
     """A Block is an append only container of statements.
 
-    Blocks are the basic building blocks of blqs. They roughly correspond to a body of a block of
+    Blocks are a basic building blocks of blqs. They roughly correspond to a body of a block of
     code.
 
     Blocks can be constructed in a variety of fashions.

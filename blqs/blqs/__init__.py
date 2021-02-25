@@ -22,10 +22,15 @@ from blqs.instruction import (
 
 from blqs.loops import (
     For,
+    While,
 )
 
 from blqs.operand import (
     Operand,
+)
+
+from blqs.register import (
+    Register,
 )
 
 from blqs.statement import (

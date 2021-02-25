@@ -72,7 +72,9 @@ class Build(gast.NodeTransformer):
                     continue
                 new_decorators.append(attribute)
             template = (
-                "with blqs.Block() as __return_block:\n" "    placeholder\n" "return __return_block"
+                "with blqs.Block() as __return_block:\n"
+                "    placeholder\n"
+                "return __return_block\n"
             )
 
             old_body = self.generic_visit(node).body

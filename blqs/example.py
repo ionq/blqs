@@ -12,12 +12,16 @@ def example():
     H(0)
     CX(0, 1)
     sub_block()
-    m = M(1, "a")
-    m.has_value = True
-    if m:
+    M(1, blqs.Register("a"))
+    if blqs.Register("a"):
         H(0)
     else:
         H(1)
+    val = True
+    if val:
+        H(3)
+    else:
+        H(2)
 
 
 @blqs.build
@@ -37,12 +41,19 @@ def main():
     c.append(CX(3, 2))
     b.append(c)
 
-    b.append(M(1, "a"))
+    a = blqs.Register("a")
+    b.append(M(1, a))
 
-    d = blqs.If("a")
+    d = blqs.If(a)
     d.if_block().append(H(0))
     d.else_block().append(H(1))
     b.append(d)
+
+    val = True
+    if val:
+        b.append(H(3))
+    else:
+        b.append(H(2))
     print(f"----\n{b}\n----\n")
 
     # Tensorflow graph style.
@@ -53,12 +64,19 @@ def main():
         with blqs.Block():
             H(0)
             CX(3, 2)
-        M(1, "a")
-        cond = blqs.If("a")
+        a = blqs.Register("a")
+        M(1, a)
+        cond = blqs.If(a)
         with cond.if_block():
             H(0)
         with cond.else_block():
             H(1)
+        val = True
+        if val:
+            H(3)
+        else:
+            H(2)
+
     print(f"----\n{p}\n----\n")
 
     # Autograph style.

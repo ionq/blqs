@@ -32,7 +32,7 @@ def sub_block():
 
 def main():
     # Cirq and qiskit style.
-    b = blqs.Block()
+    b = blqs.Program()
     b.append(H(1))
     b.extend([H(0), CX(0, 1)])
 
@@ -57,7 +57,7 @@ def main():
     print(f"----\n{b}\n----\n")
 
     # Tensorflow graph style.
-    with blqs.Block() as p:
+    with blqs.Program() as p:
         H(1)
         H(0)
         CX(0, 1)

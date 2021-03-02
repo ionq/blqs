@@ -29,6 +29,10 @@ from blqs.operand import (
     Operand,
 )
 
+from blqs.program import (
+    Program,
+)
+
 from blqs.register import (
     Register,
 )

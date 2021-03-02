@@ -10,23 +10,23 @@ import sys
 import types
 import tempfile
 
-from blqs import conditional, _template
+from blqs import conditional, _namer, _symbols, _template
 
 
 def build(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        # Get source
+        # Get source.
         source_code = inspect.getsource(func)
 
-        # Parse it
+        # Parse it.
         root = gast.parse(source_code)
 
         # Do the transform.
         transformer = Build(func.__name__)
         transformed_ast = transformer.visit(root)
 
-        # Convert back to ast and get the code
+        # Convert back to ast and get the code.
         root_ast = gast.gast_to_ast(transformed_ast)
         transformed_source_code = astunparse.unparse(root_ast).strip()
 
@@ -51,7 +51,9 @@ def build(func):
 
         # Define a function with the same globals as the original function.
         new_func = types.FunctionType(
-            code=getattr(module, func.__name__).__code__, globals=func.__globals__
+            code=getattr(module, func.__name__).__code__,
+            globals=func.__globals__,
+            closure=func.__closure__,
         )
 
         return new_func(*args, **kwargs)  # pylint: disable=not-callable
@@ -72,7 +74,8 @@ class Build(gast.NodeTransformer):
                     continue
                 new_decorators.append(attribute)
             template = (
-                "with blqs.Block() as __return_block:\n"
+                "current_block = blqs.get_current_block()\n"
+                "with blqs.Block() if current_block else blqs.Program() as __return_block:\n"
                 "    placeholder\n"
                 "return __return_block\n"
             )

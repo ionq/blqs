@@ -13,6 +13,7 @@ from blqs.build import (
 )
 
 from blqs.conditional import (
+    BareIf,
     If,
 )
 

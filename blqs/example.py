@@ -11,7 +11,13 @@ def example():
     H(1)
     H(0)
     CX(0, 1)
-    sub_block()
+
+    def sub_block():
+        H(0)
+        CX(3, 2)
+
+    blqs.build(sub_block)()
+
     M(1, blqs.Register("a"))
     if blqs.Register("a"):
         H(0)
@@ -22,12 +28,6 @@ def example():
         H(3)
     else:
         H(2)
-
-
-@blqs.build
-def sub_block():
-    H(0)
-    CX(3, 2)
 
 
 def main():

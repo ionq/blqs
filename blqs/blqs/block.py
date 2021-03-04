@@ -95,3 +95,6 @@ class Block(statement.Statement):
         if not isinstance(other, type(self)):
             return NotImplemented
         return self.statements == other.statements
+
+    def __bool__(self):
+        return True

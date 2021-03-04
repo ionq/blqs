@@ -1,14 +1,30 @@
 import gast
+import textwrap
 
 
 class ReplacementTransformer(gast.NodeTransformer):
     def __init__(self, **replacements):
         self.replacements = replacements
 
+    def visit_Expr(self, node):
+        if isinstance(node.value, gast.Name) and node.value.id in self.replacements:
+            return self.replacements[node.value.id]
+        return node
+
     def visit_Name(self, node):
-        if node.id not in self.replacements:
-            return node
-        return self.replacements[node.id]
+        if node.id in self.replacements:
+            replacement = self.replacements[node.id]
+            if isinstance(replacement, str):
+                node.id = replacement
+            else:
+                return replacement
+        return node
+
+    def visit_FunctionDef(self, node):
+        node = self.generic_visit(node)
+        if node.name in self.replacements:
+            node.name = self.replacements[node.name]
+        return node
 
 
 def replace(template, **replacements):
@@ -23,7 +39,7 @@ def replace(template, **replacements):
     Returns:
         A list of the `gast.Node`s representing the template with replaced nodes.
     """
-    nodes = gast.parse(template)
+    nodes = gast.parse(textwrap.dedent(template))
     transformer = ReplacementTransformer(**replacements)
     replaced_nodes = transformer.visit(nodes)
     return replaced_nodes

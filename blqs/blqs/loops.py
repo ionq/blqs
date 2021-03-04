@@ -31,9 +31,8 @@ class For(statement.Statement):
         if not isinstance(other, type(self)):
             return NotImplemented
         return (
-            self._condition == other._condition
+            self._loop_vars == other._loop_vars
             and self._iterable == other._iterable
-            and self._loop_vars == other._loop_vars
             and self._loop_block == other._loop_block
             and self._else_block == other._else_block
         )

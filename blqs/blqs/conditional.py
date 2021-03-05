@@ -1,16 +1,7 @@
 import contextlib
 import textwrap
 
-from blqs import block
-from blqs import statement
-
-
-@contextlib.contextmanager
-def no_op():
-    try:
-        yield None
-    finally:
-        pass
+from blqs import block, statement
 
 
 class If(statement.Statement):
@@ -42,14 +33,3 @@ class If(statement.Statement):
             and self._if_block == other._if_block
             and self._else_block == other._else_block
         )
-
-
-class BareIf:
-    def __init__(self, condition):
-        self._condition = condition
-
-    def if_block(self):
-        return no_op() if self._condition else None
-
-    def else_block(self):
-        return no_op() if not self._condition else None

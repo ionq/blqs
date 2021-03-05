@@ -13,12 +13,15 @@ from blqs.build import (
 )
 
 from blqs.conditional import (
-    BareIf,
     If,
 )
 
 from blqs.instruction import (
     Instruction,
+)
+
+from blqs.iterable import (
+    Iterable,
 )
 
 from blqs.loops import (

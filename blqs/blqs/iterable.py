@@ -1,16 +1,16 @@
-class Register:
-    def __init__(self, name):
+class Iterable:
+    def __init__(self, name, loop_vars):
         self._name = name
+        self._loop_vars = loop_vars
 
     def name(self):
         return self._name
 
-    @property
-    def is_readable(self):
-        return True
+    def loop_vars(self):
+        return self._loop_vars
 
     @property
-    def is_assignable(self):
+    def is_iterable(self):
         return True
 
     def __str__(self):

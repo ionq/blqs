@@ -12,22 +12,39 @@ def example():
     H(0)
     CX(0, 1)
 
-    def sub_block():
-        H(0)
-        CX(3, 2)
-
-    blqs.build(sub_block)()
+    sub_block()
 
     M(1, blqs.Register("a"))
     if blqs.Register("a"):
         H(0)
     else:
         H(1)
-    val = True
+    val = False
     if val:
         H(3)
     else:
         H(2)
+
+    for b in blqs.Iterable("range(4)", blqs.Register("b")):
+        H(b)
+    for i in range(4):
+        H(i)
+
+    M(1, blqs.Register("a"))
+    while blqs.Register("a"):
+        print("here")
+        M(1, blqs.Register("a"))
+        H(1)
+    i = 0
+    # while i < 5:
+    #     print(i)
+    #     i += 2
+
+
+@blqs.build
+def sub_block():
+    H(0)
+    CX(3, 2)
 
 
 def main():
@@ -37,8 +54,7 @@ def main():
     b.extend([H(0), CX(0, 1)])
 
     c = blqs.Block()
-    c.append(H(0))
-    c.append(CX(3, 2))
+    c.extend([H(0), CX(3, 2)])
     b.append(c)
 
     a = blqs.Register("a")

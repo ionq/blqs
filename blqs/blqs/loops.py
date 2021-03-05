@@ -1,20 +1,18 @@
-from blqs import block
-from blqs import statement
+from blqs import block, statement
 
 
 class For(statement.Statement):
-    def __init__(self, loop_vars, iterable):
+    def __init__(self, iterable):
         super().__init__()
-        self._loop_vars = loop_vars
         self._iterable = iterable
         self._loop_block = block.Block(parent_statement=self)
         self._else_block = block.Block(parent_statement=self)
 
-    def loop_vars(self):
-        return self._loop_vars
-
     def iterable(self):
         return self._iterable
+
+    def loop_vars(self):
+        return self._iterable.loop_vars()
 
     def loop_block(self):
         return self._loop_block
@@ -23,7 +21,7 @@ class For(statement.Statement):
         return self._else_block
 
     def __str__(self):
-        loop_str = f"for {self._loop_vars} in {self._iterable}:\n{self._loop_block}\n"
+        loop_str = f"for {self.loop_vars()} in {self._iterable}:\n{self._loop_block}\n"
         else_str = f"else:\n{self._else_block}"
         return loop_str + else_str if self._else_block else loop_str
 
@@ -31,8 +29,7 @@ class For(statement.Statement):
         if not isinstance(other, type(self)):
             return NotImplemented
         return (
-            self._loop_vars == other._loop_vars
-            and self._iterable == other._iterable
+            self._iterable == other._iterable
             and self._loop_block == other._loop_block
             and self._else_block == other._else_block
         )

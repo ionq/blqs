@@ -97,4 +97,4 @@ class Block(statement.Statement):
         return self.statements == other.statements
 
     def __bool__(self):
-        return True
+        return bool(self._statements)

@@ -109,31 +109,18 @@ class _BuildTransformer(gast.NodeTransformer):
 
     def visit_If(self, node):
         node = self.generic_visit(node)
-
-        if node.orelse:
-            template = """
-            import contextlib
-            cond = test
-            is_readable = hasattr(cond, 'is_readable')
-            cond_statement = blqs.If(cond) if is_readable else None
-            if is_readable or cond:
-                with cond_statement.if_block() if cond_statement else contextlib.nullcontext():
-                    if_body
-            if is_readable or not cond:
-                with cond_statement.else_block() if cond_statement else contextlib.nullcontext():
-                    else_body
-            """
-        else:
-            template = """
-            import contextlib
-            cond = test
-            is_readable = hasattr(cond, 'is_readable')
-            cond_statement = blqs.If(cond) if is_readable else None
-            if is_readable or cond:
-                with cond_statement.if_block() if cond_statement else contextlib.null_context():
-                    if_body
-            """
-
+        template = """
+        import contextlib
+        cond = test
+        is_readable = hasattr(cond, 'is_readable')
+        cond_statement = blqs.If(cond) if is_readable else None
+        if is_readable or cond:
+            with cond_statement.if_block() if cond_statement else contextlib.nullcontext():
+                if_body
+        if is_readable or not cond:
+            with cond_statement.else_block() if cond_statement else contextlib.nullcontext():
+                else_body
+        """
         new_node = _template.replace(
             template,
             cond=self._namer.new_name("cond", ()),
@@ -141,34 +128,23 @@ class _BuildTransformer(gast.NodeTransformer):
             cond_statement=self._namer.new_name("cond_statement", ()),
             test=node.test,
             if_body=node.body,
-            else_body=node.orelse,
+            else_body=node.orelse if node.orelse else gast.Pass(),
         )
         return new_node
 
     def visit_For(self, node):
         node = self.generic_visit(node)
-
-        if node.orelse:
-            template = """
-            import contextlib
-            is_iterable = hasattr(iter, 'is_iterable')
-            for_statement = blqs.For(iter) if is_iterable else None
-            for target in ((iter.loop_vars,) if is_iterable else iter):
-                with for_statement.loop_block() if for_statement else contextlib.nullcontext():
-                    loop_body
-            else:
-                with for_statement.else_block() if for_statement else contextlib.nullcontext():
-                    else_body
-            """
+        template = """
+        import contextlib
+        is_iterable = hasattr(iter, 'is_iterable')
+        for_statement = blqs.For(iter) if is_iterable else None
+        for target in ((iter.loop_vars(),) if is_iterable else iter):
+            with for_statement.loop_block() if for_statement else contextlib.nullcontext():
+                loop_body
         else:
-            template = """
-            import contextlib
-            is_iterable = hasattr(iter, 'is_iterable')
-            for_statement = blqs.For(iter) if is_iterable else None
-            for target in ((iter.loop_vars(),) if is_iterable else iter):
-                with for_statement.loop_block() if for_statement else contextlib.nullcontext():
-                    loop_body
-            """
+            with for_statement.else_block() if for_statement else contextlib.nullcontext():
+                else_body
+        """
         new_node = _template.replace(
             template,
             is_iterable=self._namer.new_name("is_iterable", ()),
@@ -176,43 +152,31 @@ class _BuildTransformer(gast.NodeTransformer):
             target=node.target,
             iter=node.iter,
             loop_body=node.body,
-            else_body=node.orelse,
+            else_body=node.orelse if node.orelse else gast.Pass(),
         )
         return new_node
 
     def visit_While(self, node):
         node = self.generic_visit(node)
-        if node.orelse:
-            template = """
-            import contextlib
-            is_readable = hasattr(test, 'is_readable')
-            while_statement = blqs.While(cond) if is_readable else None
-            while test or is_readable:
-                with while_statement.loop_block() if while_statement else contextlib.nullcontext():
-                    loop_body
-                if is_readable:
-                    break
-            else:
-                with while_statement.else_block() if while_statement else contextlib.nullcontext():
-                    else_body
-            """
-        else:
-            template = """
-            import contextlib
-            is_readable = hasattr(test, 'is_readable')
-            while_statement = blqs.While(cond) if is_readable else None
-            while test or is_readable:
-                with while_statement.loop_block() if while_statement else contextlib.nullcontext():
-                    loop_body
-                if is_readable:
-                    break
-            """
+        template = """
+        import contextlib
+        is_readable = hasattr(test, 'is_readable')
+        while_statement = blqs.While(cond) if is_readable else None
+        while test or is_readable:
+            with while_statement.loop_block() if while_statement else contextlib.nullcontext():
+                loop_body
+            if is_readable:
+                break
+        if not test or is_readable:
+            with while_statement.else_block() if while_statement else contextlib.nullcontext():
+                else_body
+        """
         new_node = _template.replace(
             template,
             is_readable=self._namer.new_name("is_readable", ()),
             while_statement=self._namer.new_name("while_statement", ()),
             test=node.test,
             loop_body=node.body,
-            else_body=node.orelse,
+            else_body=node.orelse if node.orelse else gast.Pass(),
         )
         return new_node

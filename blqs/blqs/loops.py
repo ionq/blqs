@@ -52,7 +52,7 @@ class While(statement.Statement):
         return self._else_block
 
     def __str__(self):
-        loop_str = f"while {self._condition}:\n{self._loop_block}"
+        loop_str = f"while {self._condition}:\n{self._loop_block}\n"
         else_str = f"else:\n{self._else_block}"
         return loop_str + else_str if self._else_block else loop_str
 

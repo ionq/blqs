@@ -27,7 +27,6 @@ def build(func):
         # This creates an outer function, which when call returns the transformed function.
         transformer = _BuildTransformer(func)
         transformed_ast, outer_fn_name = transformer.transform(root)
-        print(gast.dump(transformed_ast))
 
         # Convert back to ast and get the code.
         root_ast = gast.gast_to_ast(transformed_ast)
@@ -113,43 +112,33 @@ class _BuildTransformer(gast.NodeTransformer):
 
         if node.orelse:
             template = """
+            import contextlib
             cond = test
-            def if_fn():
-                if_body
-            def else_fn():
-                else_body
-
-            if hasattr(cond, 'is_readable'):
-                cond_statement = blqs.If(cond)
-                with cond_statement.if_block():
-                    if_fn()
-                with cond_statement.else_block():
-                    else_fn()
-            else:
-                if cond:
-                    if_fn()
-                else:
-                    else_fn()
+            is_readable = hasattr(cond, 'is_readable')
+            cond_statement = blqs.If(cond) if is_readable else None
+            if is_readable or cond:
+                with cond_statement.if_block() if cond_statement else contextlib.nullcontext():
+                    if_body
+            if is_readable or not cond:
+                with cond_statement.else_block() if cond_statement else contextlib.nullcontext():
+                    else_body
             """
         else:
             template = """
+            import contextlib
             cond = test
-            def if_fn():
-                if_body
-
-            if hasattr(cond, 'is_readable'):
-                cond_statement = blqs.If(cond)
-                with cond_statement.if_block():
-                    if_fn()
-            else:
-                if cond:
-                    if_fn()
+            is_readable = hasattr(cond, 'is_readable')
+            cond_statement = blqs.If(cond) if is_readable else None
+            if is_readable or cond:
+                with cond_statement.if_block() if cond_statement else contextlib.null_context():
+                    if_body
             """
 
         new_node = _template.replace(
             template,
             cond=self._namer.new_name("cond", ()),
-            cond_statement=self._namer.new_name("if_statement", ()),
+            is_readable=self._namer.new_name("is_readable", ()),
+            cond_statement=self._namer.new_name("cond_statement", ()),
             test=node.test,
             if_body=node.body,
             else_body=node.orelse,
@@ -161,41 +150,28 @@ class _BuildTransformer(gast.NodeTransformer):
 
         if node.orelse:
             template = """
-            def loop_fn():
-                loop_body
-            def else_fn():
-                else_body
-
-            if hasattr(iter, 'is_iterable'):
-                for_statement = blqs.For(iter)
-                target = iter.loop_vars()
-                with for_statement.loop_block():
-                    loop_fn()
-                with for_statement.else_block():
-                    else_fn()
+            import contextlib
+            is_iterable = hasattr(iter, 'is_iterable')
+            for_statement = blqs.For(iter) if is_iterable else None
+            for target in ((iter.loop_vars,) if is_iterable else iter):
+                with for_statement.loop_block() if for_statement else contextlib.nullcontext():
+                    loop_body
             else:
-                for target in iter:
-                    loop_fn()
-                else:
-                    else_fn()
+                with for_statement.else_block() if for_statement else contextlib.nullcontext():
+                    else_body
             """
         else:
             template = """
-            def loop_fn():
-                loop_body
-
-            if hasattr(iter, 'is_iterable'):
-                for_statement = blqs.For(iter)
-                target = iter.loop_vars()
-                with for_statement.loop_block():
-                    loop_fn()
-            else:
-                for target in iter:
-                    loop_fn()
+            import contextlib
+            is_iterable = hasattr(iter, 'is_iterable')
+            for_statement = blqs.For(iter) if is_iterable else None
+            for target in ((iter.loop_vars(),) if is_iterable else iter):
+                with for_statement.loop_block() if for_statement else contextlib.nullcontext():
+                    loop_body
             """
         new_node = _template.replace(
             template,
-            loop_fn=self._namer.new_name("loop_fn", ()),
+            is_iterable=self._namer.new_name("is_iterable", ()),
             for_statement=self._namer.new_name("for_statement", ()),
             target=node.target,
             iter=node.iter,
@@ -208,39 +184,32 @@ class _BuildTransformer(gast.NodeTransformer):
         node = self.generic_visit(node)
         if node.orelse:
             template = """
-            def loop_fn():
-                loop_body
-            def else_fn():
-                else_body
-
-            if hasattr(test, 'is_readable'):
-                while_statement = blqs.While(cond)
-                with while_statement.loop_block():
-                    loop_fn()
-                with while_statement.else_block():
-                    else_fn()
+            import contextlib
+            is_readable = hasattr(test, 'is_readable')
+            while_statement = blqs.While(cond) if is_readable else None
+            while test or is_readable:
+                with while_statement.loop_block() if while_statement else contextlib.nullcontext():
+                    loop_body
+                if is_readable:
+                    break
             else:
-                while(test):
-                    loop_fn()
-                else:
-                    else_fn()
+                with while_statement.else_block() if while_statement else contextlib.nullcontext():
+                    else_body
             """
         else:
             template = """
-            def loop_fn():
-                loop_body
-
-            if hasattr(test, 'is_readable'):
-                while_statement = blqs.While(cond)
-                with while_statement.loop_block():
-                    loop_fn()
-            else:
-                while(test):
-                    loop_fn()
+            import contextlib
+            is_readable = hasattr(test, 'is_readable')
+            while_statement = blqs.While(cond) if is_readable else None
+            while test or is_readable:
+                with while_statement.loop_block() if while_statement else contextlib.nullcontext():
+                    loop_body
+                if is_readable:
+                    break
             """
         new_node = _template.replace(
             template,
-            loop_fn=self._namer.new_name("loop_fn", ()),
+            is_readable=self._namer.new_name("is_readable", ()),
             while_statement=self._namer.new_name("while_statement", ()),
             test=node.test,
             loop_body=node.body,

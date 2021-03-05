@@ -27,18 +27,21 @@ def example():
 
     for b in blqs.Iterable("range(4)", blqs.Register("b")):
         H(b)
-    for i in range(4):
+    for i in [0, 2]:
         H(i)
 
     M(1, blqs.Register("a"))
     while blqs.Register("a"):
-        print("here")
         M(1, blqs.Register("a"))
         H(1)
+    else:
+        H(3)
     i = 0
-    # while i < 5:
-    #     print(i)
-    #     i += 2
+    while i < 5:
+        H(i)
+        i += 2
+    else:
+        H(3)
 
 
 @blqs.build

@@ -21,8 +21,8 @@ class If(statement.Statement):
         return self._else_block
 
     def __str__(self):
-        if_str = f"if {self._condition}:\n{self._if_block}\n"
-        else_str = f"else:\n{self._else_block}"
+        if_str = f"if {self._condition}:\n{self._if_block}"
+        else_str = f"\nelse:\n{self._else_block}"
         return if_str + else_str if self._else_block else if_str
 
     def __eq__(self, other):

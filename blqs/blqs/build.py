@@ -31,7 +31,6 @@ def build(func):
         # Convert back to ast and get the code.
         root_ast = gast.gast_to_ast(transformed_ast)
         transformed_source_code = astunparse.unparse(root_ast).strip()
-        print(transformed_source_code)
 
         # Write a temp file with the new source code.
         with tempfile.NamedTemporaryFile(
@@ -77,7 +76,8 @@ class _BuildTransformer(gast.NodeTransformer):
         # If this comes from a decorator, remove it.
         node.decorator_list = self.remove_blqs_build_annotation(node.decorator_list)
 
-        # Replace function with an outer function, along with a
+        # Replace function with an outer function, along the inner function that
+        # builds the appropriate block.
         template = """
         def outer_fn():
             var_defs
@@ -100,6 +100,9 @@ class _BuildTransformer(gast.NodeTransformer):
             return_block=self._namer.new_name("return_block", ()),
             old_body=node.body,
         )
+        # Set the inner args to the args of the original function.
+        inner = next(x for x in new_module.body[0].body if isinstance(x, gast.FunctionDef))
+        inner.args = node.args
         return new_module.body[0]
 
     def remove_blqs_build_annotation(self, decorator_list):

@@ -1,5 +1,4 @@
 import blqs
-import gast
 
 H = blqs.Operand("H")
 CX = blqs.Operand("CX")
@@ -44,7 +43,6 @@ def example():
         H(3)
 
 
-@blqs.build
 def sub_block():
     H(0)
     CX(3, 2)

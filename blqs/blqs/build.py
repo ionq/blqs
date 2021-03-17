@@ -91,13 +91,13 @@ class _BuildTransformer(gast.NodeTransformer):
             _template.replace(f"var_name = None", var_name=var)
             for var in self._func.__code__.co_freevars
         ]
-        self._outer_fn_name = self._namer.new_name("outer_fn", ())
+        self._outer_fn_name = self._namer.new_name("outer_fn")
         new_module = _template.replace(
             template,
             outer_fn=self._outer_fn_name,
             var_defs=var_defs,
-            inner_fn=self._namer.new_name("inner_fn", ()),
-            return_block=self._namer.new_name("return_block", ()),
+            inner_fn=self._namer.new_name("inner_fn"),
+            return_block=self._namer.new_name("return_block"),
             old_body=node.body,
         )
         # Set the inner args to the args of the original function.
@@ -126,9 +126,9 @@ class _BuildTransformer(gast.NodeTransformer):
         """
         new_node = _template.replace(
             template,
-            cond=self._namer.new_name("cond", ()),
-            is_readable=self._namer.new_name("is_readable", ()),
-            cond_statement=self._namer.new_name("cond_statement", ()),
+            cond=self._namer.new_name("cond"),
+            is_readable=self._namer.new_name("is_readable"),
+            cond_statement=self._namer.new_name("cond_statement"),
             test=node.test,
             if_body=node.body,
             else_body=node.orelse if node.orelse else gast.Pass(),
@@ -150,8 +150,8 @@ class _BuildTransformer(gast.NodeTransformer):
         """
         new_node = _template.replace(
             template,
-            is_iterable=self._namer.new_name("is_iterable", ()),
-            for_statement=self._namer.new_name("for_statement", ()),
+            is_iterable=self._namer.new_name("is_iterable"),
+            for_statement=self._namer.new_name("for_statement"),
             target=node.target,
             iter=node.iter,
             loop_body=node.body,
@@ -176,8 +176,8 @@ class _BuildTransformer(gast.NodeTransformer):
         """
         new_node = _template.replace(
             template,
-            is_readable=self._namer.new_name("is_readable", ()),
-            while_statement=self._namer.new_name("while_statement", ()),
+            is_readable=self._namer.new_name("is_readable"),
+            while_statement=self._namer.new_name("while_statement"),
             test=node.test,
             loop_body=node.body,
             else_body=node.orelse if node.orelse else gast.Pass(),

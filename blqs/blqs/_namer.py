@@ -1,13 +1,13 @@
 class Namer:
     """Produces new names for symbols that do not conflict with other symbols."""
 
-    def __init__(self, used_names):
+    def __init__(self, used_names=None):
         """Initialize the Namer.
 
         Args:
             used_names: A set of names that are already named and should not be used.
         """
-        self._used_names = set(used_names)
+        self._used_names = set(used_names or {})
 
     def new_name(self, name_base):
         """Create a new name which does not conflict with already created, or used names.
@@ -18,13 +18,14 @@ class Namer:
             * `used_names` for this `Namer` instance.
             * any names added by this `Namer` instance.
         The new name will attempt to added the lowest number (if necessary) as the postfix.
+        If the name ends in `_<number>` then this will produce the same, but for the string
+        with this number removed.
 
         Args:
             name_base: The name to try to base this new name upon.
 
         Returns:
-            A non conflicting symbol that starts with `name_base` but may have a numeric postfix
-            `name_base_<number`.
+            A non conflicting new symbol satisfying the conditions described above.
         """
         new_name = name_base
         name_parts = name_base.split("_")
@@ -32,8 +33,9 @@ class Namer:
         if name_parts[-1].isdigit():
             new_name = "_".join(name_parts[:-1])
         n = 0
-        while new_name in self._used_names:
+        final_name = new_name
+        while final_name in self._used_names:
+            final_name = f"{new_name}_{n}"
             n += 1
-            new_name = f"{new_name}_{n}"
-        self._used_names.add(new_name)
-        return new_name
+        self._used_names.add(final_name)
+        return final_name

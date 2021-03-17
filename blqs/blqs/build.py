@@ -2,9 +2,8 @@ import ast
 import astunparse
 import functools
 import gast
-import importlib
 import inspect
-import imp
+import importlib
 import os
 import sys
 import textwrap

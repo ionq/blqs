@@ -2,8 +2,8 @@ from typing import Tuple
 
 try:
     from typing import Protocol
-except:
-    from typing_extensions import Protocol
+except ImportError:
+    from typing_extensions import Protocols
 
 
 class SupportsIsReadable(Protocol):

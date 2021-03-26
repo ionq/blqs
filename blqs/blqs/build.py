@@ -31,8 +31,6 @@ def build(func):
         root_ast = gast.gast_to_ast(transformed_ast)
         transformed_source_code = astunparse.unparse(root_ast).strip()
 
-        print(transformed_source_code)
-
         # Write a temp file with the new source code.
         with tempfile.NamedTemporaryFile(
             mode="w", suffix=".py", delete=False, encoding="utf-8"
@@ -216,6 +214,8 @@ class _BuildTransformer(gast.NodeTransformer):
             print(target)
             if isinstance(target, gast.Name):
                 names.append(gast.Constant(target.id, None))
+            elif isinstance(target, gast.Tuple):
+                return self._targets_names(target.elts)
             elif isinstance(target, gast.Tuple):
                 return self._targets_names(target.elts)
             else:

@@ -3,7 +3,7 @@ from typing import Tuple
 try:
     from typing import Protocol
 except ImportError:
-    from typing_extensions import Protocols
+    from typing_extensions import Protocol
 
 
 class SupportsIsReadable(Protocol):

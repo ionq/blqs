@@ -3,3 +3,4 @@ astor
 gast
 pytype
 pymore
+typing-exensions; python_version < '3.8'

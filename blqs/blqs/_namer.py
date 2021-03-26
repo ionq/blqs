@@ -4,6 +4,8 @@ class Namer:
     def __init__(self, used_names=None):
         """Initialize the Namer.
 
+        The namer is stateful, it records all new names that were created by the namer.
+
         Args:
             used_names: A set of names that are already named and should not be used.
         """

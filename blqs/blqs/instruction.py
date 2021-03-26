@@ -1,4 +1,4 @@
-from blqs import statement
+from blqs import protocols, statement
 
 
 class Instruction(statement.Statement):
@@ -12,6 +12,9 @@ class Instruction(statement.Statement):
 
     def targets(self):
         return self._targets
+
+    def readable_targets(self):
+        return tuple(t for t in self._targets if protocols.is_readable(t))
 
     def __str__(self):
         return f"{self._operand} {','.join(str(t) for t in self._targets)}"

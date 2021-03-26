@@ -1,8 +1,8 @@
 import blqs
 
-H = blqs.Operand("H")
-CX = blqs.Operand("CX")
-M = blqs.Operand("M")
+H = blqs.Op("H")
+CX = blqs.Op("CX")
+M = blqs.Op("M")
 
 
 @blqs.build
@@ -42,7 +42,12 @@ def example():
     else:
         H(3)
 
+    a = blqs.Register("a")
+    if a:
+        H(0)
 
+
+@blqs.build
 def sub_block():
     H(0)
     CX(3, 2)

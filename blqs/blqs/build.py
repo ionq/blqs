@@ -31,6 +31,8 @@ def build(func):
         root_ast = gast.gast_to_ast(transformed_ast)
         transformed_source_code = astunparse.unparse(root_ast).strip()
 
+        print(transformed_source_code)
+
         # Write a temp file with the new source code.
         with tempfile.NamedTemporaryFile(
             mode="w", suffix=".py", delete=False, encoding="utf-8"
@@ -114,7 +116,7 @@ class _BuildTransformer(gast.NodeTransformer):
         template = """
         import contextlib
         cond = test
-        is_readable = hasattr(cond, 'is_readable')
+        is_readable = blqs.is_readable(cond)
         cond_statement = blqs.If(cond) if is_readable else None
         if is_readable or cond:
             with cond_statement.if_block() if cond_statement else contextlib.nullcontext():
@@ -138,7 +140,7 @@ class _BuildTransformer(gast.NodeTransformer):
         node = self.generic_visit(node)
         template = """
         import contextlib
-        is_iterable = hasattr(iter, 'is_iterable')
+        is_iterable = blqs.is_iterable(iter)
         for_statement = blqs.For(iter) if is_iterable else None
         for target in ((iter.loop_vars(),) if is_iterable else iter):
             with for_statement.loop_block() if for_statement else contextlib.nullcontext():
@@ -162,7 +164,7 @@ class _BuildTransformer(gast.NodeTransformer):
         node = self.generic_visit(node)
         template = """
         import contextlib
-        is_readable = hasattr(test, 'is_readable')
+        is_readable = blqs.is_readable(test)
         while_statement = blqs.While(cond) if is_readable else None
         while test or is_readable:
             with while_statement.loop_block() if while_statement else contextlib.nullcontext():
@@ -182,3 +184,40 @@ class _BuildTransformer(gast.NodeTransformer):
             else_body=node.orelse if node.orelse else gast.Pass(),
         )
         return new_node
+
+    def visit_Assign(self, node):
+        node = self.generic_visit(node)
+        template = """
+        temp_value = value
+        readable_targets = blqs.readable_targets(temp_value)
+        if len(readable_targets) == 1:
+            readable_targets = readable_targets[0]
+        if readable_targets:
+            assign = blqs.Assign(target_names, temp_value)
+            targets = readable_targets
+        else:
+            targets = temp_value
+        """
+        target_names = self._targets_names(node.targets)
+        new_node = _template.replace(
+            template,
+            temp_value=self._namer.new_name("temp_value"),
+            value=node.value,
+            targets=node.targets,
+            is_readable=self._namer.new_name("is_readable"),
+            assign=self._namer.new_name("assign"),
+            target_names=target_names,
+        )
+        return new_node
+
+    def _targets_names(self, targets):
+        names = []
+        for target in targets:
+            print(target)
+            if isinstance(target, gast.Name):
+                names.append(gast.Constant(target.id, None))
+            elif isinstance(target, gast.Tuple):
+                return self._targets_names(target.elts)
+            else:
+                assert False
+        return gast.Tuple(names, gast.Load)

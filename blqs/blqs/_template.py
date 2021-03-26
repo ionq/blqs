@@ -6,11 +6,6 @@ class ReplacementTransformer(gast.NodeTransformer):
     def __init__(self, **replacements):
         self.replacements = replacements
 
-    def visit_Expr(self, node):
-        if isinstance(node.value, gast.Name) and node.value.id in self.replacements:
-            return self.replacements[node.value.id]
-        return node
-
     def visit_Name(self, node):
         if node.id in self.replacements:
             replacement = self.replacements[node.id]

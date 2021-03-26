@@ -1,3 +1,7 @@
+from blqs.assignment import (
+    Assign,
+)
+
 from blqs.block_stack import (
     get_current_block,
     pop_block,
@@ -29,8 +33,18 @@ from blqs.loops import (
     While,
 )
 
-from blqs.operand import (
-    Operand,
+from blqs.op import (
+    Op,
+)
+
+from blqs.protocols import (
+    is_assignable,
+    is_iterable,
+    is_readable,
+    readable_targets,
+    SupportsIsAssignable,
+    SupportsIsIterable,
+    SupportsIsReadable,
 )
 
 from blqs.program import (

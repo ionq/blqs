@@ -1,13 +1,13 @@
 from blqs import instruction
 
 
-class Operand:
+class Op:
     """The identifier component of an `Instruction`.
 
-    Operands can be called with a list of targets to produce an `Instruction`:
+    Ops can be called with a list of targets to produce an `Instruction`:
 
     ```
-    o = Operand('H')
+    o = Op('H')
     # Create an Instruction
     o(0)
     ```
@@ -32,3 +32,4 @@ class Operand:
 
     def __hash__(self):
         return hash(self._name)
+    

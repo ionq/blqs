@@ -21,7 +21,7 @@ H = blqs.Operand('H')
 CX = blqs.Operand('CX')
 
 @blqs.build
-def hello_blqs()
+def hello_blqs():
     H(0)
     CX(0, 1)
 
@@ -32,8 +32,7 @@ print(program)
 > H 1
 ```
 Here `program` is `blqs.Program` container of the listed `blqs.Statement`s. The
-function annotation turns that function into a builder that when called returns
-the built program.
+function annotation turns the `hello_blqs` function into a builder that when called this function returns the built program.
 
 More interestingly, blqs programs can also take native python functionality,
 like `if` statements, and capture then in blqs objects:

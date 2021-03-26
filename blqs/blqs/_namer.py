@@ -7,7 +7,8 @@ class Namer:
         The namer is stateful, it records all new names that were created by the namer.
 
         Args:
-            used_names: A set of names that are already named and should not be used.
+            used_names: A set of names that are already used. The namer will not produce
+                names from this list.
         """
         self._used_names = set(used_names or {})
 

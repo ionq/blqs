@@ -32,4 +32,3 @@ class Op:
 
     def __hash__(self):
         return hash(self._name)
-    

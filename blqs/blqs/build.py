@@ -100,13 +100,17 @@ class _BuildTransformer(gast.NodeTransformer):
             old_body=node.body,
         )
         # Set the inner args to the args of the original function.
-        inner = next(x for x in new_module.body[0].body if isinstance(x, gast.FunctionDef))
+        inner = next(
+            x for x in new_module.body[0].body if isinstance(x, gast.FunctionDef)
+        )
         inner.args = node.args
         return new_module.body[0]
 
     def remove_blqs_build_annotation(self, decorator_list):
         return [
-            d for d in decorator_list if not d.value or d.value.id != "blqs" or d.attr != "build"
+            d
+            for d in decorator_list
+            if not d.value or d.value.id != "blqs" or d.attr != "build"
         ]
 
     def visit_If(self, node):

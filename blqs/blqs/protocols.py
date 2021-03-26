@@ -1,4 +1,9 @@
-from typing import Protocol, Tuple
+from typing import Tuple
+
+try:
+    from typing import Protocol
+except:
+    from typing_extensions import Protocol
 
 
 class SupportsIsReadable(Protocol):

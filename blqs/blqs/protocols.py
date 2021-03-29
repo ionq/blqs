@@ -39,4 +39,6 @@ def is_iterable(val) -> bool:
 def readable_targets(val) -> Tuple:
     if hasattr(val, "readable_targets"):
         return val.readable_targets()
+    if hasattr(val, "is_readable"):
+        return (val,)
     return tuple()

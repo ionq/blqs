@@ -43,7 +43,7 @@ jobs:
         cat blqs/requirements-dev.txt | grep black | xargs pip install
     - name: Check format
       run: |
-        black --check blqs
+        black --check --line-length=100 blqs
   type-check:
 
     runs-on: ubuntu-latest

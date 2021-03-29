@@ -14,7 +14,7 @@ class Register:
         return True
 
     def __str__(self):
-        return self._name
+        return f"R({self._name})"
 
     def __eq__(self, other):
         if not isinstance(other, type(self)):

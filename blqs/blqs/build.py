@@ -24,6 +24,7 @@ def build(func):
 
         # Transform the function a builder.
         # This creates an outer function, which when call returns the transformed function.
+        # This pattern is used to correctly capture closures.
         transformer = _BuildTransformer(func)
         transformed_ast, outer_fn_name = transformer.transform(root)
 
@@ -91,7 +92,7 @@ class _BuildTransformer(gast.NodeTransformer):
             for var in self._func.__code__.co_freevars
         ]
         self._outer_fn_name = self._namer.new_name("outer_fn")
-        new_module = _template.replace(
+        new_fn = _template.replace(
             template,
             outer_fn=self._outer_fn_name,
             var_defs=var_defs,
@@ -100,17 +101,13 @@ class _BuildTransformer(gast.NodeTransformer):
             old_body=node.body,
         )
         # Set the inner args to the args of the original function.
-        inner = next(
-            x for x in new_module.body[0].body if isinstance(x, gast.FunctionDef)
-        )
+        inner = next(x for x in new_fn if isinstance(x, gast.FunctionDef))
         inner.args = node.args
-        return new_module.body[0]
+        return new_fn
 
     def remove_blqs_build_annotation(self, decorator_list):
         return [
-            d
-            for d in decorator_list
-            if not d.value or d.value.id != "blqs" or d.attr != "build"
+            d for d in decorator_list if not d.value or d.value.id != "blqs" or d.attr != "build"
         ]
 
     def visit_If(self, node):
@@ -215,7 +212,6 @@ class _BuildTransformer(gast.NodeTransformer):
     def _targets_names(self, targets):
         names = []
         for target in targets:
-            print(target)
             if isinstance(target, gast.Name):
                 names.append(gast.Constant(target.id, None))
             elif isinstance(target, gast.Tuple):

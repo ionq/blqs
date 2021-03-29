@@ -63,4 +63,4 @@ jobs:
         cat blqs/requirements-dev.txt | grep mypy | xargs pip install
     - name: Run type checking
       run: |
-        mypy --config-file=blqs/config/mypy.ini blqs
+        mypy --config-file=blqs/ci/mypy.ini blqs

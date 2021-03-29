@@ -17,7 +17,7 @@ class Instruction(statement.Statement):
         return tuple(t for t in self._targets if protocols.is_readable(t))
 
     def __str__(self):
-        return f"{self._operand} {', '.join(str(t) for t in self._targets)}"
+        return f"{self._operand} {','.join(str(t) for t in self._targets)}"
 
     def __eq__(self, other):
         if not isinstance(other, type(self)):

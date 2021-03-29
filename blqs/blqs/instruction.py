@@ -2,13 +2,13 @@ from blqs import protocols, statement
 
 
 class Instruction(statement.Statement):
-    def __init__(self, operand, *targets):
+    def __init__(self, op, *targets):
         super().__init__()
-        self._operand = operand
-        self._targets = targets
+        self._op = op
+        self._targets = tuple(targets)
 
-    def operand(self):
-        return self._operand
+    def op(self):
+        return self._op
 
     def targets(self):
         return self._targets
@@ -17,12 +17,17 @@ class Instruction(statement.Statement):
         return tuple(t for t in self._targets if protocols.is_readable(t))
 
     def __str__(self):
-        return f"{self._operand} {','.join(str(t) for t in self._targets)}"
+
+        return (
+            f"{self._op} {','.join(str(t) for t in self._targets)}"
+            if self._targets
+            else f"{self._op}"
+        )
 
     def __eq__(self, other):
         if not isinstance(other, type(self)):
             return NotImplemented
-        return self._operand == other._operand and self._targets == other._targets
+        return self._op == other._op and self._targets == other._targets
 
     def __hash__(self):
-        return hash((self._operand, *self._targets))
+        return hash((self._op, *self._targets))

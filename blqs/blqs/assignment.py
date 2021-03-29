@@ -24,6 +24,9 @@ class Assign(statement.Statement):
             return NotImplemented
         return self._assign_names == other._assign_names and self._value == other._value
 
+    def __hash__(self):
+        return hash((*self._assign_names, self._value))
+
     def __str__(self):
         if len(self._assign_names) == 1:
             return f"{self._assign_names[0]} = {self._value}"

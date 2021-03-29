@@ -51,6 +51,9 @@ class Block(statement.Statement):
     `Block`s do not support mutation of their elements (though if those elements are
     references, the objects these reference refer to can be mutated).
 
+    `Block`s have a boolean value of `False` if they contain no statements, otherwise
+    they are `True`.
+
     See also `blqs.Program` for a top level `Block`.
     """
 
@@ -58,21 +61,20 @@ class Block(statement.Statement):
         """Construction a block.
 
         Args:
-            parent_statement: If set this block does inherits its statement properties
-                (i.e. belonging to another block), from this block. Typically this is never
-                set by client code, but is used by other statements that have their own
-                `blqs.Block`s (arising, for example, in `if` statements).
+            parent_statement: If set to not None, this block is not treated as a statement
+                to be added to the current default block. Typically this is never set by client
+                code, but is used by other statements that have their own `blqs.Block`s
+                (arising, for example, in `if` statements).
         """
         if not parent_statement:
             super().__init__()
         self._statements = []
-        self._parent_statement = parent_statement
 
     @staticmethod
     def of(*statements):
         """Static constructor for `Blocks`.
 
-        Sample:
+        Example:
         ```
         blqs.Block.of("a", "b")
         ```
@@ -91,13 +93,6 @@ class Block(statement.Statement):
     def statements(self):
         """The statements that make up a block, returned as an immutable tuple."""
         return tuple(self._statements)
-
-    def parent_statement(self):
-        """The parent statement to which this statement belongs.
-
-        This is not None for statement that contain blocks, like an if statement.
-        """
-        return self._parent_statement
 
     def __getitem__(self, key):
         return self._statements[key]
@@ -120,7 +115,10 @@ class Block(statement.Statement):
     def __eq__(self, other):
         if not isinstance(other, type(self)):
             return NotImplemented
-        return self.statements() == other.statements()
+        return self._statements == other._statements
+
+    def __hash__(self):
+        return hash((*self._statements,))
 
     def __bool__(self):
         return bool(self._statements)

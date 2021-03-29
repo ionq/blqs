@@ -112,5 +112,5 @@ def test_block_statements_immutable():
 
 
 def test_block_parent_statement():
-    b = blqs.Block.of("a", "b")
-    assert b.parent_statement() == None
+    b = blqs.Block(parent_statement=True)
+    assert blqs.get_current_block() == None

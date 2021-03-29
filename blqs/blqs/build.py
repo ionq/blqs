@@ -101,7 +101,7 @@ class _BuildTransformer(gast.NodeTransformer):
             old_body=node.body,
         )
         # Set the inner args to the args of the original function.
-        inner = next(x for x in new_fn if isinstance(x, gast.FunctionDef))
+        inner = next(x for x in new_fn[0].body if isinstance(x, gast.FunctionDef))
         inner.args = node.args
         return new_fn
 

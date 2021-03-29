@@ -35,7 +35,7 @@ Here `program` is `blqs.Program` container of the listed `blqs.Statement`s. The
 function annotation turns the `hello_blqs` function into a builder that when called this function returns the built program.
 
 More interestingly, blqs programs can also take native python functionality,
-like `if` statements, and capture then in blqs objects:
+like `if` statements, and capture them in blqs objects:
 ```python
 M = blqs.Operand('M')
 
@@ -48,7 +48,8 @@ def hello_if_blqs():
     else:
         CX(1, 0)
 
-print(hello_if_blqs)
+program = hello_if_blqs()
+print(program)
 > prints
 > H 0
 > M 0,a
@@ -66,7 +67,9 @@ for s in program:
 > <class 'blqs.conditional.If'>
 ```
 
-Further we can mix and match native and captured python.
+Further we can mix and match native and captured python. For example,
+here `a` is just a variable normal python boolean variable, and we
+can use it in to build one of two different cases:
 ```python
 
 def hello_native(a):
@@ -84,7 +87,8 @@ print(hello_native(False))
 
 Blqs is meant to be all about building programs and the intermediate representation
 of that program.  In many ways it is meant to be a framework to help you build other
-frameworks.  As such, blqs itself will be kept very simple and pure, other frameworks
-will be built on top of it.
+frameworks.  As such, blqs itself will be kept very simple, the ideas is that other
+frameworks can be built on top of it.
 
-The inspiration for blqs comes from Tensorflow's autograph library.
+The inspiration for blqs comes from Tensorflow's autograph library. The main
+difference is that we avoid using static analysis.

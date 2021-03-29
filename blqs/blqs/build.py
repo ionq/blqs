@@ -192,12 +192,12 @@ class _BuildTransformer(gast.NodeTransformer):
         if len(readable_targets) == 1:
             readable_targets = readable_targets[0]
         if readable_targets:
-            assign = blqs.Assign(target_names, temp_value)
+            assign = blqs.Assign(assign_names, temp_value)
             targets = readable_targets
         else:
             targets = temp_value
         """
-        target_names = self._targets_names(node.targets)
+        assign_names = self._assign_names(node.targets)
         new_node = _template.replace(
             template,
             temp_value=self._namer.new_name("temp_value"),
@@ -205,11 +205,11 @@ class _BuildTransformer(gast.NodeTransformer):
             targets=node.targets,
             is_readable=self._namer.new_name("is_readable"),
             assign=self._namer.new_name("assign"),
-            target_names=target_names,
+            assign_names=assign_names,
         )
         return new_node
 
-    def _targets_names(self, targets):
+    def _assign_names(self, targets):
         names = []
         for target in targets:
             if isinstance(target, gast.Name):

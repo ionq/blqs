@@ -1,5 +1,13 @@
 class Iterable:
+    """An object that is iterable."""
+
     def __init__(self, name, loop_vars):
+        """Create the iterable.
+
+        Args:
+            name: The name of the iterable.
+            loop_vars: the targets that are to be iterated over.
+        """
         self._name = name
         self._loop_vars = loop_vars
 
@@ -19,4 +27,7 @@ class Iterable:
     def __eq__(self, other):
         if not isinstance(other, type(self)):
             return NotImplemented
-        return self._name == other._name
+        return self._name == other._name and self._loop_vars == other._loop_vars
+
+    def __hash__(self):
+        return hash((self._name, self._loop_vars))

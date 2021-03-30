@@ -38,13 +38,13 @@ from blqs.op import (
 )
 
 from blqs.protocols import (
-    is_assignable,
+    is_writable,
     is_iterable,
     is_readable,
     readable_targets,
-    SupportsIsAssignable,
     SupportsIsIterable,
     SupportsIsReadable,
+    SupportsIsWriteable,
 )
 
 from blqs.program import (

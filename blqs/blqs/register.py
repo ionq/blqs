@@ -10,7 +10,7 @@ class Register:
         return True
 
     @property
-    def is_assignable(self):
+    def is_writable(self):
         return True
 
     def __str__(self):
@@ -20,3 +20,6 @@ class Register:
         if not isinstance(other, type(self)):
             return NotImplemented
         return self._name == other._name
+
+    def __hash__(self):
+        return hash((self._name,))

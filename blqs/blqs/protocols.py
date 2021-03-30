@@ -16,14 +16,14 @@ def is_readable(val) -> bool:
     return hasattr(val, "is_readable") and val.is_readable
 
 
-class SupportsIsAssignable(Protocol):
+class SupportsIsWriteable(Protocol):
     @property
-    def is_assignable(self) -> bool:
+    def is_writeable(self) -> bool:
         ...
 
 
-def is_assignable(val) -> bool:
-    return hasattr(val, "is_assignable") and val.is_assignable
+def is_writable(val) -> bool:
+    return hasattr(val, "is_writeable") and val.is_writable
 
 
 class SupportsIsIterable(Protocol):

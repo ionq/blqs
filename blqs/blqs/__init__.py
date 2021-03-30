@@ -44,7 +44,7 @@ from blqs.protocols import (
     readable_targets,
     SupportsIsIterable,
     SupportsIsReadable,
-    SupportsIsWriteable,
+    SupportsIsWritable,
 )
 
 from blqs.program import (

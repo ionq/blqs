@@ -1,12 +1,15 @@
 import contextlib
 import textwrap
 
-from blqs import block, statement
+from blqs import block, protocols, statement
 
 
 class If(statement.Statement):
-    def __init__(self, condition):
+    def __init__(self, condition: protocols.SupportsIsReadable):
         super().__init__()
+        assert protocols.is_readable(
+            condition
+        ), f"If's condition parameter must be readable. See {protocols.SupportsIsReadable.__name__}."
         self._condition = condition
         self._if_block = block.Block(parent_statement=self)
         self._else_block = block.Block(parent_statement=self)

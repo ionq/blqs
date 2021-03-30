@@ -1,25 +1,26 @@
 import pymore
+import pytest
 
 import blqs
 
 
 def test_for_eq():
     eq = pymore.EqualsTester()
-    eq.make_equality_group(lambda: blqs.For((1, 2)))
+    eq.make_equality_group(lambda: blqs.For(blqs.Iterable("range(5)", ("a",))))
 
-    f = blqs.For((1, 2))
+    f = blqs.For(blqs.Iterable("range(5)", ("a",)))
     with f.loop_block():
         s1 = blqs.Statement()
     eq.add_equality_group(f)
 
-    f = blqs.For((1, 2))
+    f = blqs.For(blqs.Iterable("range(5)", ("a",)))
     with f.loop_block():
         s1 = blqs.Statement()
     with f.else_block():
         s2 = blqs.Statement()
     eq.add_equality_group(f)
 
-    f = blqs.For((1, 2))
+    f = blqs.For(blqs.Iterable("range(5)", ("a",)))
     with f.loop_block():
         s1 = blqs.Statement()
     with f.else_block():
@@ -42,9 +43,12 @@ def test_for_str():
     assert str(loop) == "for ('a',) in range(5):\n  MOV 0,1\nelse:\n  H 0"
 
 
-def test_for_iterable():
-    assert blqs.For((1, 2)).iterable() == (1, 2)
+def test_for_iterable_not_iterable():
+    with pytest.raises(AssertionError, match="SupportsIsIterable"):
+        _ = blqs.For((1, 2))
 
+
+def test_for_iterable():
     iterable = blqs.Iterable("range(5)", ("a",))
     assert blqs.For(iterable).iterable() == iterable
 
@@ -90,6 +94,11 @@ def test_while_str():
         op = blqs.Op("H")
         op(0)
     assert str(loop) == "while R(a):\n  MOV 0,1\nelse:\n  H 0"
+
+
+def test_while_condition_not_readable():
+    with pytest.raises(AssertionError, match="SupportsIsReadable"):
+        _ = blqs.While(True)
 
 
 def test_while_condition():

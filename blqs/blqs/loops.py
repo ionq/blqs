@@ -4,6 +4,10 @@ from blqs import block, protocols, statement
 class For(statement.Statement):
     def __init__(self, iterable: protocols.SupportsIsIterable):
         super().__init__()
+        assert protocols.is_iterable(iterable), (
+            f"For's iterable parameter must be iterable. "
+            "See {protocols.SupportsIsIterable.__name__}."
+        )
         self._iterable = iterable
         self._loop_block = block.Block(parent_statement=self)
         self._else_block = block.Block(parent_statement=self)
@@ -39,8 +43,12 @@ class For(statement.Statement):
 
 
 class While(statement.Statement):
-    def __init__(self, condition):
+    def __init__(self, condition: protocols.SupportsIsReadable):
         super().__init__()
+        assert protocols.is_readable(condition), (
+            f"While's condition parameter must be readable. "
+            "See {protocols.SupportsIsReadable.__name__}"
+        )
         self._condition = condition
         self._loop_block = block.Block(parent_statement=self)
         self._else_block = block.Block(parent_statement=self)

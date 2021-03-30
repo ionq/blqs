@@ -70,8 +70,8 @@ class Block(statement.Statement):
             super().__init__()
         self._statements = []
 
-    @staticmethod
-    def of(*statements):
+    @classmethod
+    def of(clz, *statements):
         """Static constructor for `Blocks`.
 
         Example:
@@ -79,7 +79,7 @@ class Block(statement.Statement):
         blqs.Block.of("a", "b")
         ```
         """
-        b = Block()
+        b = clz()
         b.extend(statements)
         return b
 

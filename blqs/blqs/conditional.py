@@ -33,3 +33,6 @@ class If(statement.Statement):
             and self._if_block == other._if_block
             and self._else_block == other._else_block
         )
+
+    def __hash__(self):
+        return hash((self._condition, self._if_block, self._else_block))

@@ -24,4 +24,4 @@ def test_register_is_readable():
 
 def test_register_is_writable():
     assert blqs.Register("abc").is_writable
-    assert blqs.is_assignable(blqs.Register("abc"))
+    assert blqs.is_writable(blqs.Register("abc"))

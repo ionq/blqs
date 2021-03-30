@@ -27,13 +27,17 @@ def test_instruction_fields():
 
 def test_instruction_readable_targets():
     i = blqs.Instruction(blqs.Op("b"))
-    assert i.readable_targets() == tuple()
+    assert i._readable_targets_() == tuple()
+    assert blqs.readable_targets(i) == tuple()
 
     i = blqs.Instruction(blqs.Op("b"), 1, 2)
-    assert i.readable_targets() == tuple()
+    assert i._readable_targets_() == tuple()
+    assert blqs.readable_targets(i) == tuple()
 
     i = blqs.Instruction(blqs.Op("a"), blqs.Register("b"))
-    assert i.readable_targets() == (blqs.Register("b"),)
+    assert i._readable_targets_() == (blqs.Register("b"),)
+    assert blqs.readable_targets(i) == (blqs.Register("b"),)
 
     i = blqs.Instruction(blqs.Op("a"), 0, blqs.Register("b"))
-    assert i.readable_targets() == (blqs.Register("b"),)
+    assert i._readable_targets_() == (blqs.Register("b"),)
+    assert blqs.readable_targets(i) == (blqs.Register("b"),)

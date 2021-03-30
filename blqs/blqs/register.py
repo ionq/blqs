@@ -5,12 +5,10 @@ class Register:
     def name(self):
         return self._name
 
-    @property
-    def is_readable(self):
+    def _is_readable_(self):
         return True
 
-    @property
-    def is_writable(self):
+    def _is_writable_(self):
         return True
 
     def __str__(self):

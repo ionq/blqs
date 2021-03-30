@@ -13,7 +13,7 @@ class Instruction(statement.Statement):
     def targets(self):
         return self._targets
 
-    def readable_targets(self):
+    def _readable_targets_(self):
         return tuple(t for t in self._targets if protocols.is_readable(t))
 
     def __str__(self):

@@ -45,6 +45,7 @@ from blqs.protocols import (
     SupportsIsIterable,
     SupportsIsReadable,
     SupportsIsWritable,
+    SupportsReadableTargets,
 )
 
 from blqs.program import (

@@ -21,5 +21,5 @@ def test_iterable_fields():
 
 
 def test_iterable_is_iterable():
-    assert blqs.Iterable("name", "var").is_iterable
+    assert blqs.Iterable("name", "var")._is_iterable_()
     assert blqs.is_iterable(blqs.Iterable("name", "var"))

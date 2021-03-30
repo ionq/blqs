@@ -18,10 +18,10 @@ def test_register_field():
 
 
 def test_register_is_readable():
-    assert blqs.Register("abc").is_readable
+    assert blqs.Register("abc")._is_readable_()
     assert blqs.is_readable(blqs.Register("abc"))
 
 
 def test_register_is_writable():
-    assert blqs.Register("abc").is_writable
+    assert blqs.Register("abc")._is_writable_()
     assert blqs.is_writable(blqs.Register("abc"))

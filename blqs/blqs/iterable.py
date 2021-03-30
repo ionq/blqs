@@ -17,8 +17,7 @@ class Iterable:
     def loop_vars(self):
         return self._loop_vars
 
-    @property
-    def is_iterable(self):
+    def _is_iterable_(self):
         return True
 
     def __str__(self):

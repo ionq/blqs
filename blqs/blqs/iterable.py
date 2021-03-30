@@ -1,7 +1,10 @@
+from blqs import protocols
+
+
 class Iterable:
     """An object that is iterable."""
 
-    def __init__(self, name, loop_vars):
+    def __init__(self, name: str, loop_vars):
         """Create the iterable.
 
         Args:
@@ -9,7 +12,11 @@ class Iterable:
             loop_vars: the targets that are to be iterated over.
         """
         self._name = name
-        self._loop_vars = loop_vars
+        assert all(protocols.is_writable(v) for v in loop_vars), (
+            "Iterable must have all loop variable writable. "
+            f"See {protocols.SupportsIsWritable.__name__}."
+        )
+        self._loop_vars = tuple(loop_vars)
 
     def name(self):
         return self._name

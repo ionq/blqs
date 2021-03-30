@@ -1,5 +1,10 @@
 from blqs import statement
 
+from typing import Sequence, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import blqs
+
 
 class Assign(statement.Statement):
     """An assignment statement.
@@ -8,15 +13,15 @@ class Assign(statement.Statement):
     to which these names have been assigned.
     """
 
-    def __init__(self, assign_names, value):
+    def __init__(self, assign_names: Sequence[str], value: "blqs.SupportsIsReadable"):
         super().__init__()
         self._assign_names = assign_names
         self._value = value
 
-    def assign_names(self):
+    def assign_names(self) -> Sequence[str]:
         return self._assign_names
 
-    def value(self):
+    def value(self) -> "blqs.SupportsIsReadable":
         return self._value
 
     def __eq__(self, other):

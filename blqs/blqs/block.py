@@ -1,8 +1,9 @@
 import functools
 import textwrap
 
-from blqs import block_stack
-from blqs import statement
+from blqs import block_stack, statement
+
+from typing import Iterable, List, Tuple
 
 
 class Block(statement.Statement):
@@ -68,10 +69,10 @@ class Block(statement.Statement):
         """
         if not parent_statement:
             super().__init__()
-        self._statements = []
+        self._statements: List[statement.Statement] = []
 
     @classmethod
-    def of(clz, *statements):
+    def of(clz, *statements) -> "Block":
         """Static constructor for `Blocks`.
 
         Example:
@@ -90,7 +91,7 @@ class Block(statement.Statement):
     def __exit__(self, exc_type, exc_value, traceback):
         block_stack.pop_block()
 
-    def statements(self):
+    def statements(self) -> Tuple[statement.Statement, ...]:
         """The statements that make up a block, returned as an immutable tuple."""
         return tuple(self._statements)
 
@@ -100,13 +101,13 @@ class Block(statement.Statement):
     def __setitem__(self, index, value):
         raise NotImplementedError("Block elements cannot be modified.")
 
-    def append(self, statement):
+    def append(self, statement: statement.Statement):
         self._statements.append(statement)
 
-    def extend(self, statements):
+    def extend(self, statements: Iterable[statement.Statement]):
         self._statements.extend(statements)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._statements)
 
     def __str__(self):
@@ -120,5 +121,5 @@ class Block(statement.Statement):
     def __hash__(self):
         return hash((*self._statements,))
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         return bool(self._statements)

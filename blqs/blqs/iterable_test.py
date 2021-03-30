@@ -5,21 +5,21 @@ import blqs
 
 def test_iterable_equality():
     eq = pymore.EqualsTester()
-    eq.make_equality_group(lambda: blqs.Iterable("name", "var"))
-    eq.add_equality_group(blqs.Iterable("name", "var1"))
-    eq.add_equality_group(blqs.Iterable("name1", "var"))
+    eq.make_equality_group(lambda: blqs.Iterable("name", [blqs.Register("var")]))
+    eq.add_equality_group(blqs.Iterable("name", [blqs.Register("var1")]))
+    eq.add_equality_group(blqs.Iterable("name1", [blqs.Register("var")]))
 
 
 def test_iterable_str():
-    assert str(blqs.Iterable("name", "var")) == "name"
+    assert str(blqs.Iterable("name", [blqs.Register("var")])) == "name"
 
 
 def test_iterable_fields():
-    i = blqs.Iterable("name", "var")
+    i = blqs.Iterable("name", [blqs.Register("var")])
     assert i.name() == "name"
-    assert i.loop_vars() == "var"
+    assert i.loop_vars() == (blqs.Register("var"),)
 
 
 def test_iterable_is_iterable():
-    assert blqs.Iterable("name", "var")._is_iterable_()
-    assert blqs.is_iterable(blqs.Iterable("name", "var"))
+    assert blqs.Iterable("name", [blqs.Register("var")])._is_iterable_()
+    assert blqs.is_iterable(blqs.Iterable("name", [blqs.Register("var")]))

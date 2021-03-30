@@ -14,13 +14,13 @@ class If(statement.Statement):
         self._if_block = block.Block(parent_statement=self)
         self._else_block = block.Block(parent_statement=self)
 
-    def condition(self):
+    def condition(self) -> protocols.SupportsIsReadable:
         return self._condition
 
-    def if_block(self):
+    def if_block(self) -> block.Block:
         return self._if_block
 
-    def else_block(self):
+    def else_block(self) -> block.Block:
         return self._else_block
 
     def __str__(self):

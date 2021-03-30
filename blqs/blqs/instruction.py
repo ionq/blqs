@@ -1,13 +1,13 @@
-from blqs import protocols, statement
+from blqs import op, protocols, statement
 
 
 class Instruction(statement.Statement):
-    def __init__(self, op, *targets):
+    def __init__(self, op: op.Op, *targets):
         super().__init__()
         self._op = op
         self._targets = tuple(targets)
 
-    def op(self):
+    def op(self) -> op.Op:
         return self._op
 
     def targets(self):
@@ -17,7 +17,6 @@ class Instruction(statement.Statement):
         return tuple(t for t in self._targets if protocols.is_readable(t))
 
     def __str__(self):
-
         return (
             f"{self._op} {','.join(str(t) for t in self._targets)}"
             if self._targets

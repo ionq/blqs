@@ -13,16 +13,16 @@ class Op:
     ```
     """
 
-    def __init__(self, name):
+    def __init__(self, name: str):
         self._name = name
 
-    def name(self):
+    def name(self) -> str:
         return self._name
 
     def __str__(self):
         return str(self._name)
 
-    def __call__(self, *targets):
+    def __call__(self, *targets) -> "instruction.Instruction":
         return instruction.Instruction(self, *targets)
 
     def __eq__(self, other):

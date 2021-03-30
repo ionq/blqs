@@ -1,7 +1,10 @@
+from typing import Sequence
+
+
 class Namer:
     """Produces new names for symbols that do not conflict with other symbols."""
 
-    def __init__(self, used_names=None):
+    def __init__(self, used_names: Sequence[str] = None):
         """Initialize the Namer.
 
         The namer is stateful, it records all new names that were created by the namer.
@@ -12,7 +15,7 @@ class Namer:
         """
         self._used_names = set(used_names or {})
 
-    def new_name(self, name_base):
+    def new_name(self, name_base: str) -> str:
         """Create a new name which does not conflict with already created, or used names.
 
         This creates a new name based upon `name_base`.  If `name_base` does not end in `_<number>`,

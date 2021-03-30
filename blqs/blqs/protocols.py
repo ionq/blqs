@@ -80,7 +80,7 @@ class SupportsReadableTargets(Protocol):
         """Returns the readable targets of the object."""
 
 
-def readable_targets(val) -> Tuple:
+def readable_targets(val: Any) -> Tuple:
     """Determine the readable targets of an object.
 
     An object has readable targets if either

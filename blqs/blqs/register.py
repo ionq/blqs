@@ -1,14 +1,19 @@
 class Register:
-    def __init__(self, name):
+    """A register containing a value.
+
+    By default registers are `SupportsIsReadable` and `SupportsIsWritable`.
+    """
+
+    def __init__(self, name: str):
         self._name = name
 
-    def name(self):
+    def name(self) -> str:
         return self._name
 
-    def _is_readable_(self):
+    def _is_readable_(self) -> bool:
         return True
 
-    def _is_writable_(self):
+    def _is_writable_(self) -> bool:
         return True
 
     def __str__(self):

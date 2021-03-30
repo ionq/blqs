@@ -5,8 +5,8 @@ class For(statement.Statement):
     def __init__(self, iterable: protocols.SupportsIsIterable):
         super().__init__()
         assert protocols.is_iterable(iterable), (
-            f"For's iterable parameter must be iterable. "
-            "See {protocols.SupportsIsIterable.__name__}."
+            "For's iterable parameter must be iterable. "
+            f"See {protocols.SupportsIsIterable.__name__}."
         )
         self._iterable = iterable
         self._loop_block = block.Block(parent_statement=self)
@@ -25,7 +25,8 @@ class For(statement.Statement):
         return self._else_block
 
     def __str__(self):
-        loop_str = f"for {self.loop_vars()} in {self._iterable}:\n{self._loop_block}"
+        loop_var_str = ", ".join(str(x) for x in self._iterable.loop_vars())
+        loop_str = f"for {loop_var_str} in {self._iterable}:\n{self._loop_block}"
         else_str = f"\nelse:\n{self._else_block}"
         return loop_str + else_str if self._else_block else loop_str
 
@@ -46,20 +47,20 @@ class While(statement.Statement):
     def __init__(self, condition: protocols.SupportsIsReadable):
         super().__init__()
         assert protocols.is_readable(condition), (
-            f"While's condition parameter must be readable. "
-            "See {protocols.SupportsIsReadable.__name__}"
+            "While's condition parameter must be readable. "
+            f"See {protocols.SupportsIsReadable.__name__}"
         )
         self._condition = condition
         self._loop_block = block.Block(parent_statement=self)
         self._else_block = block.Block(parent_statement=self)
 
-    def condition(self):
+    def condition(self) -> protocols.SupportsIsReadable:
         return self._condition
 
-    def loop_block(self):
+    def loop_block(self) -> block.Block:
         return self._loop_block
 
-    def else_block(self):
+    def else_block(self) -> block.Block:
         return self._else_block
 
     def __str__(self):

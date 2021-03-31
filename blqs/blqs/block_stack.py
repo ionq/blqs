@@ -3,7 +3,7 @@ from blqs import _stack
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    import blqs
+    import blqs  # coverage: ignore
 
 
 class _BlockStack(_stack.ThreadLocalStack["blqs.Block"]):

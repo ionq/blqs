@@ -12,8 +12,12 @@ import tempfile
 
 from blqs import conditional, loops, _namer, _template
 
+from typing import Callable
 
-def build(func):
+
+def build(func: types.FunctionType):
+    """Turn the supplied function into a builder for the code the function contains."""
+
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         # Get source.
@@ -22,7 +26,7 @@ def build(func):
         # Parse it.
         root = gast.parse(source_code)
 
-        # Transform the function a builder.
+        # Transform the function via the transform below.
         # This creates an outer function, which when call returns the transformed function.
         # This pattern is used to correctly capture closures.
         transformer = _BuildTransformer(func)
@@ -58,10 +62,10 @@ def build(func):
 
 
 class _BuildTransformer(gast.NodeTransformer):
-    def __init__(self, func):
+    def __init__(self, func: types.FunctionType):
         self._func = func
         self._local_vars = func.__code__.co_freevars + func.__code__.co_varnames
-        self._namer = _namer.Namer(func.__globals__.keys())
+        self._namer = _namer.Namer(tuple(func.__globals__.keys()))
         self._outer_fn_name = None
 
     def transform(self, node):

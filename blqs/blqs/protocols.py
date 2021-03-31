@@ -1,9 +1,9 @@
 from typing import Any, Tuple
 
-# Protocol is only available in Python 3.7 via the typing_extensions package.
 try:
     from typing import Protocol
 except ImportError:
+    # Protocol is only available in Python 3.7 via the typing_extensions package.
     from typing_extensions import Protocol  # type: ignore
 
 
@@ -80,7 +80,7 @@ class SupportsReadableTargets(Protocol):
         """Returns the readable targets of the object."""
 
 
-def readable_targets(val: Any) -> Tuple:
+def readable_targets(val) -> Tuple:
     """Determine the readable targets of an object.
 
     An object has readable targets if either

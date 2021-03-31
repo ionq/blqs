@@ -1,0 +1,4 @@
+[report]
+exclude_lines =
+    coverage: ignore
+omit = *test.py

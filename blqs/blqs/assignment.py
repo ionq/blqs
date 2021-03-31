@@ -3,7 +3,7 @@ from blqs import statement
 from typing import Sequence, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    import blqs
+    import blqs  # coverage: ignore
 
 
 class Assign(statement.Statement):

@@ -2,9 +2,8 @@ from typing import Any, Tuple
 
 try:
     from typing import Protocol
-except ImportError:
-    # Protocol is only available in Python 3.7 via the typing_extensions package.
-    from typing_extensions import Protocol  # type: ignore
+except ImportError:  # coverage: ignore
+    from typing_extensions import Protocol  # type:ignore
 
 
 class SupportsIsReadable(Protocol):

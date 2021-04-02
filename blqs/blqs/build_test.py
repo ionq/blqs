@@ -295,7 +295,8 @@ def test_assign_readable_targets_blqs():
         a, b = blqs.Op("M")(blqs.Register("a"), blqs.Register("b"))
 
     transformed_fn = blqs.build(fn)
-    assign_stmt = blqs.Assign(("a", "b"), (blqs.Register("a"), blqs.Register("b")))
+    assign_stmt = blqs.Assign(("a", "b"), blqs.Op("M")(blqs.Register("a"), blqs.Register("b")))
+
     assert transformed_fn() == blqs.Program.of(
         blqs.Op("M")(blqs.Register("a"), blqs.Register("b")), assign_stmt
     )
@@ -306,9 +307,7 @@ def test_assign_readable_targets_list_blqs():
         [a, b] = blqs.Op("M")(blqs.Register("a"), blqs.Register("b"))
 
     transformed_fn = blqs.build(fn)
-    print(transformed_fn())
     assign_stmt = blqs.Assign(("a", "b"), blqs.Op("M")(blqs.Register("a"), blqs.Register("b")))
-    print(blqs.Program.of(blqs.Op("M")(blqs.Register("a"), blqs.Register("b")), assign_stmt))
     assert transformed_fn() == blqs.Program.of(
         blqs.Op("M")(blqs.Register("a"), blqs.Register("b")), assign_stmt
     )

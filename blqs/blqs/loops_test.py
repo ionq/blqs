@@ -6,21 +6,21 @@ import blqs
 
 def test_for_eq():
     eq = pymore.EqualsTester()
-    eq.make_equality_group(lambda: blqs.For(blqs.Iterable("range(5)", (blqs.Register("a"),))))
+    eq.make_equality_group(lambda: blqs.For(blqs.Iterable("range(5)", blqs.Register("a"))))
 
-    f = blqs.For(blqs.Iterable("range(5)", (blqs.Register("a"),)))
+    f = blqs.For(blqs.Iterable("range(5)", blqs.Register("a")))
     with f.loop_block():
         s1 = blqs.Statement()
     eq.add_equality_group(f)
 
-    f = blqs.For(blqs.Iterable("range(5)", (blqs.Register("a"),)))
+    f = blqs.For(blqs.Iterable("range(5)", blqs.Register("a")))
     with f.loop_block():
         s1 = blqs.Statement()
     with f.else_block():
         s2 = blqs.Statement()
     eq.add_equality_group(f)
 
-    f = blqs.For(blqs.Iterable("range(5)", (blqs.Register("a"),)))
+    f = blqs.For(blqs.Iterable("range(5)", blqs.Register("a")))
     with f.loop_block():
         s1 = blqs.Statement()
     with f.else_block():
@@ -30,7 +30,7 @@ def test_for_eq():
 
 
 def test_for_str():
-    iterable = blqs.Iterable("range(5)", (blqs.Register("a"),))
+    iterable = blqs.Iterable("range(5)", blqs.Register("a"))
     loop = blqs.For(iterable)
     with loop.loop_block():
         op = blqs.Op("MOV")
@@ -45,18 +45,18 @@ def test_for_str():
 
 def test_for_iterable_not_iterable():
     with pytest.raises(AssertionError, match="SupportsIsIterable"):
-        _ = blqs.For((1, 2))
+        _ = blqs.For(1)
 
 
 def test_for_iterable():
-    iterable = blqs.Iterable("range(5)", (blqs.Register("a"),))
+    iterable = blqs.Iterable("range(5)", blqs.Register("a"))
     assert blqs.For(iterable).iterable() == iterable
 
     assert blqs.For(iterable).loop_vars() == (blqs.Register("a"),)
 
 
 def test_for_blocks():
-    loop = blqs.For(blqs.Iterable("range(5)", (blqs.Register("a"),)))
+    loop = blqs.For(blqs.Iterable("range(5)", blqs.Register("a")))
     with loop.loop_block():
         s1 = blqs.Statement()
     assert loop.loop_block() == blqs.Block.of(s1)

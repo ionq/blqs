@@ -15,7 +15,7 @@ from blqs import conditional, loops, _namer, _template
 from typing import Callable
 
 
-def build(func: types.FunctionType):
+def build(func: Callable):
     """Turn the supplied function into a builder for the code the function contains."""
 
     @functools.wraps(func)
@@ -86,6 +86,7 @@ class _BuildTransformer(gast.NodeTransformer):
         def outer_fn():
             var_defs
             def inner_fn():
+                import contextlib
                 with blqs.Block() if blqs.get_current_block() else blqs.Program() as return_block:
                     old_body
                 return return_block
@@ -142,10 +143,10 @@ class _BuildTransformer(gast.NodeTransformer):
     def visit_For(self, node):
         node = self.generic_visit(node)
         template = """
-        import contextlib
         is_iterable = blqs.is_iterable(iter)
         for_statement = blqs.For(iter) if is_iterable else None
-        for target in ((iter.loop_vars(),) if is_iterable else iter):
+        for target in ([iter.loop_vars() if len(iter.loop_vars()) > 1 else iter.loop_vars()[0]]
+                       if is_iterable else iter):
             with for_statement.loop_block() if for_statement else contextlib.nullcontext():
                 loop_body
         else:
@@ -166,7 +167,6 @@ class _BuildTransformer(gast.NodeTransformer):
     def visit_While(self, node):
         node = self.generic_visit(node)
         template = """
-        import contextlib
         is_readable = blqs.is_readable(test)
         while_statement = blqs.While(cond) if is_readable else None
         while test or is_readable:

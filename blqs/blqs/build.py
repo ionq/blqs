@@ -36,6 +36,8 @@ def build(func: Callable):
         root_ast = gast.gast_to_ast(transformed_ast)
         transformed_source_code = astunparse.unparse(root_ast).strip()
 
+        print(transformed_source_code)
+
         # Write a temp file with the new source code.
         with tempfile.NamedTemporaryFile(
             mode="w", suffix=".py", delete=False, encoding="utf-8"
@@ -168,7 +170,7 @@ class _BuildTransformer(gast.NodeTransformer):
         node = self.generic_visit(node)
         template = """
         is_readable = blqs.is_readable(test)
-        while_statement = blqs.While(cond) if is_readable else None
+        while_statement = blqs.While(test) if is_readable else None
         while test or is_readable:
             with while_statement.loop_block() if while_statement else contextlib.nullcontext():
                 loop_body
@@ -219,9 +221,9 @@ class _BuildTransformer(gast.NodeTransformer):
             if isinstance(target, gast.Name):
                 names.append(gast.Constant(target.id, None))
             elif isinstance(target, gast.Tuple):
-                return self._targets_names(target.elts)
-            elif isinstance(target, gast.Tuple):
-                return self._targets_names(target.elts)
+                names.extend(gast.Constant(t.id, None) for t in target.elts)
+            elif isinstance(target, gast.List):
+                names.extend(gast.Constant(t.id, None) for t in target.elts)
             else:
-                assert False
+                raise ValueError("Invalid target type: this should not happen")  # coverage: ignore
         return gast.Tuple(names, gast.Load)

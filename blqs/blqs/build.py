@@ -36,8 +36,6 @@ def build(func: Callable):
         root_ast = gast.gast_to_ast(transformed_ast)
         transformed_source_code = astunparse.unparse(root_ast).strip()
 
-        print(transformed_source_code)
-
         # Write a temp file with the new source code.
         with tempfile.NamedTemporaryFile(
             mode="w", suffix=".py", delete=False, encoding="utf-8"

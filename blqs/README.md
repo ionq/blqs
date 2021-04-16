@@ -1,11 +1,12 @@
 
-# blqs: Building Blocks for Quantum Languages
+# blqs: Building Blocks for Domain Specific Languages
 
-Blqs is a framework for writing quantum programs that look like native Python
-programs.
+Blqs is a framework for building domain specific language that can be written in native Python.
+It was inspired by TensorFlow's autograph library, and motivated by the state of the art
+in quantum programming frameworks like Cirq and Qisket.
 
-In many traditional quantum programming frameworks on writes a quantum program
-via appending to a container object, (here is an example from Cirq):
+Here is a motivating example.  In many traditional quantum programming frameworks on writes
+a quantum program via appending to a container object, (here is an example from Cirq):
 ```python
 import cirq
 circuit = cirq.Circuit()
@@ -32,7 +33,8 @@ print(program)
 > H 1
 ```
 Here `program` is `blqs.Program` container of the listed `blqs.Statement`s. The
-function annotation turns the `hello_blqs` function into a builder that when called this function returns the built program.
+function annotation turns the `hello_blqs` function into a builder that,
+ when called, returns the built program.
 
 More interestingly, blqs programs can also take native python functionality,
 like `if` statements, and capture them in blqs objects:
@@ -67,8 +69,8 @@ for s in program:
 > <class 'blqs.conditional.If'>
 ```
 
-Further we can mix and match native and captured python. For example,
-here `a` is just a variable normal python boolean variable, and we
+Further we can mix and match native and captured Python. For example,
+here `a` is just a normal python boolean variable, and we
 can use it in to build one of two different cases:
 ```python
 
@@ -87,8 +89,5 @@ print(hello_native(False))
 
 Blqs is meant to be all about building programs and the intermediate representation
 of that program.  In many ways it is meant to be a framework to help you build other
-frameworks.  As such, blqs itself will be kept very simple, the ideas is that other
+frameworks.  As such, every attempt will be made to keep blqs simple, the ideas is that other
 frameworks can be built on top of it.
-
-The inspiration for blqs comes from Tensorflow's autograph library. The main
-difference is that we avoid using static analysis.

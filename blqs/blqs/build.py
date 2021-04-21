@@ -87,6 +87,7 @@ class _BuildTransformer(gast.NodeTransformer):
             var_defs
             def inner_fn():
                 import contextlib
+                import blqs
                 with blqs.Block() if blqs.get_current_block() else blqs.Program() as return_block:
                     old_body
                 return return_block

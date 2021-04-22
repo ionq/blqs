@@ -28,5 +28,14 @@ def cirq_blqs_op(cirq_gate):
         return CirqBlqsOp(cirq_gate)
 
 
+class Gates:
+    def __init__():
+        self._dispatch = {"H": cirq_blqs_op(cirq.H), "HPowGate": cirq_blqs_op(cirq.HPowGate)}
+
+    def __getattr__(self, item):
+        if item in self._dispatch:
+            return self._dispatch[item]
+
+
 H = cirq_blqs_op(cirq.H)
 HPowGate = cirq_blqs_op(cirq.HPowGate)

@@ -1,5 +1,6 @@
 import ast
 import astunparse
+import dataclasses
 import functools
 import gast
 import inspect
@@ -12,10 +13,20 @@ import tempfile
 
 from blqs import conditional, loops, _namer, _template
 
-from typing import Callable
+from typing import Callable, Optional
 
 
-def build(func: Callable):
+@dataclasses.dataclass
+class BuildConfig:
+    """Configuration for the build compilation."""
+
+    support_if: bool = True
+    support_for: bool = True
+    support_while: bool = True
+    support_assign: bool = True
+
+
+def build(func: Callable, build_config: Optional[BuildConfig] = None):
     """Turn the supplied function into a builder for the code the function contains."""
 
     @functools.wraps(func)
@@ -29,7 +40,7 @@ def build(func: Callable):
         # Transform the function via the transform below.
         # This creates an outer function, which when call returns the transformed function.
         # This pattern is used to correctly capture closures.
-        transformer = _BuildTransformer(func)
+        transformer = _BuildTransformer(func, build_config or BuildConfig())
         transformed_ast, outer_fn_name = transformer.transform(root)
 
         # Convert back to ast and get the code.
@@ -62,8 +73,9 @@ def build(func: Callable):
 
 
 class _BuildTransformer(gast.NodeTransformer):
-    def __init__(self, func: types.FunctionType):
+    def __init__(self, func: types.FunctionType, build_config: BuildConfig):
         self._func = func
+        self._build_config = build_config
         self._local_vars = func.__code__.co_freevars + func.__code__.co_varnames
         self._namer = _namer.Namer(tuple(func.__globals__.keys()))
         self._outer_fn_name = None
@@ -118,6 +130,8 @@ class _BuildTransformer(gast.NodeTransformer):
 
     def visit_If(self, node):
         node = self.generic_visit(node)
+        if not self._build_config.support_if:
+            return node
         template = """
         import contextlib
         cond = test
@@ -143,6 +157,9 @@ class _BuildTransformer(gast.NodeTransformer):
 
     def visit_For(self, node):
         node = self.generic_visit(node)
+        if not self._build_config.support_for:
+            return node
+
         template = """
         is_iterable = blqs.is_iterable(iter)
         for_statement = blqs.For(iter) if is_iterable else None
@@ -167,6 +184,9 @@ class _BuildTransformer(gast.NodeTransformer):
 
     def visit_While(self, node):
         node = self.generic_visit(node)
+        if not self._build_config.support_while:
+            return node
+
         template = """
         is_readable = blqs.is_readable(test)
         while_statement = blqs.While(test) if is_readable else None
@@ -191,6 +211,9 @@ class _BuildTransformer(gast.NodeTransformer):
 
     def visit_Assign(self, node):
         node = self.generic_visit(node)
+        if not self._build_config.support_assign:
+            return node
+
         template = """
         temp_value = value
         readable_targets = blqs.readable_targets(temp_value)

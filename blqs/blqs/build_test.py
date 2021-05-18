@@ -311,3 +311,68 @@ def test_assign_readable_targets_list_blqs():
     assert transformed_fn() == blqs.Program.of(
         blqs.Op("M")(blqs.Register("a"), blqs.Register("b")), assign_stmt
     )
+
+
+def test_build_config_support_if():
+    def if_fn():
+        if blqs.Register("a"):
+            blqs.Op("H")(0)
+
+    config = blqs.BuildConfig(support_if=False)
+    transformed_fn = blqs.build(if_fn, config)
+    # blqs.Register("a") is truthy, so we just get the op.
+    assert transformed_fn() == blqs.Program.of(blqs.Op("H")(0))
+
+
+def test_build_config_support_for():
+    class FakeIterable(blqs.Iterable):
+        def __init__(self, name: str, *loop_vars):
+            super().__init__(name, *loop_vars)
+            self.items = [0, 1]
+
+        def __getitem__(self, key):
+            return self.items[key]
+
+    def fn():
+        for x in FakeIterable("range(5)", blqs.Register("a")):
+            blqs.Op("H")(x)
+
+    config = blqs.BuildConfig(support_for=False)
+    transformed_fn = blqs.build(fn, config)
+
+    # FakeIterable is a blqs.Iterable but it acts like a real one because of config.
+    assert transformed_fn() == blqs.Program.of(blqs.Op("H")(0), blqs.Op("H")(1))
+
+
+def test_build_config_support_while():
+    class SettableRegister(blqs.Register):
+        def __init__(self, name):
+            super().__init__(name)
+            self.value = True
+
+        def set_false(self):
+            self.value = False
+
+        def __bool__(self):
+            return bool(self.value)
+
+    a = SettableRegister("a")
+
+    def fn():
+        while a:
+            blqs.Op("H")(0)
+            # We use a method here to not have this captured by an assign.
+            a.set_false()
+
+    config = blqs.BuildConfig(support_while=False)
+    transformed_fn = blqs.build(fn, config)
+    assert transformed_fn() == blqs.Program.of(blqs.Op("H")(0))
+
+
+def test_build_config_support_assign():
+    def fn():
+        a = blqs.Register("a")
+
+    config = blqs.BuildConfig(support_assign=False)
+    transformed_fn = blqs.build(fn, config)
+    assert transformed_fn() == blqs.Program.of()

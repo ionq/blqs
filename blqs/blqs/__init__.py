@@ -14,7 +14,9 @@ from blqs.block import (
 
 from blqs.build import (
     build,
+    BuildConfig,
 )
+
 
 from blqs.conditional import (
     If,

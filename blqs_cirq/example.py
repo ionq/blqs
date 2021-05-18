@@ -1,6 +1,6 @@
 import cirq
 import blqs_cirq as bc
-from blqs_cirq import H, HPowGate
+from blqs_cirq import H, HPowGate, rx
 
 
 @bc.build
@@ -8,6 +8,7 @@ def program():
     q = cirq.LineQubit(0)
     H(q)
     HPowGate(exponent=0.1)(q)
+    rx(0.1)(q)
 
 
 def main():

@@ -1,4 +1,10 @@
+import inspect
+import textwrap
+
+import pytest
+
 import blqs
+import blqs.build_test_sample as bts
 
 
 def test_build_empty_function():
@@ -130,6 +136,25 @@ def test_build_if_capture():
     transformed_fn = blqs.build(if_fn)
     assert transformed_fn(True) == blqs.Program.of(blqs.Op("H")(0))
     assert transformed_fn(False) == blqs.Program.of()
+
+
+def test_build_if_elif_blqs():
+    def if_fn():
+        if blqs.Register("a"):
+            blqs.Op("H")(0)
+        elif blqs.Register("b"):
+            blqs.Op("H")(1)
+        else:
+            blqs.Op("H")(2)
+
+    transformed_fn = blqs.build(if_fn)
+    if_stmt = blqs.If(blqs.Register("a"))
+    if_stmt.if_block().append(blqs.Op("H")(0))
+    elif_stmt = blqs.If(blqs.Register("b"))
+    elif_stmt.if_block().append(blqs.Op("H")(1))
+    elif_stmt.else_block().append(blqs.Op("H")(2))
+    if_stmt.else_block().append(elif_stmt)
+    assert transformed_fn() == blqs.Program.of(if_stmt)
 
 
 def test_build_for_blqs():
@@ -376,3 +401,32 @@ def test_build_config_support_assign():
     config = blqs.BuildConfig(support_assign=False)
     transformed_fn = blqs.build(fn, config)
     assert transformed_fn() == blqs.Program.of()
+
+
+@pytest.mark.parametrize(
+    "method",
+    [
+        bts.only_raise,
+        bts.multiple_statements,
+        bts.if_native,
+        bts.if_blqs,
+        bts.else_native,
+        bts.else_blqs,
+        bts.elif_native,
+        bts.elif_blqs,
+        bts.for_native,
+        bts.for_blqs,
+        bts.for_else_native,
+        bts.for_else_blqs,
+        bts.while_native,
+        bts.while_blqs,
+        bts.while_else_native,
+        bts.while_else_blqs,
+    ],
+)
+def test_build_exception_only_raise(method):
+    with pytest.raises(bts.LocatedException, match="oh no") as e:
+        method()
+    cause = e.value.__cause__
+    assert cause.filename() == inspect.getfile(blqs.build_test_sample)
+    assert cause.lineno() == e.value.lineno

@@ -70,7 +70,7 @@ def is_iterable(val: Any) -> bool:
 
 
 class SupportsReadableTargets(Protocol):
-    """A protocol for objects that have readble targets.
+    """A protocol for objects that have readable targets.
 
     Readable targets can be used for the right hand side of an assignment.
     """

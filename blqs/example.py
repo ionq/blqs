@@ -15,7 +15,6 @@ def example():
 
     M(1, blqs.Register("a"))
     if blqs.Register("a"):
-        raise ValueError("s")
         H(0)
     else:
         H(1)

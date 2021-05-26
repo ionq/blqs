@@ -47,7 +47,6 @@ def build(func: Callable, build_config: Optional[BuildConfig] = None):
         # Convert back to ast and get the code, preserving annotations.
         transformed_ast = _ast.gast_to_ast(transformed_gast)
         transformed_source_code = astunparse.unparse(transformed_ast).strip()
-        print(transformed_source_code)
 
         # Write a temp file with the new source code.
         with tempfile.NamedTemporaryFile(

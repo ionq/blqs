@@ -12,7 +12,7 @@ import textwrap
 import types
 import tempfile
 
-from blqs import conditional, loops, _ast, _traceback, _namer, _template
+from blqs import exceptions, _ast, _namer, _template
 
 from typing import Callable, Optional
 
@@ -74,7 +74,8 @@ def build(func: Callable, build_config: Optional[BuildConfig] = None):
         except Exception as e:
             # If there is an exception, chain the exception in such a way as to indicated
             # the original file and line number is given.
-            _traceback.raise_with_line_mapping(e, func, transformed_gast, transformed_source_code)
+            line_map = _ast.construct_line_map(transformed_gast, transformed_source_code)
+            exceptions._raise_with_line_mapping(e, func, line_map)
 
     return wrapper
 

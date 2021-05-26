@@ -4,7 +4,7 @@ import textwrap
 import pytest
 
 import blqs
-import blqs.build_test_sample as bts
+import blqs.build_test_testing as btt
 
 
 def test_build_empty_function():
@@ -406,27 +406,28 @@ def test_build_config_support_assign():
 @pytest.mark.parametrize(
     "method",
     [
-        bts.only_raise,
-        bts.multiple_statements,
-        bts.if_native,
-        bts.if_blqs,
-        bts.else_native,
-        bts.else_blqs,
-        bts.elif_native,
-        bts.elif_blqs,
-        bts.for_native,
-        bts.for_blqs,
-        bts.for_else_native,
-        bts.for_else_blqs,
-        bts.while_native,
-        bts.while_blqs,
-        bts.while_else_native,
-        bts.while_else_blqs,
+        btt.only_raise,
+        btt.multiple_statements,
+        btt.if_native,
+        btt.if_blqs,
+        btt.else_native,
+        btt.else_blqs,
+        btt.elif_native,
+        btt.elif_blqs,
+        btt.for_native,
+        btt.for_blqs,
+        btt.for_else_native,
+        btt.for_else_blqs,
+        btt.while_native,
+        btt.while_blqs,
+        btt.while_else_native,
+        btt.while_else_blqs,
     ],
 )
 def test_build_exception_only_raise(method):
-    with pytest.raises(bts.LocatedException, match="oh no") as e:
+    with pytest.raises(btt.LocatedException, match="oh no") as e:
         method()
     cause = e.value.__cause__
-    assert cause.filename() == inspect.getfile(blqs.build_test_sample)
+    assert type(cause) == blqs.GeneratedCodeException
+    assert cause.filename() == inspect.getfile(blqs.build_test_testing)
     assert cause.lineno() == e.value.lineno

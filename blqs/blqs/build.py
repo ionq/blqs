@@ -1,5 +1,6 @@
 import ast
 import astunparse
+import collections
 import dataclasses
 import functools
 import gast
@@ -11,7 +12,7 @@ import textwrap
 import types
 import tempfile
 
-from blqs import conditional, loops, _namer, _template
+from blqs import exceptions, _ast, _namer, _template
 
 from typing import Callable, Optional
 
@@ -41,11 +42,11 @@ def build(func: Callable, build_config: Optional[BuildConfig] = None):
         # This creates an outer function, which when call returns the transformed function.
         # This pattern is used to correctly capture closures.
         transformer = _BuildTransformer(func, build_config or BuildConfig())
-        transformed_ast, outer_fn_name = transformer.transform(root)
+        transformed_gast, outer_fn_name = transformer.transform(root)
 
-        # Convert back to ast and get the code.
-        root_ast = gast.gast_to_ast(transformed_ast)
-        transformed_source_code = astunparse.unparse(root_ast).strip()
+        # Convert back to ast and get the code, preserving annotations.
+        transformed_ast = _ast.gast_to_ast(transformed_gast)
+        transformed_source_code = astunparse.unparse(transformed_ast).strip()
 
         # Write a temp file with the new source code.
         with tempfile.NamedTemporaryFile(
@@ -67,7 +68,13 @@ def build(func: Callable, build_config: Optional[BuildConfig] = None):
         final_func = types.FunctionType(
             code=new_func.__code__, globals=func.__globals__, closure=func.__closure__
         )
-        return final_func(*args, **kwargs)  # pylint: disable=not-callable
+        try:
+            return final_func(*args, **kwargs)  # pylint: disable=not-callable
+        except Exception as e:
+            # If there is an exception, chain the exception in such a way as to indicated
+            # the original file and line number is given.
+            line_map = _ast.construct_line_map(transformed_gast, transformed_source_code)
+            exceptions._raise_with_line_mapping(e, func, line_map)
 
     return wrapper
 
@@ -84,6 +91,19 @@ class _BuildTransformer(gast.NodeTransformer):
         transformed_node = self.visit(node)
         assert self._outer_fn_name is not None
         return transformed_node, self._outer_fn_name
+
+    def visit(self, node):
+        new_nodes = super().visit(node)
+        return self.annotate_nodes(node, new_nodes)
+
+    def annotate_nodes(self, original, new_nodes):
+        if hasattr(original, "lineno"):
+            if isinstance(new_nodes, collections.abc.Iterable):
+                for new_node in new_nodes:
+                    new_node.original_lineno = original.lineno
+            else:
+                new_nodes.original_lineno = original.lineno
+        return new_nodes
 
     def visit_FunctionDef(self, node):
         node = self.generic_visit(node)
@@ -133,7 +153,6 @@ class _BuildTransformer(gast.NodeTransformer):
         if not self._build_config.support_if:
             return node
         template = """
-        import contextlib
         cond = test
         is_readable = blqs.is_readable(cond)
         cond_statement = blqs.If(cond) if is_readable else None
@@ -144,7 +163,7 @@ class _BuildTransformer(gast.NodeTransformer):
             with cond_statement.else_block() if cond_statement else contextlib.nullcontext():
                 else_body
         """
-        new_node = _template.replace(
+        new_nodes = _template.replace(
             template,
             cond=self._namer.new_name("cond"),
             is_readable=self._namer.new_name("is_readable"),
@@ -153,7 +172,7 @@ class _BuildTransformer(gast.NodeTransformer):
             if_body=node.body,
             else_body=node.orelse if node.orelse else gast.Pass(),
         )
-        return new_node
+        return new_nodes
 
     def visit_For(self, node):
         node = self.generic_visit(node)
@@ -171,7 +190,7 @@ class _BuildTransformer(gast.NodeTransformer):
             with for_statement.else_block() if for_statement else contextlib.nullcontext():
                 else_body
         """
-        new_node = _template.replace(
+        new_nodes = _template.replace(
             template,
             is_iterable=self._namer.new_name("is_iterable"),
             for_statement=self._namer.new_name("for_statement"),
@@ -180,7 +199,7 @@ class _BuildTransformer(gast.NodeTransformer):
             loop_body=node.body,
             else_body=node.orelse if node.orelse else gast.Pass(),
         )
-        return new_node
+        return new_nodes
 
     def visit_While(self, node):
         node = self.generic_visit(node)
@@ -199,7 +218,7 @@ class _BuildTransformer(gast.NodeTransformer):
             with while_statement.else_block() if while_statement else contextlib.nullcontext():
                 else_body
         """
-        new_node = _template.replace(
+        new_nodes = _template.replace(
             template,
             is_readable=self._namer.new_name("is_readable"),
             while_statement=self._namer.new_name("while_statement"),
@@ -207,7 +226,7 @@ class _BuildTransformer(gast.NodeTransformer):
             loop_body=node.body,
             else_body=node.orelse if node.orelse else gast.Pass(),
         )
-        return new_node
+        return new_nodes
 
     def visit_Assign(self, node):
         node = self.generic_visit(node)
@@ -226,7 +245,7 @@ class _BuildTransformer(gast.NodeTransformer):
             targets = temp_value
         """
         assign_names = self._assign_names(node.targets)
-        new_node = _template.replace(
+        new_nodes = _template.replace(
             template,
             temp_value=self._namer.new_name("temp_value"),
             value=node.value,
@@ -235,7 +254,7 @@ class _BuildTransformer(gast.NodeTransformer):
             assign=self._namer.new_name("assign"),
             assign_names=assign_names,
         )
-        return new_node
+        return new_nodes
 
     def _assign_names(self, targets):
         names = []
@@ -248,4 +267,4 @@ class _BuildTransformer(gast.NodeTransformer):
                 names.extend(gast.Constant(t.id, None) for t in target.elts)
             else:
                 raise ValueError("Invalid target type: this should not happen")  # coverage: ignore
-        return gast.Tuple(names, gast.Load)
+        return gast.Tuple(names, gast.Load())

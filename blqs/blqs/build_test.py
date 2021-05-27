@@ -1,3 +1,4 @@
+import gc
 import inspect
 import textwrap
 
@@ -338,6 +339,48 @@ def test_assign_readable_targets_list_blqs():
     )
 
 
+def test_build_delete_blqs():
+    def fn():
+        a = blqs.Register("a")
+        del a
+
+    transformed_fn = blqs.build(fn)
+    assert transformed_fn() == blqs.Program.of(
+        blqs.Assign(("a",), blqs.Register("a")), blqs.Delete(("a",))
+    )
+
+
+def test_build_delete_blqs_multiple():
+    def fn():
+        a, b = blqs.Op("M")(blqs.Register("a"), blqs.Register("b"))
+        del a, b
+
+    transformed_fn = blqs.build(fn)
+    assert transformed_fn() == blqs.Program.of(
+        blqs.Op("M")(blqs.Register("a"), blqs.Register("b")),
+        blqs.Assign(("a", "b"), blqs.Op("M")(blqs.Register("a"), blqs.Register("b"))),
+        blqs.Delete(("a", "b")),
+    )
+
+
+def test_build_delete_native():
+    def fn():
+        a = 1
+        del a
+
+    transformed_fn = blqs.build(fn)
+    assert transformed_fn() == blqs.Program.of()
+
+
+def test_build_delete_native_multiple():
+    def fn():
+        a, b = 1, 2
+        del a, b
+
+    transformed_fn = blqs.build(fn)
+    assert transformed_fn() == blqs.Program.of()
+
+
 def test_build_config_support_if():
     def if_fn():
         if blqs.Register("a"):
@@ -401,6 +444,17 @@ def test_build_config_support_assign():
     config = blqs.BuildConfig(support_assign=False)
     transformed_fn = blqs.build(fn, config)
     assert transformed_fn() == blqs.Program.of()
+
+
+def test_build_config_support_delete():
+    def fn():
+        a = blqs.Register("a")
+        del a
+
+    config = blqs.BuildConfig(support_delete=False)
+    transformed_fn = blqs.build(fn, config)
+    assign_stmt = blqs.Assign(("a",), blqs.Register("a"))
+    assert transformed_fn() == blqs.Program.of(assign_stmt)
 
 
 def test_build_inside_of_class():

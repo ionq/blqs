@@ -277,13 +277,23 @@ class _BuildTransformer(gast.NodeTransformer):
             return node
 
         target_names = self._target_names(node.targets)
+        target_tuple = gast.Tuple(node.targets, gast.Load())
         template = """
-        temp_value = targets
+        temp_value = target_tuple
         standard_targets = tuple(val for val in temp_value if not blqs.is_deletable(val))
         if len(standard_targets) > 0:
             del standard_targets
-        deletable_names = tuple(name for val, name in zip(temp_value, target_names) if blqs.is_deletable(val))
+        deletable_names = tuple(name for val, name in zip(temp_value, target_names)
+                                if blqs.is_deletable(val))
         if len(deletable_names) > 0:
             blqs.Delete(deletable_names)
         """
-        return node
+        new_nodes = _template.replace(
+            template,
+            temp_value=self._namer.new_name("temp_value"),
+            targets=node.targets,
+            standard_targets=self._namer.new_name("standard_targets"),
+            target_names=target_names,
+            target_tuple=target_tuple,
+        )
+        return new_nodes

@@ -72,3 +72,19 @@ def test_readable_targets():
             return False
 
     assert blqs.readable_targets(NotReadable()) == tuple()
+
+
+def test_is_deletable():
+    class IsDeletable(blqs.SupportsIsDeletable):
+        def _is_deletable_(self):
+            return True
+
+    assert blqs.is_deletable(IsDeletable())
+
+    class NotDeletable(blqs.SupportsIsDeletable):
+        def _is_deletable_(self):
+            return False
+
+    assert not blqs.is_deletable(NotDeletable())
+
+    assert not blqs.is_deletable("a")

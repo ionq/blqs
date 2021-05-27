@@ -21,7 +21,7 @@ def is_readable(val: Any) -> bool:
 
     Readable objects can be used in conditionals and loops.
 
-    Checks to see if the value has the `is_readable` attribute and then returns the value of
+    Checks to see if the value has the `_is_readable_` attribute and then returns the value of
     that attribute.
     """
     return hasattr(val, "_is_readable_") and val._is_readable_()
@@ -42,7 +42,7 @@ def is_writable(val: Any) -> bool:
 
     Writable objects can be used in conditionals and loops.
 
-    Checks to see if the value has the `is_writable` attribute and then returns the value of
+    Checks to see if the value has the `_is_writable_` attribute and then returns the value of
     that attribute.
     """
     return hasattr(val, "_is_writable_") and val._is_writable_()
@@ -63,7 +63,7 @@ def is_iterable(val: Any) -> bool:
 
     Iterable objects can be used in conditionals and loops.
 
-    Checks to see if the value has the `is_iterable` attribute and then returns the value of
+    Checks to see if the value has the `_is_iterable_` attribute and then returns the value of
     that attribute.
     """
     return hasattr(val, "_is_iterable_") and val._is_iterable_()
@@ -79,7 +79,7 @@ class SupportsReadableTargets(Protocol):
         """Returns the readable targets of the object."""
 
 
-def readable_targets(val) -> Tuple:
+def readable_targets(val: Any) -> Tuple:
     """Determine the readable targets of an object.
 
     An object has readable targets if either
@@ -95,3 +95,24 @@ def readable_targets(val) -> Tuple:
     if hasattr(val, "_is_readable_") and val._is_readable_():
         return (val,)
     return tuple()
+
+
+class SupportsIsDeletable(Protocol):
+    """A protocol for object that can be deleted.
+
+    Deletable objects can be used in a delete command.
+    """
+
+    def _is_deletable_(self) -> bool:
+        """Returns whether the object is deletable."""
+
+
+def is_deletable(val: Any) -> bool:
+    """Determine whether an object is deletable.
+
+    Deletable objects can be used in a delete command.
+
+    Checks to see if the value has the `_is_deletable_` attribute and then returns the value of
+    that attribute.
+    """
+    return hasattr(val, "_is_deletable_") and val._is_deletable_()

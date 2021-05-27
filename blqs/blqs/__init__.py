@@ -22,6 +22,10 @@ from blqs.conditional import (
     If,
 )
 
+from blqs.delete import (
+    Delete,
+)
+
 from blqs.exceptions import (
     GeneratedCodeException,
 )
@@ -44,10 +48,12 @@ from blqs.op import (
 )
 
 from blqs.protocols import (
-    is_writable,
+    is_deletable,
     is_iterable,
     is_readable,
+    is_writable,
     readable_targets,
+    SupportsIsDeletable,
     SupportsIsIterable,
     SupportsIsReadable,
     SupportsIsWritable,

@@ -1,9 +1,6 @@
-import ast
-import astunparse
 import collections
 import dataclasses
 import functools
-import gast
 import inspect
 import importlib
 import os
@@ -11,6 +8,10 @@ import sys
 import textwrap
 import types
 import tempfile
+
+import ast
+import astunparse
+import gast
 
 from blqs import exceptions, _ast, _namer, _template
 
@@ -25,6 +26,7 @@ class BuildConfig:
     support_for: bool = True
     support_while: bool = True
     support_assign: bool = True
+    support_delete: bool = True
 
 
 def build(func: Callable, build_config: Optional[BuildConfig] = None):
@@ -94,9 +96,9 @@ class _BuildTransformer(gast.NodeTransformer):
 
     def visit(self, node):
         new_nodes = super().visit(node)
-        return self.annotate_nodes(node, new_nodes)
+        return self._annotate_nodes(node, new_nodes)
 
-    def annotate_nodes(self, original, new_nodes):
+    def _annotate_nodes(self, original, new_nodes):
         if hasattr(original, "lineno"):
             if isinstance(new_nodes, collections.abc.Iterable):
                 for new_node in new_nodes:
@@ -244,7 +246,7 @@ class _BuildTransformer(gast.NodeTransformer):
         else:
             targets = temp_value
         """
-        assign_names = self._assign_names(node.targets)
+        assign_names = self._target_names(node.targets)
         new_nodes = _template.replace(
             template,
             temp_value=self._namer.new_name("temp_value"),
@@ -256,7 +258,7 @@ class _BuildTransformer(gast.NodeTransformer):
         )
         return new_nodes
 
-    def _assign_names(self, targets):
+    def _target_names(self, targets):
         names = []
         for target in targets:
             if isinstance(target, gast.Name):
@@ -268,3 +270,30 @@ class _BuildTransformer(gast.NodeTransformer):
             else:
                 raise ValueError("Invalid target type: this should not happen")  # coverage: ignore
         return gast.Tuple(names, gast.Load())
+
+    def visit_Delete(self, node):
+        node = self.generic_visit(node)
+        if not self._build_config.support_delete:
+            return node
+
+        target_names = self._target_names(node.targets)
+        target_tuple = gast.Tuple(node.targets, gast.Load())
+        template = """
+        temp_value = target_tuple
+        standard_targets = tuple(val for val in temp_value if not blqs.is_deletable(val))
+        if len(standard_targets) > 0:
+            del standard_targets
+        deletable_names = tuple(name for val, name in zip(temp_value, target_names)
+                                if blqs.is_deletable(val))
+        if len(deletable_names) > 0:
+            blqs.Delete(deletable_names)
+        """
+        new_nodes = _template.replace(
+            template,
+            temp_value=self._namer.new_name("temp_value"),
+            targets=node.targets,
+            standard_targets=self._namer.new_name("standard_targets"),
+            target_names=target_names,
+            target_tuple=target_tuple,
+        )
+        return new_nodes

@@ -33,7 +33,4 @@ class Assign(statement.Statement):
         return hash((*self._assign_names, self._value))
 
     def __str__(self):
-        if len(self._assign_names) == 1:
-            return f"{self._assign_names[0]} = {self._value}"
-        else:
-            return f"{', '.join(self._assign_names)} = {self._value}"
+        return f"{', '.join(self._assign_names)} = {self._value}"

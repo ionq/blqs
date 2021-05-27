@@ -403,6 +403,37 @@ def test_build_config_support_assign():
     assert transformed_fn() == blqs.Program.of()
 
 
+def test_build_inside_of_class():
+    class MyClass:
+        @blqs.build
+        def my_func(self):
+            blqs.Op("H")(0)
+
+    transformed_fn = MyClass().my_func
+    assert transformed_fn() == blqs.Program.of(blqs.Op("H")(0))
+    assert transformed_fn.__name__ == "my_func"
+
+
+def test_build_before_decorator():
+    def add_an_op(func):
+        def wrapper(*args, **kwargs):
+            func(*args, **kwargs)
+            blqs.Op("X")(0)
+
+        return wrapper
+
+    class MyClass:
+        @blqs.build
+        @add_an_op
+        def my_func(self):
+            blqs.Op("H")(0)
+
+    transformed_fn = MyClass().my_func
+    assert transformed_fn() == blqs.Program.of(blqs.Op("H")(0), blqs.Op("X")(0))
+    # Didn't user itertools.wraps
+    assert transformed_fn.__name__ == "wrapper"
+
+
 @pytest.mark.parametrize(
     "method",
     [

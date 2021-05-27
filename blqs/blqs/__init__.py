@@ -22,6 +22,10 @@ from blqs.conditional import (
     If,
 )
 
+from blqs.delete import (
+    Delete,
+)
+
 from blqs.exceptions import (
     GeneratedCodeException,
 )

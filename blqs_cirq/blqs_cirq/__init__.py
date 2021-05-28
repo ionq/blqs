@@ -1,4 +1,6 @@
-from blqs_cirq.build import build
+from blqs_cirq.build import (
+    build,
+)
 
 from blqs_cirq.gates import (
     AmplitudeDampingChannel,
@@ -28,6 +30,7 @@ from blqs_cirq.gates import (
     MSGate,
     MatrixGate,
     MeasurementGate,
+    measure,
     PauliInteractionGate,
     PhaseDampingChannel,
     PhaseFlipChannel,
@@ -36,6 +39,7 @@ from blqs_cirq.gates import (
     PhasedXPowGate,
     QasmTwoQubitGate,
     QasmUGate,
+    qft,
     QubitPermutationGate,
     QuilOneQubitGate,
     QuilTwoQubitGate,
@@ -54,4 +58,18 @@ from blqs_cirq.gates import (
     Z,
     ZPowGate,
     ZZ,
+)
+
+from blqs_cirq.protocols import (
+    decode,
+    SupportsDecoding,
+)
+
+from blqs_cirq.repeat import (
+    Repeat,
+)
+
+from blqs_cirq.qubits import (
+    DefaultQubitDecoder,
+    DEFAULT_QUBIT_DECODER,
 )

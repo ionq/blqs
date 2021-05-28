@@ -29,7 +29,7 @@ class BuildConfig:
     support_delete: bool = True
 
 
-def build(func: Callable, build_config: Optional[BuildConfig] = None):
+def build(func: Callable, build_config: Optional[BuildConfig] = None) -> Callable:
     """Turn the supplied function into a builder for the code the function contains."""
 
     @functools.wraps(func)

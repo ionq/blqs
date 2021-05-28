@@ -1,3 +1,4 @@
+import functools
 import inspect
 
 import blqs
@@ -21,13 +22,22 @@ class CirqBlqsOpFactory:
         return CirqBlqsOp(self._cirq_gate_class(*args, **kwargs))
 
 
+class CirqBlqsFnOp(blqs.Op):
+    def __init__(self, gate_fn, gate_name):
+        super().__init__(gate_name)
+        self._gate_fn = gate_fn
+
+    def gate_fn(self):
+        return self._gate_fn
+
+
 def cirq_blqs_op(cirq_construct):
     if inspect.isclass(cirq_construct):
         return CirqBlqsOpFactory(cirq_construct)
     elif inspect.isfunction(cirq_construct):
 
         def wrapped(*args, **kwargs):
-            return cirq_blqs_op(cirq_construct(*args, **kwargs))
+            return CirqBlqsOp(cirq_construct(*args, **kwargs))
 
         return wrapped
     else:
@@ -106,9 +116,6 @@ QubitPermutationGate = cirq_blqs_op(cirq.QubitPermutationGate)
 QuantumFourierTransformGate = cirq_blqs_op(cirq.QuantumFourierTransformGate)
 PhaseGradientGate = cirq_blqs_op(cirq.PhaseGradientGate)
 
-# N qubit gate functions
-measure = cirq_blqs_op(cirq.measure)
-qft = cirq_blqs_op(cirq.qft)
 
 # Noise classes
 AmplitudeDampingChannel = cirq_blqs_op(cirq.AmplitudeDampingChannel)
@@ -130,3 +137,13 @@ reset = cirq_blqs_op(cirq.reset)
 phase_damp = cirq_blqs_op(cirq.phase_damp)
 phase_flip = cirq_blqs_op(cirq.phase_flip)
 bit_flip = cirq_blqs_op(cirq.bit_flip)
+
+# N qubit gate functions.
+def measure(*targets, key=None, invert_mask=()):
+    measurement_fn = functools.partial(cirq.measure, key=key, invert_mask=invert_mask)
+    return CirqBlqsFnOp(measurement_fn, "measure")(*targets)
+
+
+def qft(*qubits, without_reverse=False, inverse=False):
+    qft_fn = functools.partial(cirq.qft, without_reverse=without_reverse, inverse=inverse)
+    return CirqBlqsFnOp(qft_fn, "qft")(*qubits)

@@ -1,3 +1,4 @@
+import functools
 import inspect
 
 import blqs
@@ -5,6 +6,8 @@ import cirq
 
 
 class CirqBlqsOp(blqs.Op):
+    """A `blqs.Op` corresponding to a `cirq.Gate`."""
+
     def __init__(self, gate):
         super().__init__(str(gate))
         self._gate = gate
@@ -14,6 +17,8 @@ class CirqBlqsOp(blqs.Op):
 
 
 class CirqBlqsOpFactory:
+    """A wrapper for a cirq gate class which can be initialized with parameters."""
+
     def __init__(self, cirq_gate_class):
         self._cirq_gate_class = cirq_gate_class
 
@@ -21,13 +26,25 @@ class CirqBlqsOpFactory:
         return CirqBlqsOp(self._cirq_gate_class(*args, **kwargs))
 
 
+class CirqBlqsFnOp(blqs.Op):
+    """Some cirq methods take both targets (qubits) and args, these require late binding."""
+
+    def __init__(self, gate_fn, gate_name):
+        super().__init__(gate_name)
+        self._gate_fn = gate_fn
+
+    def gate_fn(self):
+        return self._gate_fn
+
+
 def cirq_blqs_op(cirq_construct):
+    """Construct a blqs object for the relevant cirq gate, class, or method."""
     if inspect.isclass(cirq_construct):
         return CirqBlqsOpFactory(cirq_construct)
     elif inspect.isfunction(cirq_construct):
 
         def wrapped(*args, **kwargs):
-            return cirq_blqs_op(cirq_construct(*args, **kwargs))
+            return CirqBlqsOp(cirq_construct(*args, **kwargs))
 
         return wrapped
     else:
@@ -106,9 +123,6 @@ QubitPermutationGate = cirq_blqs_op(cirq.QubitPermutationGate)
 QuantumFourierTransformGate = cirq_blqs_op(cirq.QuantumFourierTransformGate)
 PhaseGradientGate = cirq_blqs_op(cirq.PhaseGradientGate)
 
-# N qubit gate functions
-measure = cirq_blqs_op(cirq.measure)
-qft = cirq_blqs_op(cirq.qft)
 
 # Noise classes
 AmplitudeDampingChannel = cirq_blqs_op(cirq.AmplitudeDampingChannel)
@@ -130,3 +144,13 @@ reset = cirq_blqs_op(cirq.reset)
 phase_damp = cirq_blqs_op(cirq.phase_damp)
 phase_flip = cirq_blqs_op(cirq.phase_flip)
 bit_flip = cirq_blqs_op(cirq.bit_flip)
+
+# N qubit gate functions.
+def measure(*targets, key=None, invert_mask=()):
+    measurement_fn = functools.partial(cirq.measure, key=key, invert_mask=invert_mask)
+    return CirqBlqsFnOp(measurement_fn, "measure")(*targets)
+
+
+def qft(*qubits, without_reverse=False, inverse=False):
+    qft_fn = functools.partial(cirq.qft, without_reverse=without_reverse, inverse=inverse)
+    return CirqBlqsFnOp(qft_fn, "qft")(*qubits)

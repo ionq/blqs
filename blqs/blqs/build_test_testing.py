@@ -133,3 +133,11 @@ def while_else_blqs():
         a = 1
     else:
         raise LocatedException(135)
+
+
+@blqs.build
+def larger_traceback():
+    def inner_fn():
+        raise LocatedException(141)
+
+    inner_fn()

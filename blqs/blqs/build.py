@@ -55,11 +55,11 @@ def build(func: Callable, build_config: Optional[BuildConfig] = None) -> Callabl
             mode="w", suffix=".py", delete=False, encoding="utf-8"
         ) as f:
             module_name = os.path.basename(f.name[:-3])
-            file_name = f.name
+            filename = f.name
             f.write(transformed_source_code)
 
         # Import this new code into the temp module.
-        spec = importlib.util.spec_from_file_location(module_name, file_name)
+        spec = importlib.util.spec_from_file_location(module_name, filename)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
         sys.modules[module_name] = module
@@ -76,7 +76,7 @@ def build(func: Callable, build_config: Optional[BuildConfig] = None) -> Callabl
             # If there is an exception, chain the exception in such a way as to indicated
             # the original file and line number is given.
             line_map = _ast.construct_line_map(transformed_gast, transformed_source_code)
-            exceptions._raise_with_line_mapping(e, func, line_map)
+            exceptions._raise_with_line_mapping(e, func, line_map, filename)
 
     return wrapper
 

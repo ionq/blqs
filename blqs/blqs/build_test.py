@@ -507,6 +507,7 @@ def test_build_before_decorator():
         btt.while_blqs,
         btt.while_else_native,
         btt.while_else_blqs,
+        btt.larger_traceback,
     ],
 )
 def test_build_exception_only_raise(method):
@@ -514,5 +515,5 @@ def test_build_exception_only_raise(method):
         method()
     cause = e.value.__cause__
     assert type(cause) == blqs.GeneratedCodeException
-    assert cause.filename() == inspect.getfile(blqs.build_test_testing)
-    assert cause.lineno() == e.value.lineno
+    assert cause.original_filename() == inspect.getfile(blqs.build_test_testing)
+    assert e.value.lineno in cause.linenos_dict().values()

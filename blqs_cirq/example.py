@@ -1,6 +1,5 @@
-import cirq
 import blqs_cirq as bc
-from blqs_cirq import measure, H, HPowGate, rx, CX, qft, Repeat
+from blqs_cirq import measure, H, HPowGate, rx, CX, qft
 
 
 @bc.build
@@ -13,6 +12,10 @@ def program():
     measure(0, 1, key="b")
 
     qft(0, 1, inverse=True)
+
+    with bc.CircuitOperation(repetitions=10):
+        H(1)
+        CX(0, 1)
 
 
 def main():

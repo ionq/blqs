@@ -62,4 +62,4 @@ jobs:
         pip install -r blqs_cirq/requirements.txt
     - name: Run type checking
       run: |
-        mypy --config-file=ci/mypy.ini .
+        mypy --config-file=ci/mypy.ini blqs blqs_cirq

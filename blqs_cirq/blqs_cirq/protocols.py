@@ -1,15 +1,15 @@
-from typing import Any, Generic, TypeVar
+from typing import Generic, Union, TypeVar
 
 F = TypeVar("F")
 T = TypeVar("T")
 
 
 class SupportsDecoding(Generic[F, T]):
-    def _decode_(input: F) -> T:
+    def _decode_(self, input: F) -> T:
         """Deco"""
 
 
-def decode(decoder: SupportsDecoding, input: F) -> T:
+def decode(decoder: SupportsDecoding[F, T], input: F) -> Union[T, F]:
     if hasattr(decoder, "_decode_"):
         return decoder._decode_(input)
     return input

@@ -1,6 +1,6 @@
 name: Continuous Integration
 
-on: [push]
+on: [pull_request]
 
 jobs:
   pytest:
@@ -20,47 +20,46 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r blqs/requirements.txt
+        pip install -r blqs_cirq/requirements.txt
         cat blqs/requirements-dev.txt | grep pytest | xargs pip install
     - name: Test with pytest
       run: |
-        pytest blqs
+        pytest blqs blqs_cirq
   format:
 
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.7, 3.8, 3.9]
 
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: '3.7'
+        architecture: 'x64'
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         cat blqs/requirements-dev.txt | grep black | xargs pip install
     - name: Check format
       run: |
-        black --check --line-length=100 blqs
+        black --check --line-length=100 blqs blqs_cirq
   type-check:
 
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.7, 3.8, 3.9]
 
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: '3.7'
+        architecture: 'x64'
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        cat blqs/requirements-dev.txt | grep mypy | xargs pip install
+        pip install -r blqs/requirements-dev.txt
+        pip install -r blqs/requirements.txt
+        pip install -r blqs_cirq/requirements.txt
     - name: Run type checking
       run: |
-        mypy --config-file=blqs/ci/mypy.ini blqs
+        mypy --config-file=ci/mypy.ini blqs/blqs blqs_cirq/blqs_cirq

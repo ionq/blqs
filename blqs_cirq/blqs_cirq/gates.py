@@ -7,10 +7,13 @@ import cirq
 from typing import Callable, Type, Union
 
 
+GateLikeType = Union[cirq.Gate, Callable[[], cirq.Gate], functools.partial]
+
+
 class CirqBlqsOp(blqs.Op):
     """A `blqs.Op` corresponding to a `cirq.Gate`."""
 
-    def __init__(self, gate: Union[cirq.Gate, Callable[[], cirq.Gate]], op_name: str = None):
+    def __init__(self, gate: GateLikeType, op_name: str = None):
         """Construct a CirqBlqsOp.
 
         Args:
@@ -20,7 +23,7 @@ class CirqBlqsOp(blqs.Op):
         super().__init__(op_name or str(gate))
         self._gate = gate
 
-    def gate(self) -> Union[cirq.Gate, Callable[[], cirq.Gate]]:
+    def gate(self) -> GateLikeType:
         """The `cirq.Gate` or a callable which produces this gate for this op."""
         return self._gate
 
@@ -36,16 +39,17 @@ class CirqBlqsOpFactory:
         ```
     """
 
-    def __init__(self, cirq_gate_class: Union[Type[cirq.Gate], Callable[..., cirq.Gate]]):
+    def __init__(self, cirq_gate_class: Callable[..., cirq.Gate]):
         self._cirq_gate_class = cirq_gate_class
 
     def __call__(self, *args, **kwargs) -> CirqBlqsOp:
-        return CirqBlqsOp(self._cirq_gate_class(*args, **kwargs))
+        gate = self._cirq_gate_class(*args, **kwargs)
+        return CirqBlqsOp(gate)
 
 
 def cirq_blqs_op(
     cirq_construct: Union[cirq.Gate, Type[cirq.Gate], Callable[..., cirq.Gate]]
-) -> Union[CirqBlqsOp, CirqBlqsOpFactory]:
+) -> Union[CirqBlqsOp, CirqBlqsOpFactory, Callable[..., CirqBlqsOp]]:
     """Construct a blqs object for the relevant cirq gate, class, or method.
 
     Note that this will not work for methods that require qubit targets and parameters to construct
@@ -152,7 +156,6 @@ asymmetric_depolarize = cirq_blqs_op(cirq.asymmetric_depolarize)
 depolarize = cirq_blqs_op(cirq.depolarize)
 generalized_amplitude_damp = cirq_blqs_op(cirq.generalized_amplitude_damp)
 amplitude_damp = cirq_blqs_op(cirq.amplitude_damp)
-reset = cirq_blqs_op(cirq.reset)
 phase_damp = cirq_blqs_op(cirq.phase_damp)
 phase_flip = cirq_blqs_op(cirq.phase_flip)
 bit_flip = cirq_blqs_op(cirq.bit_flip)
@@ -166,3 +169,8 @@ def measure(*targets, key=None, invert_mask=()) -> blqs.Instruction:
 def qft(*qubits, without_reverse=False, inverse=False) -> blqs.Instruction:
     qft_fn = functools.partial(cirq.qft, without_reverse=without_reverse, inverse=inverse)
     return CirqBlqsOp(qft_fn, "qft")(*qubits)
+
+
+# Special functions
+def reset(qubit) -> blqs.Instruction:
+    return CirqBlqsOp(cirq.ResetChannel(getattr(qubit, "dimension", 2)))(qubit)

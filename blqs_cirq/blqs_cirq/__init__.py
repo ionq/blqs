@@ -47,6 +47,7 @@ from blqs_cirq.gates import (
     QubitPermutationGate,
     QuilOneQubitGate,
     QuilTwoQubitGate,
+    reset,
     ResetChannel,
     rx,
     SWAP,

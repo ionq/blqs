@@ -13,8 +13,6 @@ def example():
 
     sub_block()
 
-    raise ValueError("oh no")
-
     M(1, blqs.Register("a"))
     if blqs.Register("a"):
         H(0)

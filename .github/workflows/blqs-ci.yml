@@ -1,6 +1,6 @@
 name: Continuous Integration
 
-on: [push]
+on: [pull_request]
 
 jobs:
   pytest:
@@ -23,7 +23,7 @@ jobs:
         cat blqs/requirements-dev.txt | grep pytest | xargs pip install
     - name: Test with pytest
       run: |
-        pytest blqs
+        pytest blqs blqs_cirq
   format:
 
     runs-on: ubuntu-latest
@@ -43,7 +43,7 @@ jobs:
         cat blqs/requirements-dev.txt | grep black | xargs pip install
     - name: Check format
       run: |
-        black --check --line-length=100 blqs
+        black --check --line-length=100 blqs blqs_cirq
   type-check:
 
     runs-on: ubuntu-latest
@@ -63,4 +63,4 @@ jobs:
         cat blqs/requirements-dev.txt | grep mypy | xargs pip install
     - name: Run type checking
       run: |
-        mypy --config-file=blqs/ci/mypy.ini blqs
+        mypy --config-file=blqs/ci/mypy.ini .

@@ -1,5 +1,9 @@
 # blqs: Building Blocks for Domain Specific Languages
 
+.. image:: https://github.com/ionq/blqs/workflows/Continuous%20Integration/badge.svg
+  :target: https://github.com/ionq/blqs
+  :alt: Build Status
+
 Blqs is a framework for building domain specific language that can be written in native Python.
 It was inspired by TensorFlow's
 [autograph](https://blog.tensorflow.org/2018/07/autograph-converts-python-into-tensorflow-graphs.html)

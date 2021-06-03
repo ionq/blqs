@@ -6,7 +6,7 @@ T = TypeVar("T")
 
 class SupportsDecoding(Generic[F, T]):
     def _decode_(input: F) -> T:
-        """sup"""
+        """Deco"""
 
 
 def decode(decoder: SupportsDecoding, input: F) -> T:

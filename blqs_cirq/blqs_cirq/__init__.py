@@ -2,6 +2,10 @@ from blqs_cirq.build import (
     build,
 )
 
+from blqs_cirq.circuit_operation import (
+    CircuitOperation,
+)
+
 from blqs_cirq.gates import (
     AmplitudeDampingChannel,
     AsymmetricDepolarizingChannel,
@@ -63,10 +67,6 @@ from blqs_cirq.gates import (
 from blqs_cirq.protocols import (
     decode,
     SupportsDecoding,
-)
-
-from blqs_cirq.repeat import (
-    Repeat,
 )
 
 from blqs_cirq.qubits import (

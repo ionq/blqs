@@ -62,7 +62,7 @@ def test_raise_with_line_mapping():
         )
     cause = et.value.__cause__
     assert type(cause) == blqs.GeneratedCodeException
-    assert cause.linenos_dict() == {35: 35}
+    assert cause.linenos_dict() == {actual_lineno + 1: actual_lineno + 1}
 
     # Same because there is no generated code in test.
     assert "exceptions_test" in cause.original_filename()

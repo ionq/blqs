@@ -58,7 +58,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r blqs/requirements.txt
-        pip install -r blqs-cirq/requirements.txt
+        pip install -r blqs_cirq/requirements.txt
     - name: Run type checking
       run: |
         mypy --config-file=ci/mypy.ini .

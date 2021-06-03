@@ -1,12 +1,12 @@
 import dataclasses
 import functools
+from typing import Optional, Callable
 
-import blqs
 import cirq
 
-from blqs_cirq import protocols, qubits, circuit_operation
+import blqs
 
-from typing import Optional, Callable
+from blqs_cirq import protocols, qubits, circuit_operation
 
 
 @dataclasses.dataclass

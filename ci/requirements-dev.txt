@@ -3,3 +3,4 @@ pytest-cov
 black
 pymore
 mypy
+pylint

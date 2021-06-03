@@ -97,7 +97,7 @@ def test_block_context_manager_default_blocks():
 
 def test_block_context_manager_captures_nested():
     with blqs.Block() as b:
-        with blqs.Block() as c:
+        with blqs.Block():
             s1 = blqs.Statement()
         s2 = blqs.Statement()
         s3 = blqs.Statement()
@@ -112,5 +112,5 @@ def test_block_statements_immutable():
 
 
 def test_block_parent_statement():
-    b = blqs.Block(parent_statement=True)
+    blqs.Block(parent_statement=True)
     assert blqs.get_current_block() == None

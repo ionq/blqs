@@ -10,22 +10,22 @@ def test_for_eq():
 
     f = blqs.For(blqs.Iterable("range(5)", blqs.Register("a")))
     with f.loop_block():
-        s1 = blqs.Statement()
+        blqs.Statement()
     eq.add_equality_group(f)
 
     f = blqs.For(blqs.Iterable("range(5)", blqs.Register("a")))
     with f.loop_block():
-        s1 = blqs.Statement()
+        blqs.Statement()
     with f.else_block():
-        s2 = blqs.Statement()
+        blqs.Statement()
     eq.add_equality_group(f)
 
     f = blqs.For(blqs.Iterable("range(5)", blqs.Register("a")))
     with f.loop_block():
-        s1 = blqs.Statement()
+        blqs.Statement()
     with f.else_block():
-        s2 = blqs.Statement()
-        s3 = blqs.Statement()
+        blqs.Statement()
+        blqs.Statement()
     eq.add_equality_group(f)
 
 
@@ -73,14 +73,14 @@ def test_while_eq():
 
     loop = blqs.While(blqs.Register("a"))
     with loop.loop_block():
-        s1 = blqs.Statement()
+        blqs.Statement()
     eq.add_equality_group(loop)
 
     loop = blqs.While(blqs.Register("a"))
     with loop.loop_block():
-        s1 = blqs.Statement()
+        blqs.Statement()
     with loop.loop_block():
-        s2 = blqs.Statement()
+        blqs.Statement()
     eq.add_equality_group(loop)
 
 

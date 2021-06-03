@@ -1,6 +1,7 @@
+from typing import Sequence, TYPE_CHECKING
+
 from blqs import statement
 
-from typing import Sequence, TYPE_CHECKING
 
 if TYPE_CHECKING:
     import blqs  # coverage: ignore

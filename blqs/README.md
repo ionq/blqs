@@ -1,9 +1,8 @@
-
 # blqs: Building Blocks for Domain Specific Languages
 
 Blqs is a framework for building domain specific language that can be written in native Python.
 It was inspired by TensorFlow's autograph library, and motivated by the state of the art
-in quantum programming frameworks like Cirq and Qisket.
+in quantum programming frameworks like Cirq and Qiskit.
 
 Here is a motivating example.  In many traditional quantum programming frameworks one writes
 a quantum program via appending to a container object, (here is an example from Cirq):

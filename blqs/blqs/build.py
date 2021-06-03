@@ -9,13 +9,12 @@ import textwrap
 import types
 import tempfile
 
-import ast
+from typing import Callable, Optional
+
 import astunparse
 import gast
 
 from blqs import exceptions, _ast, _namer, _template
-
-from typing import Callable, Optional
 
 
 @dataclasses.dataclass

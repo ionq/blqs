@@ -20,17 +20,17 @@ def only_raise():
 @blqs.build
 def multiple_statements():
     a = 1
-    raise LocatedException(23)
-    print("no op")
+    print(a)
+    raise LocatedException(24)
 
 
 @blqs.build
 def if_native():
     if True:
-        a = 2
+        print("yes")
         raise LocatedException(31)
     else:
-        a = 1
+        print("no")
 
 
 @blqs.build
@@ -42,59 +42,59 @@ def if_blqs():
 @blqs.build
 def else_native():
     if False:
-        a = 2
+        print("yes")
     else:
-        a = 3
+        print("no")
         raise LocatedException(48)
 
 
 @blqs.build
 def else_blqs():
     if blqs.Register("a"):
-        a = 2
+        print("a")
     else:
-        a = 3
+        print("b")
         raise LocatedException(57)
 
 
 @blqs.build
 def elif_native():
     if False:
-        a = 2
+        print("1")
     elif True:
-        a = 4
+        print("2")
         raise LocatedException(66)
     else:
-        a = 3
+        print("3")
 
 
 @blqs.build
 def elif_blqs():
     if blqs.Register("a"):
-        a = 2
+        print("1")
     elif blqs.Register("b"):
-        a = 4
+        print("2")
         raise LocatedException(77)
     else:
-        a = 3
+        print("3")
 
 
 @blqs.build
 def for_native():
-    for x in range(5, 10):
+    for _ in range(5, 10):
         raise LocatedException(85)
 
 
 @blqs.build
 def for_blqs():
-    for x in blqs.Iterable("range(5)", blqs.Register("a")):
+    for _ in blqs.Iterable("range(5)", blqs.Register("a")):
         raise LocatedException(91)
 
 
 @blqs.build
 def for_else_native():
     for x in range(5, 10):
-        y = x
+        print(x)
     else:
         raise LocatedException(99)
 
@@ -102,7 +102,7 @@ def for_else_native():
 @blqs.build
 def for_else_blqs():
     for x in blqs.Iterable("range(5)", blqs.Register("a")):
-        y = x
+        print(x)
     else:
         raise LocatedException(107)
 
@@ -122,7 +122,7 @@ def while_blqs():
 @blqs.build
 def while_else_native():
     while False:
-        a = 1
+        print("yes")
     else:
         raise LocatedException(127)
 
@@ -130,7 +130,7 @@ def while_else_native():
 @blqs.build
 def while_else_blqs():
     while blqs.Register("a"):
-        a = 1
+        print("yes")
     else:
         raise LocatedException(135)
 

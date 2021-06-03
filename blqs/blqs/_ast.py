@@ -1,7 +1,7 @@
 import ast
-import gast
-
 from typing import Dict, Union
+
+import gast
 
 
 ANNOTATIONS = ["original_lineno"]

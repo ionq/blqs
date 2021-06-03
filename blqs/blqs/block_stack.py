@@ -1,6 +1,7 @@
+from typing import TYPE_CHECKING
+
 from blqs import _stack
 
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     import blqs  # coverage: ignore

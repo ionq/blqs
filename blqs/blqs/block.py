@@ -1,9 +1,7 @@
-import functools
 import textwrap
+from typing import Iterable, Tuple
 
 from blqs import block_stack, statement
-
-from typing import Iterable, List, Tuple
 
 
 class Block(statement.Statement):

@@ -1,6 +1,4 @@
-import gc
 import inspect
-import textwrap
 
 import pytest
 
@@ -96,11 +94,11 @@ def test_build_if_native():
     transformed_fn = blqs.build(if_fn)
     assert transformed_fn() == blqs.Program.of(blqs.Op("H")(0))
 
-    def if_fn():
+    def if_fn_false():
         if False:
             blqs.Op("H")(0)
 
-    transformed_fn = blqs.build(if_fn)
+    transformed_fn = blqs.build(if_fn_false)
     assert transformed_fn() == blqs.Program.of()
 
 
@@ -114,13 +112,13 @@ def test_build_if_else_native():
     transformed_fn = blqs.build(if_fn)
     assert transformed_fn() == blqs.Program.of(blqs.Op("H")(0))
 
-    def if_fn():
+    def if_fn_false():
         if False:
             blqs.Op("H")(0)
         else:
             blqs.Op("H")(1)
 
-    transformed_fn = blqs.build(if_fn)
+    transformed_fn = blqs.build(if_fn_false)
     assert transformed_fn() == blqs.Program.of(blqs.Op("H")(1))
 
 
@@ -310,32 +308,39 @@ def test_while_else_native():
 def test_assign_blqs():
     def fn():
         a = blqs.Register("a")
+        blqs.Op("M")(a)
 
     transformed_fn = blqs.build(fn)
     assign_stmt = blqs.Assign(("a",), blqs.Register("a"))
-    assert transformed_fn() == blqs.Program.of(assign_stmt)
+    assert transformed_fn() == blqs.Program.of(assign_stmt, blqs.Op("M")(blqs.Register("a")))
 
 
 def test_assign_readable_targets_blqs():
     def fn():
         a, b = blqs.Op("M")(blqs.Register("a"), blqs.Register("b"))
+        blqs.Op("M")(a, b)
 
     transformed_fn = blqs.build(fn)
     assign_stmt = blqs.Assign(("a", "b"), blqs.Op("M")(blqs.Register("a"), blqs.Register("b")))
 
     assert transformed_fn() == blqs.Program.of(
-        blqs.Op("M")(blqs.Register("a"), blqs.Register("b")), assign_stmt
+        blqs.Op("M")(blqs.Register("a"), blqs.Register("b")),
+        assign_stmt,
+        blqs.Op("M")(blqs.Register("a"), blqs.Register("b")),
     )
 
 
 def test_assign_readable_targets_list_blqs():
     def fn():
         [a, b] = blqs.Op("M")(blqs.Register("a"), blqs.Register("b"))
+        blqs.Op("M")(a, b)
 
     transformed_fn = blqs.build(fn)
     assign_stmt = blqs.Assign(("a", "b"), blqs.Op("M")(blqs.Register("a"), blqs.Register("b")))
     assert transformed_fn() == blqs.Program.of(
-        blqs.Op("M")(blqs.Register("a"), blqs.Register("b")), assign_stmt
+        blqs.Op("M")(blqs.Register("a"), blqs.Register("b")),
+        assign_stmt,
+        blqs.Op("M")(blqs.Register("a"), blqs.Register("b")),
     )
 
 
@@ -440,10 +445,11 @@ def test_build_config_support_while():
 def test_build_config_support_assign():
     def fn():
         a = blqs.Register("a")
+        blqs.Op("H")(a)
 
     config = blqs.BuildConfig(support_assign=False)
     transformed_fn = blqs.build(fn, config)
-    assert transformed_fn() == blqs.Program.of()
+    assert transformed_fn() == blqs.Program.of(blqs.Op("H")(blqs.Register("a")))
 
 
 def test_build_config_support_delete():

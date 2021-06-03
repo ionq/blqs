@@ -1,10 +1,10 @@
 import functools
 import inspect
+from typing import Callable, Type, Union
 
-import blqs
 import cirq
 
-from typing import Callable, Type, Union
+import blqs
 
 
 GateLikeType = Union[cirq.Gate, Callable[[], cirq.Gate], functools.partial]

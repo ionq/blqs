@@ -1,5 +1,6 @@
-import gast
 import textwrap
+
+import gast
 
 
 class ReplacementTransformer(gast.NodeTransformer):

@@ -1,22 +1,22 @@
+from typing import Any
+
 import cirq
 
 from blqs_cirq import protocols
 
-from typing import Any
-
 
 class DefaultQubitDecoder(protocols.SupportsDecoding[Any, cirq.Qid]):
-    def _decode_(self, input: Any) -> cirq.Qid:
-        if isinstance(input, cirq.Qid):
-            return input
-        elif isinstance(input, int):
-            return cirq.LineQubit(input)
-        elif isinstance(input, str):
-            return cirq.NamedQubit(input)
-        elif isinstance(input, (tuple, list)):
-            if len(input) == 2 and all(isinstance(x, int) for x in input):
-                return cirq.GridQubit(*input)
-        return cirq.NamedQubit(str(input))
+    def _decode_(self, val: Any) -> cirq.Qid:
+        if isinstance(val, cirq.Qid):
+            return val
+        elif isinstance(val, int):
+            return cirq.LineQubit(val)
+        elif isinstance(val, str):
+            return cirq.NamedQubit(val)
+        elif isinstance(val, (tuple, list)):
+            if len(val) == 2 and all(isinstance(x, int) for x in val):
+                return cirq.GridQubit(*val)
+        return cirq.NamedQubit(str(val))
 
 
 DEFAULT_QUBIT_DECODER = DefaultQubitDecoder()

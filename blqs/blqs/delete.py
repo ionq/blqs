@@ -1,6 +1,6 @@
-from blqs import statement
-
 from typing import Sequence
+
+from blqs import statement
 
 
 class Delete(statement.Statement):

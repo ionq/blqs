@@ -1,13 +1,18 @@
-from blqs import op, protocols, statement
+from typing import TYPE_CHECKING
+
+from blqs import protocols, statement
+
+if TYPE_CHECKING:
+    from blqs import op
 
 
 class Instruction(statement.Statement):
-    def __init__(self, op: op.Op, *targets):
+    def __init__(self, op: "op.Op", *targets):
         super().__init__()
         self._op = op
         self._targets = tuple(targets)
 
-    def op(self) -> op.Op:
+    def op(self) -> "op.Op":
         return self._op
 
     def targets(self):

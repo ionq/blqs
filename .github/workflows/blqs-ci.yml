@@ -57,6 +57,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        cat blqs/requirements-dev.txt | grep mypy | xargs pip install
         pip install -r blqs/requirements.txt
         pip install -r blqs_cirq/requirements.txt
     - name: Run type checking

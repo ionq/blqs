@@ -13,7 +13,7 @@ library, and motivated by attempting to improve quantum computing programming fr
 This repo contains two packages, follow the links for installation instructions and documentation.
 
 * [blqs](blqs) The base blqs framework.
-* [blqs_cirq](blqs_cirq) An application to blqs to [Cirq](https://quantumai.google/cirq)
+* [blqs_cirq](blqs_cirq) An application of blqs to [Cirq](https://quantumai.google/cirq)
 
 # Contributing
 

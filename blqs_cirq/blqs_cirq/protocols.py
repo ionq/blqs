@@ -11,18 +11,57 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Generic, Union, TypeVar
+from typing import Any, Protocol, TypeVar, Union
 
-F = TypeVar("F")
-T = TypeVar("T")
+F = TypeVar("F", contravariant=True)
+T = TypeVar("T", covariant=True)
 
-
-class SupportsDecoding(Generic[F, T]):
-    def _decode_(self, val: F) -> T:
-        """Deco"""
+# There is no type for NotImplemented which currently works with mypy.
+NotImplementedType = Any
 
 
-def decode(decoder: SupportsDecoding[F, T], val: F) -> Union[T, F]:
-    if hasattr(decoder, "_decode_"):
-        return decoder._decode_(val)
-    return val
+class SupportsDecoding(Protocol[F, T]):
+    """A protocol that supports decoding an object in one representation to another.
+
+    TypeVars:
+        F: the type decoding from.
+        T: the type decoding to.
+    """
+
+    def _decode_(self, val: F) -> Union[T, NotImplementedType]:
+        """Decode the given value from the `F` type to the `T` type.
+
+        If the value cannot be decoded, then this should return `NotImplemented`.
+        """
+
+
+def decode(
+    decoder: SupportsDecoding[F, T],
+    val: F,
+    default: Union[T, NotImplementedType] = NotImplemented,
+) -> T:
+    """Use the given decoder to decode a value or return a default.
+
+    Args:
+        decoder: The decoder which implements the `SupportsDecoding` protocol.
+        val: The value to decode.
+        default: A default value.
+
+    Returns:
+        The value obtained by applying the decoder's `_decode_` method to it, or the give `default`
+        if is specified.
+
+    Raises:
+        NotImplementedError: if no default is specified, and either there was no `_decode_`
+            method or there was one and it returned `NotImplemented`.
+    """
+    decode_method = getattr(decoder, "_decode_", None)
+    result = NotImplemented if decode_method is None else decode_method(val)
+    if result is not NotImplemented:
+        return result
+    if default is not NotImplemented:
+        return default
+    raise NotImplementedError(
+        "No default was specified and the decoder did not have `_decode_` method or one was and it "
+        "returned NotImplemented."
+    )

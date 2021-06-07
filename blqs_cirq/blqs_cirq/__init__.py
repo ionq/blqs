@@ -82,6 +82,7 @@ from blqs_cirq.gates import (
 from blqs_cirq.protocols import (
     decode,
     SupportsDecoding,
+    NotImplementedType,
 )
 
 from blqs_cirq.qubits import (

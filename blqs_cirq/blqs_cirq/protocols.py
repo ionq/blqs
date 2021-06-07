@@ -11,18 +11,32 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Generic, Union, TypeVar
+from typing import Any, Generic, Protocol, Union, TypeVar
 
-F = TypeVar("F")
-T = TypeVar("T")
+F = TypeVar("F", contravariant=True)
+T = TypeVar("T", covariant=True)
+
+# This is a special indicator value used by the
+RaiseTypeErrorIfNotProvided: Any = ([],)
 
 
-class SupportsDecoding(Generic[F, T]):
+class SupportsDecoding(Protocol[F, T]):
+    """A protocol that supports decoding an object in one representation to another."""
+
     def _decode_(self, val: F) -> T:
-        """Deco"""
+        """Decode the given value from the `F` type to the `T` type.
+
+        If the value cannot be decoded, then this should return `NotImplemented`.
+        """
 
 
-def decode(decoder: SupportsDecoding[F, T], val: F) -> Union[T, F]:
-    if hasattr(decoder, "_decode_"):
-        return decoder._decode_(val)
-    return val
+def decode(
+    decoder: SupportsDecoding[F, T], val: F, default: Any = RaiseTypeErrorIfNotProvided
+) -> Union[T, F]:
+    decode_method = getattr(decoder, "_decode_", None)
+    result = NotImplemented if decode_method is None else decode_method(val)
+    if result is not NotImplemented:
+        return result
+    if default is not RaiseTypeErrorIfNotProvided:
+        return default
+    raise NotImplementedError()

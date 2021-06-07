@@ -19,6 +19,17 @@ from blqs_cirq import protocols
 
 
 class DefaultQubitDecoder(protocols.SupportsDecoding[Any, cirq.Qid]):
+    """A default decoder that transforms python objects into `cirq.Qids`.
+
+    This performs the following transformations:
+        * If the value is already a `cirq.Qid` then this value is returned unchanged.
+        * If the value is an integer, a `cirq.LineQubit` with this value for its index is returned.
+        * If the value is a string, a `cirq.NameQubit` with this value as its name is returned.
+        * If the value is a tuple or list of length 2, a `cirq.GridQubit` is returned with the
+            two elements corresponding to the row and column of this qubit.
+        * Otherwise a `cirq.NamedQubit` is returned with a name given by the `str` of the value.
+    """
+
     def _decode_(self, val: Any) -> cirq.Qid:
         if isinstance(val, cirq.Qid):
             return val

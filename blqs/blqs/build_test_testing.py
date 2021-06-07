@@ -68,7 +68,7 @@ def else_blqs():
         print("a")
     else:
         print("b")
-        raise LocatedException(57)
+        raise LocatedException(71)
 
 
 @blqs.build

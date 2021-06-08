@@ -19,25 +19,34 @@ import cirq
 
 import blqs
 
-from blqs_cirq import protocols, qubits, circuit_operation
+from blqs_cirq import protocols, qubits, repeat
 
 
 @dataclasses.dataclass
 class BuildConfig:
     """Configuration for the build compilation."""
 
+    output_circuit: bool = True
     qubit_decoder: qubits.DefaultQubitDecoder = qubits.DEFAULT_QUBIT_DECODER
     support_circuit_operation: bool = True
 
 
-def build(func: Callable, build_config: Optional[BuildConfig] = None) -> Callable:
+def build(func: Callable) -> Callable:
+    return _build(func)
+
+
+def build_with_config(build_config: BuildConfig):
+    return functools.partial(_build, build_config=build_config)
+
+
+def _build(func: Callable, build_config: Optional[BuildConfig] = None) -> Callable:
     build_config = build_config or BuildConfig()
 
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         blqs_func = blqs.build(func)
         program = blqs_func(*args, **kwargs)
-        return _build_circuit(program, build_config)
+        return _build_circuit(program, build_config) if build_config.output_circuit else program
 
     return wrapper
 
@@ -53,7 +62,7 @@ def _build_circuit(program, build_config):
                 raise ValueError(
                     f"Unsupported instruction type: {type(statement)}. Instruction: {statement}."
                 )
-        elif isinstance(statement, circuit_operation.CircuitOperation):
+        elif isinstance(statement, repeat.CircuitOperation):
             if build_config.support_circuit_operation:
                 subcircuit = _build_circuit(statement.statements(), build_config).freeze()
                 circuit.append(

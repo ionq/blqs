@@ -41,7 +41,47 @@ class BuildConfig:
     support_delete: bool = True
 
 
-def build(func: Callable, build_config: Optional[BuildConfig] = None) -> Callable:
+def build(func: Callable):
+    """Turn the supplied function into a builder for the code the function contains.
+
+    Typical use is as decorator:
+        ```
+        @build
+        def my_func(my_arg):
+            my_code
+
+        built_func = my_func(a_arg)
+        ```
+    but can also be called directly:
+        ```
+        def my_func(my_arg):
+            my_code
+
+        build_func = build(my_func)(a_arg)
+        ```
+
+    If one wants to pass in a configuration for the build stage, see `build_with_config`.
+    """
+    return _build(func)
+
+
+def build_with_config(build_config: BuildConfig) -> Callable:
+    """A factory for producting a `blqs.build` decorator with the given configuration.
+
+    Typical use is in creating a decorator with the given config
+        ```
+        @build(build_config=my_config)
+        def my_func(my_arg):
+            my_code
+
+        built_func = my_func(a_arg)
+        ```
+    """
+
+    return functools.partial(_build, build_config=build_config)
+
+
+def _build(func: Callable, build_config: Optional[BuildConfig] = None) -> Callable:
     """Turn the supplied function into a builder for the code the function contains."""
 
     @functools.wraps(func)
@@ -124,7 +164,7 @@ class _BuildTransformer(gast.NodeTransformer):
         if node.name != self._func.__name__:
             return node
         # If this comes from a decorator, remove it.
-        node.decorator_list = self.remove_blqs_build_annotation(node.decorator_list)
+        node.decorator_list = self.remove_blqs_build_annotations(node.decorator_list)
 
         # Replace function with an outer function, along the inner function that
         # builds the appropriate block.
@@ -152,15 +192,23 @@ class _BuildTransformer(gast.NodeTransformer):
             return_block=self._namer.new_name("return_block"),
             old_body=node.body,
         )
-        # Set the inner args to the args of the original function.
+        # Set the inner args to the args of the original function and similarly for decorators.
         inner = next(x for x in new_fn[0].body if isinstance(x, gast.FunctionDef))
         inner.args = node.args
+        inner.decorator_list = node.decorator_list
         return new_fn
 
-    def remove_blqs_build_annotation(self, decorator_list):
-        return [
-            d for d in decorator_list if not d.value or d.value.id != "blqs" or d.attr != "build"
-        ]
+    def remove_blqs_build_annotations(self, decorator_list):
+        aliases = self.get_module_aliases()
+        predicate_name = lambda x: isinstance(x, gast.Name) and x.id in aliases
+        predicate_attribute = lambda x: isinstance(x, gast.Attribute) and x.id in aliases
+
+        return [d for d in decorator_list if isinstance(d, gast.Name)]
+
+    def get_module_aliases(self):
+        import blqs as __blqs
+
+        return {k for k, v in self._func.__globals__.items() if inspect.ismodule(v) and v == __blqs}
 
     def visit_If(self, node):
         node = self.generic_visit(node)

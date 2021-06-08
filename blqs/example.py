@@ -1,8 +1,20 @@
 import blqs
+import blqs as bs
 
 H = blqs.Op("H")
 CX = blqs.Op("CX")
 M = blqs.Op("M")
+
+import functools
+
+
+def sub(func):
+    @functools.wraps(func)
+    def wrapper(*arg, **kwargs):
+        func()
+        return H(1)
+
+    return wrapper
 
 
 @blqs.build

@@ -399,18 +399,18 @@ def test_build_delete_native_multiple():
     assert transformed_fn() == blqs.Program.of()
 
 
-def test_build_config_support_if():
+def test_build_with_config_support_if():
     def if_fn():
         if blqs.Register("a"):
             blqs.Op("H")(0)
 
     config = blqs.BuildConfig(support_if=False)
-    transformed_fn = blqs.build(if_fn, config)
+    transformed_fn = blqs.build_with_config(config)(if_fn)
     # blqs.Register("a") is truthy, so we just get the op.
     assert transformed_fn() == blqs.Program.of(blqs.Op("H")(0))
 
 
-def test_build_config_support_for():
+def test_build_with_config_support_for():
     class FakeIterable(blqs.Iterable):
         def __init__(self, name: str, *loop_vars):
             super().__init__(name, *loop_vars)
@@ -424,13 +424,13 @@ def test_build_config_support_for():
             blqs.Op("H")(x)
 
     config = blqs.BuildConfig(support_for=False)
-    transformed_fn = blqs.build(fn, config)
+    transformed_fn = blqs.build_with_config(config)(fn)
 
     # FakeIterable is a blqs.Iterable but it acts like a real one because of config.
     assert transformed_fn() == blqs.Program.of(blqs.Op("H")(0), blqs.Op("H")(1))
 
 
-def test_build_config_support_while():
+def test_build_with_config_support_while():
     class SettableRegister(blqs.Register):
         def __init__(self, name):
             super().__init__(name)
@@ -451,27 +451,27 @@ def test_build_config_support_while():
             a.set_false()
 
     config = blqs.BuildConfig(support_while=False)
-    transformed_fn = blqs.build(fn, config)
+    transformed_fn = blqs.build_with_config(config)(fn)
     assert transformed_fn() == blqs.Program.of(blqs.Op("H")(0))
 
 
-def test_build_config_support_assign():
+def test_build_with_config_support_assign():
     def fn():
         a = blqs.Register("a")
         blqs.Op("H")(a)
 
     config = blqs.BuildConfig(support_assign=False)
-    transformed_fn = blqs.build(fn, config)
+    transformed_fn = blqs.build_with_config(config)(fn)
     assert transformed_fn() == blqs.Program.of(blqs.Op("H")(blqs.Register("a")))
 
 
-def test_build_config_support_delete():
+def test_build_with_config_support_delete():
     def fn():
         a = blqs.Register("a")
         del a
 
     config = blqs.BuildConfig(support_delete=False)
-    transformed_fn = blqs.build(fn, config)
+    transformed_fn = blqs.build_with_config(config)(fn)
     assign_stmt = blqs.Assign(("a",), blqs.Register("a"))
     assert transformed_fn() == blqs.Program.of(assign_stmt)
 

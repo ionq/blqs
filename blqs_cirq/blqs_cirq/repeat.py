@@ -21,3 +21,19 @@ class CircuitOperation(blqs.Block):
 
     def circuit_operation_kwargs(self):
         return self._circuit_operation_kwargs
+
+    def __str__(self):
+        return f"with CircuitOperation({self._circuit_operation_kwargs}):\n{super().__str__()}"
+
+
+class Repeat(CircuitOperation):
+    def __init__(self, repetitions, parent_statement=None):
+        super().__init__(parent_statement, repetitions=repetitions)
+        self._repetitions = repetitions
+
+    def repetitions(self):
+        return self.repetitions
+
+    def __str__(self):
+        
+        return f"repeat({self.repetitions} times):"

@@ -598,3 +598,7 @@ def test_build_with_before_decorator():
         btt.blqs_build_with_before_decorator_wrapped()
     with pytest.raises(ValueError, match="decorator"):
         btt.blqs_build_with_after_decorator_wrapped()
+
+    assert btt.build(btt.blqs_build_with_only_decorator)() == blqs.Program.of(
+        blqs.Op("X")(0), blqs.Op("H")(0)
+    )

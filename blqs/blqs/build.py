@@ -70,14 +70,13 @@ def build_with_config(build_config: BuildConfig) -> Callable:
 
     Typical use is in creating a decorator with the given config
         ```
-        @build(build_config=my_config)
+        @build_with_config(build_config=my_config)
         def my_func(my_arg):
             my_code
 
         built_func = my_func(a_arg)
         ```
     """
-
     return functools.partial(_build, build_config=build_config)
 
 

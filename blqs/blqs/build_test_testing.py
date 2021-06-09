@@ -252,3 +252,13 @@ def blqs_build_with_before_decorator_wrapped():
 @blqs.build
 def blqs_build_with_after_decorator_wrapped():
     blqs.Op("X")(0)
+
+
+@decorator
+def blqs_build_with_only_decorator():
+    blqs.Op("X")(0)
+
+
+@decorator_wrapped
+def blqs_build_with_only_decorator_wrapped():
+    blqs.Op("X")(0)

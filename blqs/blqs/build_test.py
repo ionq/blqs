@@ -399,18 +399,18 @@ def test_build_delete_native_multiple():
     assert transformed_fn() == blqs.Program.of()
 
 
-def test_build_config_support_if():
+def test_build_with_config_support_if():
     def if_fn():
         if blqs.Register("a"):
             blqs.Op("H")(0)
 
     config = blqs.BuildConfig(support_if=False)
-    transformed_fn = blqs.build(if_fn, config)
+    transformed_fn = blqs.build_with_config(config)(if_fn)
     # blqs.Register("a") is truthy, so we just get the op.
     assert transformed_fn() == blqs.Program.of(blqs.Op("H")(0))
 
 
-def test_build_config_support_for():
+def test_build_with_config_support_for():
     class FakeIterable(blqs.Iterable):
         def __init__(self, name: str, *loop_vars):
             super().__init__(name, *loop_vars)
@@ -424,13 +424,13 @@ def test_build_config_support_for():
             blqs.Op("H")(x)
 
     config = blqs.BuildConfig(support_for=False)
-    transformed_fn = blqs.build(fn, config)
+    transformed_fn = blqs.build_with_config(config)(fn)
 
     # FakeIterable is a blqs.Iterable but it acts like a real one because of config.
     assert transformed_fn() == blqs.Program.of(blqs.Op("H")(0), blqs.Op("H")(1))
 
 
-def test_build_config_support_while():
+def test_build_with_config_support_while():
     class SettableRegister(blqs.Register):
         def __init__(self, name):
             super().__init__(name)
@@ -451,27 +451,27 @@ def test_build_config_support_while():
             a.set_false()
 
     config = blqs.BuildConfig(support_while=False)
-    transformed_fn = blqs.build(fn, config)
+    transformed_fn = blqs.build_with_config(config)(fn)
     assert transformed_fn() == blqs.Program.of(blqs.Op("H")(0))
 
 
-def test_build_config_support_assign():
+def test_build_with_config_support_assign():
     def fn():
         a = blqs.Register("a")
         blqs.Op("H")(a)
 
     config = blqs.BuildConfig(support_assign=False)
-    transformed_fn = blqs.build(fn, config)
+    transformed_fn = blqs.build_with_config(config)(fn)
     assert transformed_fn() == blqs.Program.of(blqs.Op("H")(blqs.Register("a")))
 
 
-def test_build_config_support_delete():
+def test_build_with_config_support_delete():
     def fn():
         a = blqs.Register("a")
         del a
 
     config = blqs.BuildConfig(support_delete=False)
-    transformed_fn = blqs.build(fn, config)
+    transformed_fn = blqs.build_with_config(config)(fn)
     assign_stmt = blqs.Assign(("a",), blqs.Register("a"))
     assert transformed_fn() == blqs.Program.of(assign_stmt)
 
@@ -480,18 +480,33 @@ def test_build_inside_of_class():
     class MyClass:
         @blqs.build
         def my_func(self):
+            """Mydoc"""
             blqs.Op("H")(0)
 
     transformed_fn = MyClass().my_func
     assert transformed_fn() == blqs.Program.of(blqs.Op("H")(0))
     assert transformed_fn.__name__ == "my_func"
+    assert transformed_fn.__doc__ == "Mydoc"
 
 
-def test_build_before_decorator():
-    def add_an_op(func):
+def test_build_inside_of_class_args():
+    class MyClass:
+        @blqs.build
+        def my_func(self, x):
+            """Mydoc"""
+            blqs.Op("H")(x)
+
+    transformed_fn = MyClass().my_func
+    assert transformed_fn(1) == blqs.Program.of(blqs.Op("H")(1))
+
+
+def test_build_before_decorators_plain_works():
+    """This is the one simple case of decorators that works."""
+
+    def add_an_op(f):
         def wrapper(*args, **kwargs):
-            func(*args, **kwargs)
             blqs.Op("X")(0)
+            f(*args, **kwargs)
 
         return wrapper
 
@@ -502,9 +517,27 @@ def test_build_before_decorator():
             blqs.Op("H")(0)
 
     transformed_fn = MyClass().my_func
-    assert transformed_fn() == blqs.Program.of(blqs.Op("H")(0), blqs.Op("X")(0))
-    # Didn't user itertools.wraps
-    assert transformed_fn.__name__ == "wrapper"
+    assert transformed_fn() == blqs.Program.of(blqs.Op("X")(0), blqs.Op("H")(0))
+
+
+def test_build_after_decorators_fails():
+    """This is the one simple case of decorators that works."""
+
+    def add_an_op(f):
+        def wrapper(*args, **kwargs):
+            blqs.Op("X")(0)
+            f(*args, **kwargs)
+
+        return wrapper
+
+    class MyClass:
+        @add_an_op
+        @blqs.build
+        def my_func(self):
+            blqs.Op("H")(0)
+
+    with pytest.raises(ValueError, match="decorator"):
+        MyClass().my_func()
 
 
 @pytest.mark.parametrize(
@@ -536,3 +569,36 @@ def test_build_exception_only_raise(method):
     assert type(cause) == blqs.GeneratedCodeException
     assert cause.original_filename() == inspect.getfile(blqs.build_test_testing)
     assert e.value.lineno in cause.linenos_dict().values()
+
+
+@pytest.mark.parametrize(
+    "method",
+    [
+        btt.blqs_build_decorator,
+        btt.blqs_build_with_config_decorator,
+        btt.build_decorator,
+        btt.blqs_build_with_config_decorator,
+        btt.blqs_alias_build_decorator,
+        btt.blqs_alias_build_with_config_decorator,
+        btt.blqs_build_alias_decorator,
+        btt.blqs_build_with_config_alias_decorator,
+    ],
+)
+def test_decorator_types(method):
+    assert method() == blqs.Program.of(blqs.Op("X")(0))
+
+
+def test_build_with_before_decorator():
+    assert btt.blqs_build_with_before_decorator() == blqs.Program.of(
+        blqs.Op("X")(0), blqs.Op("H")(0)
+    )
+    with pytest.raises(ValueError, match="decorator"):
+        btt.blqs_build_with_after_decorator()
+    with pytest.raises(ValueError, match="decorator"):
+        btt.blqs_build_with_before_decorator_wrapped()
+    with pytest.raises(ValueError, match="decorator"):
+        btt.blqs_build_with_after_decorator_wrapped()
+
+    assert btt.build(btt.blqs_build_with_only_decorator)() == blqs.Program.of(
+        blqs.Op("X")(0), blqs.Op("H")(0)
+    )

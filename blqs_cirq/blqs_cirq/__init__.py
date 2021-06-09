@@ -14,11 +14,9 @@
 
 from blqs_cirq.build import (
     build,
+    BuildConfig,
 )
 
-from blqs_cirq.circuit_operation import (
-    CircuitOperation,
-)
 
 from blqs_cirq.gates import (
     AmplitudeDampingChannel,
@@ -88,4 +86,9 @@ from blqs_cirq.protocols import (
 from blqs_cirq.qubits import (
     DefaultQubitDecoder,
     DEFAULT_QUBIT_DECODER,
+)
+
+from blqs_cirq.repeat import (
+    CircuitOperation,
+    Repeat,
 )

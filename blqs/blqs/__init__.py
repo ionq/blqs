@@ -28,6 +28,7 @@ from blqs.block import (
 
 from blqs.build import (
     build,
+    build_with_config,
     BuildConfig,
 )
 

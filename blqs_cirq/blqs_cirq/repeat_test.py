@@ -11,13 +11,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import blqs
+import cirq
+
+import blqs_cirq as bc
 
 
-class CircuitOperation(blqs.Block):
-    def __init__(self, parent_statement=None, **circuit_op_kwargs):
-        super().__init__(parent_statement)
-        self._circuit_operation_kwargs = circuit_op_kwargs
+def test_circuit_operation():
+    def fn():
+        bc.H(0)
+        with bc.CircuitOperation():
+            bc.H(1)
 
-    def circuit_operation_kwargs(self):
-        return self._circuit_operation_kwargs
+    transformed_fn = bc.build(fn)
+    assert transformed_fn() == cirq.Circuit(
+        [
+            cirq.H(cirq.LineQubit(0)),
+            cirq.CircuitOperation(cirq.Circuit([cirq.H(cirq.LineQubit(1))]).freeze()),
+        ]
+    )

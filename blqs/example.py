@@ -4,6 +4,26 @@ H = blqs.Op("H")
 CX = blqs.Op("CX")
 M = blqs.Op("M")
 
+import functools
+
+
+def sub(func):
+    @functools.wraps(func)
+    def wrapper(*arg, **kwargs):
+        func()
+        H(1)
+
+    return wrapper
+
+
+def bef(func):
+    @functools.wraps(func)
+    def wrapper(*arg, **kwargs):
+        a = func()
+        print(a)
+
+    return wrapper
+
 
 @blqs.build
 def example():

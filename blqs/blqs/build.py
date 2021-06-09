@@ -163,7 +163,7 @@ class _BuildTransformer(gast.NodeTransformer):
         if node.name != self._func.__name__:
             return node
         # If this comes from a decorator, remove it.
-        node.decorator_list = self.remove_blqs_build_annotations(node.decorator_list)
+        new_decorator_list = self.remove_blqs_build_annotations(node.decorator_list)
         # Replace function with an outer function, along the inner function that
         # builds the appropriate block.
         template = """
@@ -194,7 +194,7 @@ class _BuildTransformer(gast.NodeTransformer):
         # Set the inner args to the args of the original function and similarly for decorators.
         inner = next(x for x in new_fn[0].body if isinstance(x, gast.FunctionDef))
         inner.args = node.args
-        inner.decorator_list = node.decorator_list
+        inner.decorator_list = new_decorator_list
         return new_fn
 
     def remove_blqs_build_annotations(self, decorator_list):

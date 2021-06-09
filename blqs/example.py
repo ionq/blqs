@@ -1,5 +1,4 @@
 import blqs
-import blqs as bs
 
 H = blqs.Op("H")
 CX = blqs.Op("CX")
@@ -12,7 +11,16 @@ def sub(func):
     @functools.wraps(func)
     def wrapper(*arg, **kwargs):
         func()
-        return H(1)
+        H(1)
+
+    return wrapper
+
+
+def bef(func):
+    @functools.wraps(func)
+    def wrapper(*arg, **kwargs):
+        a = func()
+        print(a)
 
     return wrapper
 

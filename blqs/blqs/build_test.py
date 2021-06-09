@@ -480,18 +480,33 @@ def test_build_inside_of_class():
     class MyClass:
         @blqs.build
         def my_func(self):
+            """Mydoc"""
             blqs.Op("H")(0)
 
     transformed_fn = MyClass().my_func
     assert transformed_fn() == blqs.Program.of(blqs.Op("H")(0))
     assert transformed_fn.__name__ == "my_func"
+    assert transformed_fn.__doc__ == "Mydoc"
 
 
-def test_build_before_decorator():
-    def add_an_op(func):
+def test_build_inside_of_class_args():
+    class MyClass:
+        @blqs.build
+        def my_func(self, x):
+            """Mydoc"""
+            blqs.Op("H")(x)
+
+    transformed_fn = MyClass().my_func
+    assert transformed_fn(1) == blqs.Program.of(blqs.Op("H")(1))
+
+
+def test_build_before_decorators_plain_works():
+    """This is the one simple case of decorators that works."""
+
+    def add_an_op(f):
         def wrapper(*args, **kwargs):
-            func(*args, **kwargs)
             blqs.Op("X")(0)
+            f(*args, **kwargs)
 
         return wrapper
 
@@ -502,9 +517,27 @@ def test_build_before_decorator():
             blqs.Op("H")(0)
 
     transformed_fn = MyClass().my_func
-    assert transformed_fn() == blqs.Program.of(blqs.Op("H")(0), blqs.Op("X")(0))
-    # Didn't user itertools.wraps
-    assert transformed_fn.__name__ == "wrapper"
+    assert transformed_fn() == blqs.Program.of(blqs.Op("X")(0), blqs.Op("H")(0))
+
+
+def test_build_after_decorators_fails():
+    """This is the one simple case of decorators that works."""
+
+    def add_an_op(f):
+        def wrapper(*args, **kwargs):
+            blqs.Op("X")(0)
+            f(*args, **kwargs)
+
+        return wrapper
+
+    class MyClass:
+        @add_an_op
+        @blqs.build
+        def my_func(self):
+            blqs.Op("H")(0)
+
+    with pytest.raises(ValueError, match="decorator"):
+        MyClass().my_func()
 
 
 @pytest.mark.parametrize(
@@ -536,3 +569,32 @@ def test_build_exception_only_raise(method):
     assert type(cause) == blqs.GeneratedCodeException
     assert cause.original_filename() == inspect.getfile(blqs.build_test_testing)
     assert e.value.lineno in cause.linenos_dict().values()
+
+
+@pytest.mark.parametrize(
+    "method",
+    [
+        btt.blqs_build_decorator,
+        btt.blqs_build_with_config_decorator,
+        btt.build_decorator,
+        btt.blqs_build_with_config_decorator,
+        btt.blqs_alias_build_decorator,
+        btt.blqs_alias_build_with_config_decorator,
+        btt.blqs_build_alias_decorator,
+        btt.blqs_build_with_config_alias_decorator,
+    ],
+)
+def test_decorator_types(method):
+    assert method() == blqs.Program.of(blqs.Op("X")(0))
+
+
+def test_build_with_before_decorator():
+    assert btt.blqs_build_with_before_decorator() == blqs.Program.of(
+        blqs.Op("X")(0), blqs.Op("H")(0)
+    )
+    with pytest.raises(ValueError, match="decorator"):
+        btt.blqs_build_with_after_decorator()
+    with pytest.raises(ValueError, match="decorator"):
+        btt.blqs_build_with_before_decorator_wrapped()
+    with pytest.raises(ValueError, match="decorator"):
+        btt.blqs_build_with_after_decorator_wrapped()

@@ -11,16 +11,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import blqs
 import cirq
 
 import blqs_cirq as bc
 
 
 def test_circuit_operation():
-    with blqs.Program() as p:
-        bc.H(cirq.LineQubit(0))
+    def fn():
+        bc.H(0)
         with bc.CircuitOperation():
-            bc.H(cirq.LineQubit(1))
+            bc.H(1)
 
-    
+    transformed_fn = bc.build(fn)
+    assert transformed_fn() == cirq.Circuit(
+        [
+            cirq.H(cirq.LineQubit(0)),
+            cirq.CircuitOperation(cirq.Circuit([cirq.H(cirq.LineQubit(1))]).freeze()),
+        ]
+    )

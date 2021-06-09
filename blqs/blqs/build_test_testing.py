@@ -15,6 +15,7 @@
 # This file is for testing and is linespace sensitive. That is the lines on which the
 # code is defined matters for these tests. If you need to add new test code, please add
 # it to the end.
+import functools
 import blqs
 
 
@@ -28,21 +29,21 @@ class LocatedException(Exception):
 
 @blqs.build
 def only_raise():
-    raise LocatedException(31)
+    raise LocatedException(32)
 
 
 @blqs.build
 def multiple_statements():
     a = 1
     print(a)
-    raise LocatedException(38)
+    raise LocatedException(39)
 
 
 @blqs.build
 def if_native():
     if True:
         print("yes")
-        raise LocatedException(45)
+        raise LocatedException(46)
     else:
         print("no")
 
@@ -50,7 +51,7 @@ def if_native():
 @blqs.build
 def if_blqs():
     if blqs.Register("a"):
-        raise LocatedException(53)
+        raise LocatedException(54)
 
 
 @blqs.build
@@ -59,7 +60,7 @@ def else_native():
         print("yes")
     else:
         print("no")
-        raise LocatedException(62)
+        raise LocatedException(63)
 
 
 @blqs.build
@@ -68,7 +69,7 @@ def else_blqs():
         print("a")
     else:
         print("b")
-        raise LocatedException(71)
+        raise LocatedException(72)
 
 
 @blqs.build
@@ -77,7 +78,7 @@ def elif_native():
         print("1")
     elif True:
         print("2")
-        raise LocatedException(80)
+        raise LocatedException(81)
     else:
         print("3")
 
@@ -88,7 +89,7 @@ def elif_blqs():
         print("1")
     elif blqs.Register("b"):
         print("2")
-        raise LocatedException(91)
+        raise LocatedException(92)
     else:
         print("3")
 
@@ -96,13 +97,13 @@ def elif_blqs():
 @blqs.build
 def for_native():
     for _ in range(5, 10):
-        raise LocatedException(99)
+        raise LocatedException(100)
 
 
 @blqs.build
 def for_blqs():
     for _ in blqs.Iterable("range(5)", blqs.Register("a")):
-        raise LocatedException(105)
+        raise LocatedException(106)
 
 
 @blqs.build
@@ -110,7 +111,7 @@ def for_else_native():
     for x in range(5, 10):
         print(x)
     else:
-        raise LocatedException(113)
+        raise LocatedException(114)
 
 
 @blqs.build
@@ -118,19 +119,19 @@ def for_else_blqs():
     for x in blqs.Iterable("range(5)", blqs.Register("a")):
         print(x)
     else:
-        raise LocatedException(121)
+        raise LocatedException(122)
 
 
 @blqs.build
 def while_native():
     while True:
-        raise LocatedException(127)
+        raise LocatedException(128)
 
 
 @blqs.build
 def while_blqs():
     while blqs.Register("a"):
-        raise LocatedException(133)
+        raise LocatedException(134)
 
 
 @blqs.build
@@ -138,7 +139,7 @@ def while_else_native():
     while False:
         print("yes")
     else:
-        raise LocatedException(141)
+        raise LocatedException(142)
 
 
 @blqs.build
@@ -146,12 +147,108 @@ def while_else_blqs():
     while blqs.Register("a"):
         print("yes")
     else:
-        raise LocatedException(149)
+        raise LocatedException(150)
 
 
 @blqs.build
 def larger_traceback():
     def inner_fn():
-        raise LocatedException(155)
+        raise LocatedException(156)
 
     inner_fn()
+
+
+@blqs.build
+def blqs_build_decorator():
+    blqs.Op("X")(0)
+
+
+@blqs.build_with_config(blqs.BuildConfig(support_if=False))
+def blqs_build_with_config_decorator():
+    blqs.Op("X")(0)
+
+
+# pylint: disable=wrong-import-position
+from blqs import build, build_with_config
+
+
+@build
+def build_decorator():
+    blqs.Op("X")(0)
+
+
+@build_with_config(blqs.BuildConfig(support_if=False))
+def build_with_config_decorator():
+    blqs.Op("X")(0)
+
+
+# pylint: disable=wrong-import-position
+import blqs as bq
+
+
+@bq.build
+def blqs_alias_build_decorator():
+    blqs.Op("X")(0)
+
+
+@bq.build_with_config(blqs.BuildConfig(support_if=False))
+def blqs_alias_build_with_config_decorator():
+    blqs.Op("X")(0)
+
+
+# pylint: disable=wrong-import-position
+from blqs import build as bld
+
+# pylint: disable=wrong-import-position
+from blqs import build_with_config as bwc
+
+
+@bld
+def blqs_build_alias_decorator():
+    blqs.Op("X")(0)
+
+
+@bwc(blqs.BuildConfig(support_if=False))
+def blqs_build_with_config_alias_decorator():
+    blqs.Op("X")(0)
+
+
+def decorator(func):
+    def wrapper():
+        func()
+        blqs.Op("H")(0)
+
+    return wrapper
+
+
+@blqs.build
+@decorator
+def blqs_build_with_before_decorator():
+    blqs.Op("X")(0)
+
+
+@decorator
+@blqs.build
+def blqs_build_with_after_decorator():
+    blqs.Op("X")(0)
+
+
+def decorator_wrapped(func):
+    @functools.wraps(func)
+    def wrapper():
+        func()
+        blqs.Op("H")(0)
+
+    return wrapper
+
+
+@blqs.build
+@decorator_wrapped
+def blqs_build_with_before_decorator_wrapped():
+    blqs.Op("X")(0)
+
+
+@decorator_wrapped
+@blqs.build
+def blqs_build_with_after_decorator_wrapped():
+    blqs.Op("X")(0)

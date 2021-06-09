@@ -35,5 +35,5 @@ class Repeat(CircuitOperation):
         return self.repetitions
 
     def __str__(self):
-        
+
         return f"repeat({self.repetitions} times):"

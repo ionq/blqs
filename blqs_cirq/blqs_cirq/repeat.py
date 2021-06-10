@@ -25,15 +25,21 @@ class CircuitOperation(blqs.Block):
     def __str__(self):
         return f"with CircuitOperation({self._circuit_operation_kwargs}):\n{super().__str__()}"
 
+    def __eq__(self, other):
+        if not isinstance(other, type(self)):
+            return NotImplemented
+        return (
+            super().__eq__(other)
+            and self._circuit_operation_kwargs == other._circuit_operation_kwargs
+        )
+
 
 class Repeat(CircuitOperation):
     def __init__(self, repetitions, parent_statement=None):
         super().__init__(parent_statement, repetitions=repetitions)
-        self._repetitions = repetitions
 
     def repetitions(self):
-        return self.repetitions
+        return self.circuit_operation_kwargs()["repetitions"]
 
     def __str__(self):
-
-        return f"repeat({self.repetitions} times):"
+        return f"repeat({self.repetitions()} times):"

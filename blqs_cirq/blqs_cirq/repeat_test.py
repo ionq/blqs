@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import cirq
+import pymore
 import sympy
 
 import blqs_cirq as bc
@@ -88,6 +89,36 @@ def test_circuit_operation_nested():
     )
 
 
+def test_circuit_operation_empty():
+    def fn():
+        with bc.CircuitOperation():
+            pass
+
+    assert bc.build(fn)() == cirq.Circuit(
+        [
+            cirq.CircuitOperation(cirq.Circuit().freeze()),
+        ]
+    )
+
+
+def test_circuit_operation_equality():
+    equals_tester = pymore.EqualsTester()
+    equals_tester.add_equality_group(bc.CircuitOperation(), bc.CircuitOperation())
+    equals_tester.add_equality_group(bc.CircuitOperation(repetitions=3))
+    equals_tester.add_equality_group(
+        bc.CircuitOperation(
+            qubit_map={cirq.LineQubit(1): cirq.LineQubit(0)},
+        )
+    )
+    with bc.CircuitOperation() as co:
+        bc.H(0)
+    equals_tester.add_equality_group(co)
+    with bc.CircuitOperation() as co:
+        bc.H(0)
+        bc.H(1)
+    equals_tester.add_equality_group(co)
+
+
 def test_repeat():
     def fn():
         bc.H(0)
@@ -103,6 +134,21 @@ def test_repeat():
                         cirq.H(cirq.LineQubit(1)),
                     ]
                 ).freeze(),
+                repetitions=3,
+            ),
+        ]
+    )
+
+
+def test_repeat_empty():
+    def fn():
+        with bc.Repeat(3):
+            pass
+
+    assert bc.build(fn)() == cirq.Circuit(
+        [
+            cirq.CircuitOperation(
+                cirq.Circuit().freeze(),
                 repetitions=3,
             ),
         ]

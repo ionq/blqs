@@ -64,10 +64,10 @@ def _build_circuit(program, build_config):
                 )
         elif isinstance(statement, repeat.CircuitOperation):
             if build_config.support_circuit_operation:
-                subcircuit = _build_circuit(statement.statements(), build_config).freeze()
-                circuit.append(
-                    cirq.CircuitOperation(subcircuit, **statement.circuit_operation_kwargs())
-                )
+                subcircuit = _build_circuit(
+                    statement.circuit_op_block().statements(), build_config
+                ).freeze()
+                circuit.append(cirq.CircuitOperation(subcircuit, **statement.circuit_op_kwargs()))
             else:
                 raise ValueError(
                     "Encountered CircuitOperation block, but support fo such blocks is "

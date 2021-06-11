@@ -267,9 +267,6 @@ class _BuildTransformer(gast.NodeTransformer):
             "Use build(decorator(func)) instead."
         )
 
-    def get_build_aliases(self):
-        import blqs as __blqs
-
     def visit_If(self, node):
         node = self.generic_visit(node)
         if not self._build_config.support_if:

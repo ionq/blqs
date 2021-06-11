@@ -29,13 +29,14 @@ class CircuitOperation(blqs.Statement):
         return self._circuit_op_block
 
     def __enter__(self):
-        return self._circuit_op_block.__enter__()
+        self._circuit_op_block.__enter__()
+        return self
 
     def __exit__(self, exc_type, exc_value, traceback):
         return self._circuit_op_block.__exit__(exc_type, exc_value, traceback)
 
     def __str__(self):
-        return f"with CircuitOperation({self._circuit_op_kwargs}):\n{self._circuit_op_block}"
+        return f"with CircuitOperation({self._circuit_op_kwargs or ''}):\n{self._circuit_op_block}"
 
     def __eq__(self, other):
         if not isinstance(other, type(self)):

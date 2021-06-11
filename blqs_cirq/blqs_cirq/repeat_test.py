@@ -15,6 +15,7 @@ import cirq
 import pymore
 import sympy
 
+import blqs
 import blqs_cirq as bc
 
 
@@ -61,6 +62,16 @@ def test_circuit_operation_args():
             ),
         ]
     )
+
+
+def test_circuit_operation_fields():
+    with bc.CircuitOperation(
+        repetitions=3,
+        param_resolver={sympy.Symbol("x"): 0.1},
+    ) as co:
+        bc.HPowGate(exponent=sympy.Symbol("x"))(1)
+    assert co.circuit_op_kwargs() == {"repetitions": 3, "param_resolver": {sympy.Symbol("x"): 0.1}}
+    assert co.circuit_op_block() == blqs.Block.of(bc.HPowGate(exponent=sympy.Symbol("x"))(1))
 
 
 def test_circuit_operation_nested():
@@ -119,6 +130,25 @@ def test_circuit_operation_equality():
     equals_tester.add_equality_group(co)
 
 
+def test_circuit_operation_str():
+    assert str(bc.CircuitOperation()) == "with CircuitOperation():\n"
+    with bc.CircuitOperation() as co:
+        bc.H(0)
+
+    assert str(co) == "with CircuitOperation():\n  H 0"
+
+    with bc.CircuitOperation(repetitions=1) as co:
+        bc.H(0)
+    assert str(co) == "with CircuitOperation({'repetitions': 1}):\n  H 0"
+
+    with bc.CircuitOperation(repetitions=1, measurement_key_map={"a:0": "b"}) as co:
+        bc.H(0)
+    assert (
+        str(co)
+        == "with CircuitOperation({'repetitions': 1, 'measurement_key_map': {'a:0': 'b'}}):\n  H 0"
+    )
+
+
 def test_repeat():
     def fn():
         bc.H(0)
@@ -153,3 +183,28 @@ def test_repeat_empty():
             ),
         ]
     )
+
+
+def test_repeat_equality():
+    equals_tester = pymore.EqualsTester()
+    equals_tester.add_equality_group(bc.Repeat(1), bc.Repeat(1))
+    equals_tester.add_equality_group(bc.Repeat(3))
+    with bc.Repeat(4) as r:
+        bc.H(0)
+    equals_tester.add_equality_group(r)
+
+
+def test_repeat_fields():
+    with bc.Repeat(3) as r:
+        bc.H(0)
+    assert r.circuit_op_kwargs() == {"repetitions": 3}
+    assert r.circuit_op_block() == blqs.Block.of(bc.H(0))
+
+
+def test_repeat_str():
+    r = bc.Repeat(3)
+    assert str(r) == "repeat(3 times):\n"
+
+    with bc.Repeat(3) as r:
+        bc.H(0)
+    assert str(r) == "repeat(3 times):\n  H 0"

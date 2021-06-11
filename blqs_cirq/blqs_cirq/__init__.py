@@ -14,6 +14,7 @@
 
 from blqs_cirq.build import (
     build,
+    build_with_config,
     BuildConfig,
 )
 

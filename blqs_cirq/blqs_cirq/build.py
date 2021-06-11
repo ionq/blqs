@@ -24,10 +24,22 @@ from blqs_cirq import protocols, qubits, repeat
 
 @dataclasses.dataclass
 class BuildConfig:
-    """Configuration for the build compilation."""
+    """Configuration for the build compilation.
+
+    Attributes:
+        output_circuit: Whether or not to output a `cirq.Circuit`. If `False` outputs
+            a `blqs.Program`.
+        qubit_decoder: Is applied to the targets of a operation, making it simpler to
+            write simple qubit strings like `0` in place of Cirq's more verbose `cirq.LineQubit(0)`,
+            for example.
+        blqs_build_config: If supplied an extra config passed to the build stage of blqs.
+        support_circuit_operation: Whether or not `CircuitOperation` or `Repeat` ops are supported.
+            If they are included and support is off, a `ValueError` is thrown.
+    """
 
     output_circuit: bool = True
     qubit_decoder: qubits.DefaultQubitDecoder = qubits.DEFAULT_QUBIT_DECODER
+    blqs_build_config: Optional[blqs.BuildConfig] = None
     support_circuit_operation: bool = True
 
 
@@ -44,7 +56,8 @@ def _build(func: Callable, build_config: Optional[BuildConfig] = None) -> Callab
 
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        blqs_func = blqs.build(func)
+        blqs_build_config = build_config.blqs_build_config or blqs.BuildConfig()
+        blqs_func = blqs.build_with_config(blqs_build_config)(func)
         program = blqs_func(*args, **kwargs)
         return _build_circuit(program, build_config) if build_config.output_circuit else program
 
@@ -70,7 +83,7 @@ def _build_circuit(program, build_config):
                 circuit.append(cirq.CircuitOperation(subcircuit, **statement.circuit_op_kwargs()))
             else:
                 raise ValueError(
-                    "Encountered CircuitOperation block, but support fo such blocks is "
+                    "Encountered CircuitOperation or Repeat block, but support for such blocks is "
                     "disabled in build config."
                 )
         else:

@@ -2,7 +2,7 @@ import blqs_cirq as bc
 from blqs_cirq import measure, H, HPowGate, reset, rx, CX, qft, Repeat
 
 
-@bc.build()
+@bc.build
 def program():
     H(0)
     HPowGate(exponent=0.1)(0)

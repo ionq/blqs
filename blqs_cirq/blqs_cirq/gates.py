@@ -40,11 +40,19 @@ class CirqBlqsOp(blqs.Op):
         """The `cirq.Gate` or a callable which produces this gate for this op."""
         return self._gate
 
+    def __eq__(self, other):
+        if not isinstance(other, type(self)):
+            return NotImplemented
+        return self._name == other._name and self._gate == other._gate
+
+    def __hash__(self):
+        return hash((self._name, self._gate))
+
 
 class CirqBlqsOpFactory:
     """A wrapper for Cirq gate classes or methods with params that when called give a `cirq.Gate`.
 
-    Example, supposing that `MyGateClass` is a `cirq.Gate` subclass and it uses the standard
+    Example, supposing that `MyGateClass` is a `cirq.Gate` subclass and it uses an
     `__init__` with two args and two keywork args:
         ```
         factory = CirqBlqsOpFactory(MyGateClass)
@@ -52,12 +60,26 @@ class CirqBlqsOpFactory:
         ```
     """
 
-    def __init__(self, cirq_gate_class: Callable[..., cirq.Gate]):
-        self._cirq_gate_class = cirq_gate_class
+    def __init__(self, cirq_gate_factory: Union[Type, Callable[..., cirq.Gate]]):
+        self._cirq_gate_factory = cirq_gate_factory
+
+    def cirq_gate_factory(self):
+        return self._cirq_gate_factory
 
     def __call__(self, *args, **kwargs) -> CirqBlqsOp:
-        gate = self._cirq_gate_class(*args, **kwargs)
+        gate = self._cirq_gate_factory(*args, **kwargs)
         return CirqBlqsOp(gate)
+
+    def __str__(self):
+        return str(self._cirq_gate_factory.__name__)
+
+    def __eq__(self, other):
+        if not isinstance(other, type(self)):
+            return NotImplemented
+        return self._cirq_gate_factory == other._cirq_gate_factory
+
+    def __hash__(self):
+        return hash(self._cirq_gate_factory)
 
 
 def cirq_blqs_op(

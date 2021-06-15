@@ -22,7 +22,7 @@ import textwrap
 import types
 import tempfile
 
-from typing import Callable, Optional
+from typing import Callable, Optional, Sequence, Tuple
 
 import astunparse
 import gast
@@ -39,6 +39,8 @@ class BuildConfig:
     support_while: bool = True
     support_assign: bool = True
     support_delete: bool = True
+
+    decorators_to_remove: Sequence[Tuple[str, str, str]] = ()
 
 
 def build(func: Callable):
@@ -226,6 +228,10 @@ class _BuildTransformer(gast.NodeTransformer):
         builds.add("build")
         build_configs = aliases(lambda v: inspect.isfunction(v) and v == __build_with_config)
         build_configs.add("build_with_config")
+        for m, b, bc in self._build_config.decorators_to_remove:
+            modules.add(m)
+            builds.add(b)
+            build_configs.add(bc)
         for d in decorator_list:
             # @build style decorator.
             if isinstance(d, gast.Name) and d.id in builds:

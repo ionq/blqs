@@ -59,3 +59,48 @@ def test_cirq_blqs_op_factory_is_a_factory():
 def test_cirq_blqs_op_factory_str():
     assert str(bc.CirqBlqsOpFactory(cirq.HPowGate)) == "HPowGate"
     assert str(bc.CirqBlqsOpFactory(cirq.bit_flip)) == "bit_flip"
+
+
+def test_all_gate_subclasses():
+    def all_subclasses(cls):
+        return set(cls.__subclasses__()).union(
+            [s for c in cls.__subclasses__() for s in all_subclasses(c)]
+        )
+
+    cirq_gate_subclasses = all_subclasses(cirq.Gate)
+
+    excluded_cirq_classes = {
+        # Private Pauli gates. Don't ask.
+        cirq.ops.pauli_gates._PauliX,
+        cirq.ops.pauli_gates._PauliY,
+        cirq.ops.pauli_gates._PauliZ,
+        # Private parent gates.
+        cirq.ops.dense_pauli_string.BaseDensePauliString,
+        cirq.ops.eigen_gate.EigenGate,
+        cirq.ops.pauli_gates.Pauli,
+        # Private gates.
+        cirq.optimizers.two_qubit_to_fsim._BGate,
+        cirq.ops.raw_types._InverseCompositeGate,
+        # Gate features
+        cirq.ops.gate_features.SingleQubitGate,
+        cirq.ops.gate_features.SupportsOnEachGate,
+        cirq.ops.gate_features.TwoQubitGate,
+        cirq.ops.gate_features.ThreeQubitGate,
+        # Contrib gates. Move to contrib.
+        cirq.contrib.acquaintance.bipartite.BipartiteSwapNetworkGate,
+        cirq.contrib.acquaintance.gates.AcquaintanceOpportunityGate,
+        cirq.contrib.acquaintance.gates.SwapNetworkGate,
+        cirq.contrib.acquaintance.permutation.MappingDisplayGate,
+        cirq.contrib.acquaintance.permutation.PermutationGate,
+        cirq.contrib.acquaintance.permutation.SwapPermutationGate,
+        cirq.contrib.acquaintance.shift.CircularShiftGate,
+        cirq.contrib.acquaintance.shift_swap_network.ShiftSwapNetworkGate,
+        cirq.contrib.acquaintance.permutation.LinearPermutationGate,
+        # Interop gates
+        cirq.interop.quirk.cells.qubit_permutation_cells.QuirkQubitPermutationGate,
+    }
+
+    for clz in cirq_gate_subclasses:
+        if clz in excluded_cirq_classes:
+            continue
+        assert hasattr(bc, clz.__name__)

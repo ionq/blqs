@@ -16,6 +16,8 @@ import inspect
 from typing import Callable, Type, Union
 
 import cirq
+import cirq_google
+import sympy
 
 import blqs
 
@@ -119,6 +121,7 @@ Ry = cirq_blqs_op(cirq.Ry)
 Rz = cirq_blqs_op(cirq.Rz)
 HPowGate = cirq_blqs_op(cirq.HPowGate)
 PhasedXPowGate = cirq_blqs_op(cirq.PhasedXPowGate)
+PhasedXZGate = cirq_blqs_op(cirq.PhasedXZGate)
 QasmUGate = cirq_blqs_op(cirq.circuits.qasm_output.QasmUGate)
 QuilOneQubitGate = cirq_blqs_op(cirq.circuits.quil_output.QuilOneQubitGate)
 FSimGate = cirq_blqs_op(cirq.FSimGate)
@@ -153,6 +156,7 @@ PauliInteractionGate = cirq_blqs_op(cirq.PauliInteractionGate)
 PhasedISwapPowGate = cirq_blqs_op(cirq.PhasedISwapPowGate)
 ISwapPowGate = cirq_blqs_op(cirq.ISwapPowGate)
 SwapPowGate = cirq_blqs_op(cirq.SwapPowGate)
+SycamoreGate = cirq_blqs_op(cirq_google.SycamoreGate)
 TwoQubitDiagonalGate = cirq_blqs_op(cirq.TwoQubitDiagonalGate)
 
 # Three qubit gate constants.
@@ -167,13 +171,17 @@ CSwapGate = cirq_blqs_op(cirq.CSwapGate)
 ThreeQubitDiagonalGate = cirq_blqs_op(cirq.ThreeQubitDiagonalGate)
 
 # N qubit gate classes.
+DiagonalGate = cirq_blqs_op(cirq.DiagonalGate)
+DensePauliString = cirq_blqs_op(cirq.DensePauliString)
 IdentityGate = cirq_blqs_op(cirq.IdentityGate)
 MeasurementGate = cirq_blqs_op(cirq.MeasurementGate)
 MatrixGate = cirq_blqs_op(cirq.MatrixGate)
+MutableDensePauliString = cirq_blqs_op(cirq.MutableDensePauliString)
 QubitPermutationGate = cirq_blqs_op(cirq.QubitPermutationGate)
 QuantumFourierTransformGate = cirq_blqs_op(cirq.QuantumFourierTransformGate)
 PhaseGradientGate = cirq_blqs_op(cirq.PhaseGradientGate)
-
+WaitGate = cirq_blqs_op(cirq.WaitGate)
+ControlledGate = cirq_blqs_op(cirq.ControlledGate)
 
 # Noise classes
 AmplitudeDampingChannel = cirq_blqs_op(cirq.AmplitudeDampingChannel)
@@ -206,6 +214,32 @@ def qft(*qubits, without_reverse=False, inverse=False) -> blqs.Instruction:
     return CirqBlqsOp(qft_fn, "qft")(*qubits)
 
 
+def wait(
+    *targets: "cirq.Qid",
+    duration: "cirq.DURATION_LIKE" = None,
+    picos: Union[int, float, sympy.Basic] = 0,
+    nanos: Union[int, float, sympy.Basic] = 0,
+    micros: Union[int, float, sympy.Basic] = 0,
+    millis: Union[int, float, sympy.Basic] = 0
+):
+    wait_fn = functools.partial(
+        cirq.wait, duration=duration, picos=picos, nanos=nanos, micros=micros, millis=millis
+    )
+    return CirqBlqsOp(wait_fn, "wait")(*targets)
+
+
 # Special functions
 def reset(qubit) -> blqs.Instruction:
     return CirqBlqsOp(cirq.ResetChannel(getattr(qubit, "dimension", 2)))(qubit)
+
+
+# Contrib gates
+BipartiteSwapNetworkGate = cirq_blqs_op(cirq.contrib.acquaintance.AcquaintanceOpportunityGate)
+# cirq.contrib.acquaintance.gates.AcquaintanceOpportunityGate,
+# cirq.contrib.acquaintance.gates.SwapNetworkGate,
+# cirq.contrib.acquaintance.permutation.MappingDisplayGate,
+# cirq.contrib.acquaintance.permutation.PermutationGate,
+# cirq.contrib.acquaintance.permutation.SwapPermutationGate,
+# cirq.contrib.acquaintance.shift.CircularShiftGate,
+# cirq.contrib.acquaintance.shift_swap_network.ShiftSwapNetworkGate,
+# cirq.contrib.acquaintance.permutation.LinearPermutationGate,

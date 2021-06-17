@@ -22,12 +22,11 @@ import textwrap
 import types
 import tempfile
 
-from typing import Callable, Optional, Sequence, Tuple
-
+from typing import Callable, Optional, Sequence
 import astunparse
 import gast
 
-from blqs import exceptions, _ast, _namer, _template
+from blqs import decorators, exceptions, _ast, _namer, _template
 
 
 @dataclasses.dataclass
@@ -40,7 +39,7 @@ class BuildConfig:
     support_assign: bool = True
     support_delete: bool = True
 
-    decorators_to_remove: Sequence[Tuple[str, str, str]] = ()
+    additional_decorator_specs: Sequence[decorators.DecoratorSpec] = ()
 
 
 def build(func: Callable):
@@ -199,78 +198,20 @@ class _BuildTransformer(gast.NodeTransformer):
         inner.decorator_list = new_decorator_list
         return new_fn
 
-    def remove_blqs_build_annotations(self, decorator_list):
-        """Removes `blqs.build` or `blqs.build_with_config(config)` decorators.
-
-        This performs a best effort to remove these annotations. It supports the case where the
-        the module or functions are aliased. Technically there are cases where expressions evaluate
-        to functions, we avoid having to execute these at the cost of not supporting these cases.
-
-        For example it handles cases like this where the function is aliased.
-            ```
-            from blqs import build as my_build
-            @my_build
-            def f():
-                ....
-            ```
-
-        If there are other decorators, this will throw an exception as `blqs` does not currently
-        support more than a single decorator.
-        """
+    def remove_blqs_build_annotations(self, decorator_list: Sequence):
+        """Removes any """
         import blqs as __blqs
-        from blqs import build as __build
-        from blqs import build_with_config as __build_with_config
 
-        aliases = lambda predicate: {k for k, v in self._func.__globals__.items() if predicate(v)}
+        decorator_specs = [
+            decorators.DecoratorSpec(module=__blqs, method=build),
+            decorators.DecoratorSpec(module=__blqs, method=build_with_config),
+            *self._build_config.additional_decorator_specs,
+        ]
+        module_aliases = decorators._compute_module_aliases(decorator_specs, self._func.__globals__)
+        method_aliases = decorators._compute_method_aliases(decorator_specs, self._func.__globals__)
 
-        modules = aliases(lambda v: inspect.ismodule(v) and v == __blqs)
-        builds = aliases(lambda v: inspect.isfunction(v) and v == __build)
-        builds.add("build")
-        build_configs = aliases(lambda v: inspect.isfunction(v) and v == __build_with_config)
-        build_configs.add("build_with_config")
-        for m, b, bc in self._build_config.decorators_to_remove:
-            modules.add(m)
-            builds.add(b)
-            build_configs.add(bc)
-        for d in decorator_list:
-            # @build style decorator.
-            if isinstance(d, gast.Name) and d.id in builds:
-                break
-            # @blqs.build style decorator.
-            elif (
-                isinstance(d, gast.Attribute)
-                and d.attr in builds
-                and isinstance(d.value, gast.Name)
-                and d.value.id in modules
-            ):
-                break
-            # @build_with_config(config) style decorator.
-            elif (
-                isinstance(d, gast.Call)
-                and isinstance(d.func, gast.Name)
-                and d.func.id in build_configs
-            ):
-                break
-            # @blqs.build_with_config(config) style decorator.
-            elif (
-                isinstance(d, gast.Call)
-                and isinstance(d.func, gast.Attribute)
-                and d.func.attr in build_configs
-                and isinstance(d.func.value, gast.Name)
-                and d.func.value.id in modules
-            ):
-                break
-            # Technically there are more cases here since a decorator is an expression, and
-            # some expressions could evaluate to the above styles.
-        else:
-            # Did not find the build or build config decorators.
-            return decorator_list
-        if len(decorator_list) == 1:
-            return []
-        raise ValueError(
-            "If using build or build_with_config decorator, no other decorators can be used "
-            "unless they are unwrapped decorators that operate before the build decorator. "
-            "Use build(decorator(func)) instead."
+        return decorators._remove_decorators(
+            decorator_list, module_aliases=module_aliases, method_aliases=method_aliases
         )
 
     def visit_If(self, node):

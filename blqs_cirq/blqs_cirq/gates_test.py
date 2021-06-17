@@ -12,53 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import cirq
-import pymore
+import cirq_google
 
 import blqs_cirq as bc
-
-
-def test_cirq_blqs_op_equality():
-    equals_tester = pymore.EqualsTester()
-    equals_tester.make_equality_group(lambda: bc.CirqBlqsOp(cirq.H))
-    equals_tester.add_equality_group(bc.CirqBlqsOp(cirq.X))
-    equals_tester.add_equality_group(bc.CirqBlqsOp(cirq.X, op_name="x"))
-
-
-def test_cirq_blqs_op_fields():
-    op = bc.CirqBlqsOp(cirq.X)
-    assert op.gate() == cirq.X
-    assert op.name() == "X"
-    op = bc.CirqBlqsOp(cirq.X, op_name="x")
-    assert op.name() == "x"
-
-
-def test_cirq_blqs_op_str():
-    assert str(bc.CirqBlqsOp(cirq.X)) == str(cirq.X)
-    assert str(bc.CirqBlqsOp(cirq.XPowGate(exponent=0.5))) == str(cirq.XPowGate(exponent=0.5))
-
-
-def test_cirq_blqs_op_factory_eq():
-    equals_tester = pymore.EqualsTester()
-    equals_tester.make_equality_group(lambda: bc.CirqBlqsOpFactory(cirq.HPowGate))
-    equals_tester.add_equality_group(bc.CirqBlqsOpFactory(cirq.XPowGate))
-    equals_tester.add_equality_group(bc.CirqBlqsOpFactory(cirq.bit_flip))
-
-
-def test_cirq_blqs_op_factory_fields():
-    assert bc.CirqBlqsOpFactory(cirq.HPowGate).cirq_gate_factory() == cirq.HPowGate
-    assert bc.CirqBlqsOpFactory(cirq.bit_flip).cirq_gate_factory() == cirq.bit_flip
-
-
-def test_cirq_blqs_op_factory_is_a_factory():
-    assert bc.CirqBlqsOpFactory(cirq.HPowGate)(exponent=0.5) == bc.CirqBlqsOp(
-        cirq.HPowGate(exponent=0.5)
-    )
-    assert bc.CirqBlqsOpFactory(cirq.bit_flip)(0.5) == bc.CirqBlqsOp(cirq.BitFlipChannel(0.5))
-
-
-def test_cirq_blqs_op_factory_str():
-    assert str(bc.CirqBlqsOpFactory(cirq.HPowGate)) == "HPowGate"
-    assert str(bc.CirqBlqsOpFactory(cirq.bit_flip)) == "bit_flip"
 
 
 def test_all_gate_subclasses():
@@ -86,7 +42,10 @@ def test_all_gate_subclasses():
         cirq.ops.gate_features.SupportsOnEachGate,
         cirq.ops.gate_features.TwoQubitGate,
         cirq.ops.gate_features.ThreeQubitGate,
-        # Contrib gates. Move to contrib.
+        # Interop gates
+        cirq.interop.quirk.cells.qubit_permutation_cells.QuirkQubitPermutationGate,
+        # Contrib gates.
+        # When cirq.contrib is removed these should be removed.
         cirq.contrib.acquaintance.bipartite.BipartiteSwapNetworkGate,
         cirq.contrib.acquaintance.gates.AcquaintanceOpportunityGate,
         cirq.contrib.acquaintance.gates.SwapNetworkGate,
@@ -96,8 +55,9 @@ def test_all_gate_subclasses():
         cirq.contrib.acquaintance.shift.CircularShiftGate,
         cirq.contrib.acquaintance.shift_swap_network.ShiftSwapNetworkGate,
         cirq.contrib.acquaintance.permutation.LinearPermutationGate,
-        # Interop gates
-        cirq.interop.quirk.cells.qubit_permutation_cells.QuirkQubitPermutationGate,
+        # Google gates
+        # When cirq.google is remove these should be removed.
+        cirq_google.ops.sycamore_gate.SycamoreGate,
     }
 
     for clz in cirq_gate_subclasses:

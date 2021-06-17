@@ -199,7 +199,7 @@ class _BuildTransformer(gast.NodeTransformer):
         return new_fn
 
     def remove_blqs_build_annotations(self, decorator_list: Sequence):
-        """Removes any """
+        """Removes any"""
         import blqs as __blqs
 
         decorator_specs = [

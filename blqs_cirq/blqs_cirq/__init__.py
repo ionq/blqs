@@ -19,6 +19,12 @@ from blqs_cirq.build import (
 )
 
 
+from blqs_cirq.cirq_blqs_op import (
+    CirqBlqsOp,
+    CirqBlqsOpFactory,
+    create_cirq_blqs_op,
+)
+
 from blqs_cirq.gates import (
     AmplitudeDampingChannel,
     amplitude_damp,
@@ -39,8 +45,6 @@ from blqs_cirq.gates import (
     CXPowGate,
     CZ,
     CZPowGate,
-    CirqBlqsOp,
-    CirqBlqsOpFactory,
     DiagonalGate,
     DensePauliString,
     depolarize,
@@ -89,7 +93,6 @@ from blqs_cirq.gates import (
     SWAP,
     SwapPowGate,
     SingleQubitCliffordGate,
-    SycamoreGate,
     T,
     TOFOLLI,
     ThreeQubitDiagonalGate,
@@ -125,3 +128,5 @@ from blqs_cirq.repeat import (
     CircuitOperation,
     Repeat,
 )
+
+from blqs_cirq import contrib

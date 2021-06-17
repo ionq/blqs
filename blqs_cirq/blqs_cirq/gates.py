@@ -231,15 +231,3 @@ def wait(
 # Special functions
 def reset(qubit) -> blqs.Instruction:
     return CirqBlqsOp(cirq.ResetChannel(getattr(qubit, "dimension", 2)))(qubit)
-
-
-# Contrib gates
-BipartiteSwapNetworkGate = cirq_blqs_op(cirq.contrib.acquaintance.AcquaintanceOpportunityGate)
-# cirq.contrib.acquaintance.gates.AcquaintanceOpportunityGate,
-# cirq.contrib.acquaintance.gates.SwapNetworkGate,
-# cirq.contrib.acquaintance.permutation.MappingDisplayGate,
-# cirq.contrib.acquaintance.permutation.PermutationGate,
-# cirq.contrib.acquaintance.permutation.SwapPermutationGate,
-# cirq.contrib.acquaintance.shift.CircularShiftGate,
-# cirq.contrib.acquaintance.shift_swap_network.ShiftSwapNetworkGate,
-# cirq.contrib.acquaintance.permutation.LinearPermutationGate,

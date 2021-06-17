@@ -56,7 +56,14 @@ def _build(func: Callable, build_config: Optional[BuildConfig] = None) -> Callab
 
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
+        import blqs_cirq as __blqs_cirq
+
         blqs_build_config = build_config.blqs_build_config or blqs.BuildConfig()
+        blqs_build_config.additional_decorator_specs = [
+            blqs.DecoratorSpec(module=__blqs_cirq, method=build),
+            blqs.DecoratorSpec(module=__blqs_cirq, method=build_with_config),
+            *blqs_build_config.additional_decorator_specs,
+        ]
         blqs_func = blqs.build_with_config(blqs_build_config)(func)
         program = blqs_func(*args, **kwargs)
         return _build_circuit(program, build_config) if build_config.output_circuit else program

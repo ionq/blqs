@@ -37,6 +37,10 @@ from blqs.conditional import (
     If,
 )
 
+from blqs.decorators import (
+    DecoratorSpec,
+)
+
 from blqs.delete import (
     Delete,
 )

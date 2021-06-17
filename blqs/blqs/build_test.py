@@ -16,7 +16,7 @@ import inspect
 import pytest
 
 import blqs
-import blqs.build_test_testing as btt
+import blqs.testing_samples as ts
 
 
 def test_build_empty_function():
@@ -500,7 +500,7 @@ def test_build_inside_of_class_args():
     assert transformed_fn(1) == blqs.Program.of(blqs.Op("H")(1))
 
 
-def test_build_before_decorators_plain_works():
+def test_build_single_before_decorators_plain_works():
     """This is the one simple case of decorators that works."""
 
     def add_an_op(f):
@@ -521,8 +521,6 @@ def test_build_before_decorators_plain_works():
 
 
 def test_build_after_decorators_fails():
-    """This is the one simple case of decorators that works."""
-
     def add_an_op(f):
         def wrapper(*args, **kwargs):
             blqs.Op("X")(0)
@@ -543,45 +541,45 @@ def test_build_after_decorators_fails():
 @pytest.mark.parametrize(
     "method",
     [
-        btt.only_raise,
-        btt.multiple_statements,
-        btt.if_native,
-        btt.if_blqs,
-        btt.else_native,
-        btt.else_blqs,
-        btt.elif_native,
-        btt.elif_blqs,
-        btt.for_native,
-        btt.for_blqs,
-        btt.for_else_native,
-        btt.for_else_blqs,
-        btt.while_native,
-        btt.while_blqs,
-        btt.while_else_native,
-        btt.while_else_blqs,
-        btt.larger_traceback,
+        ts.only_raise,
+        ts.multiple_statements,
+        ts.if_native,
+        ts.if_blqs,
+        ts.else_native,
+        ts.else_blqs,
+        ts.elif_native,
+        ts.elif_blqs,
+        ts.for_native,
+        ts.for_blqs,
+        ts.for_else_native,
+        ts.for_else_blqs,
+        ts.while_native,
+        ts.while_blqs,
+        ts.while_else_native,
+        ts.while_else_blqs,
+        ts.larger_traceback,
     ],
 )
 def test_build_exception_only_raise(method):
-    with pytest.raises(btt.LocatedException, match="oh no") as e:
+    with pytest.raises(ts.LocatedException, match="oh no") as e:
         method()
     cause = e.value.__cause__
     assert type(cause) == blqs.GeneratedCodeException
-    assert cause.original_filename() == inspect.getfile(blqs.build_test_testing)
+    assert cause.original_filename() == inspect.getfile(blqs.testing_samples)
     assert e.value.lineno in cause.linenos_dict().values()
 
 
 @pytest.mark.parametrize(
     "method",
     [
-        btt.blqs_build_decorator,
-        btt.blqs_build_with_config_decorator,
-        btt.build_decorator,
-        btt.blqs_build_with_config_decorator,
-        btt.blqs_alias_build_decorator,
-        btt.blqs_alias_build_with_config_decorator,
-        btt.blqs_build_alias_decorator,
-        btt.blqs_build_with_config_alias_decorator,
+        ts.blqs_build_decorator,
+        ts.blqs_build_with_config_decorator,
+        ts.build_decorator,
+        ts.blqs_build_with_config_decorator,
+        ts.blqs_alias_build_decorator,
+        ts.blqs_alias_build_with_config_decorator,
+        ts.blqs_build_alias_decorator,
+        ts.blqs_build_with_config_alias_decorator,
     ],
 )
 def test_decorator_types(method):
@@ -589,16 +587,16 @@ def test_decorator_types(method):
 
 
 def test_build_with_before_decorator():
-    assert btt.blqs_build_with_before_decorator() == blqs.Program.of(
+    assert ts.blqs_build_with_before_decorator() == blqs.Program.of(
         blqs.Op("X")(0), blqs.Op("H")(0)
     )
     with pytest.raises(ValueError, match="decorator"):
-        btt.blqs_build_with_after_decorator()
+        ts.blqs_build_with_after_decorator()
     with pytest.raises(ValueError, match="decorator"):
-        btt.blqs_build_with_before_decorator_wrapped()
+        ts.blqs_build_with_before_decorator_wrapped()
     with pytest.raises(ValueError, match="decorator"):
-        btt.blqs_build_with_after_decorator_wrapped()
+        ts.blqs_build_with_after_decorator_wrapped()
 
-    assert btt.build(btt.blqs_build_with_only_decorator)() == blqs.Program.of(
+    assert ts.build(ts.blqs_build_with_only_decorator)() == blqs.Program.of(
         blqs.Op("X")(0), blqs.Op("H")(0)
     )

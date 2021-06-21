@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import inspect
-from blqs_cirq.contrib.acquaintance.acquaintance_gates import LinearPermutationGate
 
 import cirq
 import cirq.contrib.acquaintance as acquaintance

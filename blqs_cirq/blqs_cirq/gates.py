@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import functools
-from typing import Union
+from typing import Dict, Optional, Tuple, Union
 
 import cirq
+import numpy as np
 import sympy
 
 import blqs
@@ -39,8 +40,6 @@ XPowGate = cirq_blqs_op.create_cirq_blqs_op(cirq.XPowGate)
 YPowGate = cirq_blqs_op.create_cirq_blqs_op(cirq.YPowGate)
 ZPowGate = cirq_blqs_op.create_cirq_blqs_op(cirq.ZPowGate)
 
-# Special single qubit gate classes
-SingleQubitCliffordGate = cirq_blqs_op.create_cirq_blqs_op(cirq.SingleQubitCliffordGate)
 
 # Single qubit functions
 rx = cirq_blqs_op.create_cirq_blqs_op(cirq.rx)
@@ -114,7 +113,7 @@ def wait(
     picos: Union[int, float, sympy.Basic] = 0,
     nanos: Union[int, float, sympy.Basic] = 0,
     micros: Union[int, float, sympy.Basic] = 0,
-    millis: Union[int, float, sympy.Basic] = 0
+    millis: Union[int, float, sympy.Basic] = 0,
 ):
     wait_fn = functools.partial(
         cirq.wait, duration=duration, picos=picos, nanos=nanos, micros=micros, millis=millis
@@ -148,3 +147,72 @@ bit_flip = cirq_blqs_op.create_cirq_blqs_op(cirq.bit_flip)
 # Special functions.
 def reset(qubit) -> blqs.Instruction:
     return cirq_blqs_op.CirqBlqsOp(cirq.ResetChannel(getattr(qubit, "dimension", 2)))(qubit)
+
+
+# Special single qubit gate classes
+class SingleQubitCliffordGate(cirq_blqs_op.CirqBlqsOp):
+
+    I = cirq_blqs_op.CirqBlqsOp(cirq.SingleQubitCliffordGate.I)
+    H = cirq_blqs_op.CirqBlqsOp(cirq.SingleQubitCliffordGate.H)
+    X = cirq_blqs_op.CirqBlqsOp(cirq.SingleQubitCliffordGate.X)
+    Y = cirq_blqs_op.CirqBlqsOp(cirq.SingleQubitCliffordGate.Y)
+    Z = cirq_blqs_op.CirqBlqsOp(cirq.SingleQubitCliffordGate.Z)
+    X_sqrt = cirq_blqs_op.CirqBlqsOp(cirq.SingleQubitCliffordGate.X_sqrt)
+    Y_sqrt = cirq_blqs_op.CirqBlqsOp(cirq.SingleQubitCliffordGate.Y_sqrt)
+    Z_sqrt = cirq_blqs_op.CirqBlqsOp(cirq.SingleQubitCliffordGate.Z_sqrt)
+    X_nsqrt = cirq_blqs_op.CirqBlqsOp(cirq.SingleQubitCliffordGate.X_nsqrt)
+    Y_nsqrt = cirq_blqs_op.CirqBlqsOp(cirq.SingleQubitCliffordGate.Y_nsqrt)
+    Z_nsqrt = cirq_blqs_op.CirqBlqsOp(cirq.SingleQubitCliffordGate.Z_nsqrt)
+
+    @staticmethod
+    def from_xz_map(
+        x_to: Tuple[cirq.Pauli, bool], z_to: Tuple[cirq.Pauli, bool]
+    ) -> cirq_blqs_op.CirqBlqsOp:
+        return cirq_blqs_op.CirqBlqsOp(cirq.SingleQubitCliffordGate.from_xz_map(x_to, z_to))
+
+    @staticmethod
+    def from_single_map(
+        pauli_map_to: Optional[Dict[cirq.Pauli, Tuple[cirq.Pauli, bool]]] = None,
+        *,
+        x_to: Optional[Tuple[cirq.Pauli, bool]] = None,
+        y_to: Optional[Tuple[cirq.Pauli, bool]] = None,
+        z_to: Optional[Tuple[cirq.Pauli, bool]] = None,
+    ) -> cirq_blqs_op.CirqBlqsOp:
+        return cirq_blqs_op.CirqBlqsOp(
+            cirq.SingleQubitCliffordGate.from_single_map(
+                pauli_map_to=pauli_map_to, x_to=x_to, y_to=y_to, z_to=z_to
+            )
+        )
+
+    @staticmethod
+    def from_double_map(
+        pauli_map_to: Optional[Dict[cirq.Pauli, Tuple[cirq.Pauli, bool]]] = None,
+        *,
+        x_to: Optional[Tuple[cirq.Pauli, bool]] = None,
+        y_to: Optional[Tuple[cirq.Pauli, bool]] = None,
+        z_to: Optional[Tuple[cirq.Pauli, bool]] = None,
+    ) -> cirq_blqs_op.CirqBlqsOp:
+        return cirq_blqs_op.CirqBlqsOp(
+            cirq.SingleQubitCliffordGate.from_double_map(
+                pauli_map_to=pauli_map_to, x_to=x_to, y_to=y_to, z_to=z_to
+            )
+        )
+
+    @staticmethod
+    def from_pauli(pauli: cirq.Pauli, sqrt: bool = False) -> cirq_blqs_op.CirqBlqsOp:
+        return cirq_blqs_op.CirqBlqsOp(
+            cirq.SingleQubitCliffordGate.from_pauli(pauli=pauli, sqrt=sqrt)
+        )
+
+    @staticmethod
+    def from_quarter_turns(pauli: cirq.Pauli, quarter_turns: int) -> cirq_blqs_op.CirqBlqsOp:
+        return cirq_blqs_op.CirqBlqsOp(
+            cirq.SingleQubitCliffordGate.from_quarter_turns(
+                pauli=pauli, quarter_turns=quarter_turns
+            )
+        )
+
+    @staticmethod
+    def from_unitary(u: np.ndarray) -> Optional[cirq_blqs_op.CirqBlqsOp]:
+        gate = cirq.SingleQubitCliffordGate.from_unitary(u=u)
+        return cirq_blqs_op.CirqBlqsOp(gate) if gate is not None else None

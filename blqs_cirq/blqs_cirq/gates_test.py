@@ -345,3 +345,65 @@ def test_special_functions():
 
     q0 = cirq.LineQubit(0)
     assert bc.build(special_functions)() == cirq.Circuit([cirq.reset(q0)])
+
+
+def test_special_single_qubit_classes():
+    def special_single_qubit_classes():
+        bc.SingleQubitCliffordGate.I(0)
+        bc.SingleQubitCliffordGate.H(0)
+        bc.SingleQubitCliffordGate.X(0)
+        bc.SingleQubitCliffordGate.Y(0)
+        bc.SingleQubitCliffordGate.Z(0)
+        bc.SingleQubitCliffordGate.X_sqrt(0)
+        bc.SingleQubitCliffordGate.Y_sqrt(0)
+        bc.SingleQubitCliffordGate.Z_sqrt(0)
+        bc.SingleQubitCliffordGate.X_nsqrt(0)
+        bc.SingleQubitCliffordGate.Y_nsqrt(0)
+        bc.SingleQubitCliffordGate.Z_nsqrt(0)
+        bc.SingleQubitCliffordGate.from_xz_map(x_to=(cirq.X, True), z_to=(cirq.Z, False))(0)
+        bc.SingleQubitCliffordGate.from_single_map(pauli_map_to={cirq.X: (cirq.X, False)})(0)
+        bc.SingleQubitCliffordGate.from_double_map(
+            pauli_map_to={cirq.X: (cirq.X, False), cirq.Z: (cirq.Z, False)}
+        )(0)
+        bc.SingleQubitCliffordGate.from_pauli(cirq.X, sqrt=True)(0)
+        bc.SingleQubitCliffordGate.from_quarter_turns(cirq.X, quarter_turns=1)(0)
+        bc.SingleQubitCliffordGate.from_unitary(cirq.unitary(cirq.H))(0)
+
+    q0 = cirq.LineQubit(0)
+
+    assert bc.build(special_single_qubit_classes)() == cirq.Circuit(
+        [
+            cirq.SingleQubitCliffordGate.I(q0),
+            cirq.SingleQubitCliffordGate.H(q0),
+            cirq.SingleQubitCliffordGate.X(q0),
+            cirq.SingleQubitCliffordGate.Y(q0),
+            cirq.SingleQubitCliffordGate.Z(q0),
+            cirq.SingleQubitCliffordGate.X_sqrt(q0),
+            cirq.SingleQubitCliffordGate.Y_sqrt(q0),
+            cirq.SingleQubitCliffordGate.Z_sqrt(q0),
+            cirq.SingleQubitCliffordGate.X_nsqrt(q0),
+            cirq.SingleQubitCliffordGate.Y_nsqrt(q0),
+            cirq.SingleQubitCliffordGate.Z_nsqrt(q0),
+            cirq.SingleQubitCliffordGate.from_xz_map(x_to=(cirq.X, True), z_to=(cirq.Z, False))(q0),
+            cirq.SingleQubitCliffordGate.from_single_map(
+                pauli_map_to={
+                    cirq.X: (cirq.X, False),
+                }
+            )(q0),
+            cirq.SingleQubitCliffordGate.from_double_map(
+                pauli_map_to={
+                    cirq.X: (cirq.X, False),
+                    cirq.Z: (cirq.Z, False),
+                }
+            )(q0),
+            cirq.SingleQubitCliffordGate.from_pauli(cirq.X, sqrt=True)(q0),
+            cirq.SingleQubitCliffordGate.from_quarter_turns(cirq.X, quarter_turns=1)(q0),
+            cirq.SingleQubitCliffordGate.from_unitary(cirq.unitary(cirq.H))(q0),
+        ],
+    )
+
+
+def test_single_qubit_clifford_gate_unknown_unitary():
+    assert (
+        bc.SingleQubitCliffordGate.from_unitary(np.array([[3 / 5, 4 / 5], [4 / 5, -3 / 5]])) is None
+    )

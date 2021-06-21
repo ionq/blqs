@@ -13,6 +13,7 @@
 # limitations under the License.
 import cirq
 import pymore
+import pytest
 
 import blqs_cirq as bc
 
@@ -37,6 +38,29 @@ def test_cirq_blqs_op_str():
     assert str(bc.CirqBlqsOp(cirq.XPowGate(exponent=0.5))) == str(cirq.XPowGate(exponent=0.5))
 
 
+def test_cirq_blqs_op_doc_delegation():
+    op = bc.CirqBlqsOp(cirq.X)
+    assert "From Cirq documentation" in op.__doc__
+    assert "X" in op.__doc__
+
+
+def test_cirq_blqs_op_doc_delegation_no_documentation():
+    class NoDocumentationGate(cirq.SingleQubitGate):
+        pass
+
+    op = bc.CirqBlqsOp(NoDocumentationGate())
+    assert op.__doc__ == "Gate has no documentation."
+
+    # Clean up the gate class, otherwise it shows up as a subclass of cirq.Gate and
+    # this can interfere with other tests (!).
+    NoDocumentationGate.__bases__ = (type("DummyClass", (object,), {}),)
+
+
+def test_cirq_blqs_op_undefined_attribute():
+    with pytest.raises(AttributeError):
+        _ = bc.CirqBlqsOp(cirq.X).notdefined
+
+
 def test_cirq_blqs_op_factory_eq():
     equals_tester = pymore.EqualsTester()
     equals_tester.make_equality_group(lambda: bc.CirqBlqsOpFactory(cirq.HPowGate))
@@ -59,6 +83,29 @@ def test_cirq_blqs_op_factory_is_a_factory():
 def test_cirq_blqs_op_factory_str():
     assert str(bc.CirqBlqsOpFactory(cirq.HPowGate)) == "HPowGate"
     assert str(bc.CirqBlqsOpFactory(cirq.bit_flip)) == "bit_flip"
+
+
+def test_cirq_blqs_op_factory_doc_delegation():
+    op = bc.CirqBlqsOpFactory(cirq.XPowGate)
+    assert "From Cirq documentation" in op.__doc__
+    assert "X axis" in op.__doc__
+
+
+def test_cirq_blqs_op_factory_doc_delegation_no_documentation():
+    class NoDocumentationGate(cirq.Gate):
+        pass
+
+    op = bc.CirqBlqsOpFactory(NoDocumentationGate)
+    assert op.__doc__ == "Gate factory has no documentation."
+
+    # Clean up the gate class, otherwise it shows up as a subclass of cirq.Gate and
+    # this can interfere with other tests (!).
+    NoDocumentationGate.__bases__ = (type("DummyClass", (object,), {}),)
+
+
+def test_cirq_blqs_op_factory_undefined_attribute():
+    with pytest.raises(AttributeError):
+        _ = bc.CirqBlqsOpFactory(cirq.XPowGate).notdefined
 
 
 def test_create_cirq_blqs_op_gate():

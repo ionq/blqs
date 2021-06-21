@@ -40,6 +40,14 @@ class CirqBlqsOp(blqs.Op):
         """The `cirq.Gate` or a callable which produces this gate for this op."""
         return self._gate
 
+    def __getattribute__(self, name: str):
+        if name == "__doc__":
+            if self._gate.__doc__ is None:
+                return "Gate has no documentation."
+            return f"From Cirq documentation:\n{self._gate.__doc__}"
+        else:
+            return super(blqs.Op, self).__getattribute__(name)
+
     def __eq__(self, other):
         if not isinstance(other, type(self)):
             return NotImplemented
@@ -60,7 +68,10 @@ class CirqBlqsOpFactory:
         ```
     """
 
-    def __init__(self, cirq_gate_factory: Union[Type, Callable[..., cirq.Gate]]):
+    def __init__(
+        self,
+        cirq_gate_factory: Union[Type, Callable[..., cirq.Gate]],
+    ):
         self._cirq_gate_factory = cirq_gate_factory
 
     def cirq_gate_factory(self):
@@ -69,6 +80,14 @@ class CirqBlqsOpFactory:
     def __call__(self, *args, **kwargs) -> CirqBlqsOp:
         gate = self._cirq_gate_factory(*args, **kwargs)
         return CirqBlqsOp(gate)
+
+    def __getattribute__(self, name: str):
+        if name == "__doc__":
+            if self._cirq_gate_factory.__doc__ is None:
+                return "Gate factory has no documentation."
+            return f"From Cirq documentation:\n{self._cirq_gate_factory.__doc__}"
+        else:
+            return super(CirqBlqsOpFactory, self).__getattribute__(name)
 
     def __str__(self):
         return str(self._cirq_gate_factory.__name__)

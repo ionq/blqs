@@ -15,36 +15,32 @@ import functools
 from typing import Union
 
 import cirq
-import cirq_google
 import sympy
 
 import blqs
 from blqs_cirq import cirq_blqs_op
 
 # Single qubit gate constants.
-X = cirq_blqs_op.create_cirq_blqs_op(cirq.X)
-Y = cirq_blqs_op.create_cirq_blqs_op(cirq.Y)
-Z = cirq_blqs_op.create_cirq_blqs_op(cirq.Z)
 H = cirq_blqs_op.create_cirq_blqs_op(cirq.H)
 S = cirq_blqs_op.create_cirq_blqs_op(cirq.S)
 T = cirq_blqs_op.create_cirq_blqs_op(cirq.T)
+X = cirq_blqs_op.create_cirq_blqs_op(cirq.X)
+Y = cirq_blqs_op.create_cirq_blqs_op(cirq.Y)
+Z = cirq_blqs_op.create_cirq_blqs_op(cirq.Z)
 
 # Single qubit gate classes.
-XPowGate = cirq_blqs_op.create_cirq_blqs_op(cirq.XPowGate)
-YPowGate = cirq_blqs_op.create_cirq_blqs_op(cirq.YPowGate)
-ZPowGate = cirq_blqs_op.create_cirq_blqs_op(cirq.ZPowGate)
-Rx = cirq_blqs_op.create_cirq_blqs_op(cirq.Rx)
-Ry = cirq_blqs_op.create_cirq_blqs_op(cirq.Ry)
-Rz = cirq_blqs_op.create_cirq_blqs_op(cirq.Rz)
 HPowGate = cirq_blqs_op.create_cirq_blqs_op(cirq.HPowGate)
 PhasedXPowGate = cirq_blqs_op.create_cirq_blqs_op(cirq.PhasedXPowGate)
 PhasedXZGate = cirq_blqs_op.create_cirq_blqs_op(cirq.PhasedXZGate)
-QasmUGate = cirq_blqs_op.create_cirq_blqs_op(cirq.circuits.qasm_output.QasmUGate)
-QuilOneQubitGate = cirq_blqs_op.create_cirq_blqs_op(cirq.circuits.quil_output.QuilOneQubitGate)
-FSimGate = cirq_blqs_op.create_cirq_blqs_op(cirq.FSimGate)
-PhasedFSimGate = cirq_blqs_op.create_cirq_blqs_op(cirq.PhasedFSimGate)
+Rx = cirq_blqs_op.create_cirq_blqs_op(cirq.Rx)
+Ry = cirq_blqs_op.create_cirq_blqs_op(cirq.Ry)
+Rz = cirq_blqs_op.create_cirq_blqs_op(cirq.Rz)
+XPowGate = cirq_blqs_op.create_cirq_blqs_op(cirq.XPowGate)
+YPowGate = cirq_blqs_op.create_cirq_blqs_op(cirq.YPowGate)
+ZPowGate = cirq_blqs_op.create_cirq_blqs_op(cirq.ZPowGate)
+
+# Special single qubit gate classes
 SingleQubitCliffordGate = cirq_blqs_op.create_cirq_blqs_op(cirq.SingleQubitCliffordGate)
-WaitGate = cirq_blqs_op.create_cirq_blqs_op(cirq.WaitGate)
 
 # Single qubit functions
 rx = cirq_blqs_op.create_cirq_blqs_op(cirq.rx)
@@ -61,24 +57,25 @@ YY = cirq_blqs_op.create_cirq_blqs_op(cirq.YY)
 ZZ = cirq_blqs_op.create_cirq_blqs_op(cirq.ZZ)
 
 # Two qubit gate classes.
+FSimGate = cirq_blqs_op.create_cirq_blqs_op(cirq.FSimGate)
 CZPowGate = cirq_blqs_op.create_cirq_blqs_op(cirq.CZPowGate)
 CXPowGate = cirq_blqs_op.create_cirq_blqs_op(cirq.CXPowGate)
 XXPowGate = cirq_blqs_op.create_cirq_blqs_op(cirq.XXPowGate)
 YYPowGate = cirq_blqs_op.create_cirq_blqs_op(cirq.YYPowGate)
 ZZPowGate = cirq_blqs_op.create_cirq_blqs_op(cirq.ZZPowGate)
-QasmTwoQubitGate = cirq_blqs_op.create_cirq_blqs_op(cirq.circuits.qasm_output.QasmTwoQubitGate)
-QuilTwoQubitGate = cirq_blqs_op.create_cirq_blqs_op(cirq.circuits.quil_output.QuilTwoQubitGate)
-MSGate = cirq_blqs_op.create_cirq_blqs_op(cirq.ion.ion_gates.MSGate)
+PhasedFSimGate = cirq_blqs_op.create_cirq_blqs_op(cirq.PhasedFSimGate)
 PauliInteractionGate = cirq_blqs_op.create_cirq_blqs_op(cirq.PauliInteractionGate)
 PhasedISwapPowGate = cirq_blqs_op.create_cirq_blqs_op(cirq.PhasedISwapPowGate)
 ISwapPowGate = cirq_blqs_op.create_cirq_blqs_op(cirq.ISwapPowGate)
 SwapPowGate = cirq_blqs_op.create_cirq_blqs_op(cirq.SwapPowGate)
-SycamoreGate = cirq_blqs_op.create_cirq_blqs_op(cirq_google.SycamoreGate)
 TwoQubitDiagonalGate = cirq_blqs_op.create_cirq_blqs_op(cirq.TwoQubitDiagonalGate)
 
+# Two qubit gate functions.
+ms = cirq_blqs_op.create_cirq_blqs_op(cirq.ms)
+
 # Three qubit gate constants.
-CCX = cirq_blqs_op.create_cirq_blqs_op(cirq.CCX)
-CCZ = TOFOLLI = CCNOT = cirq_blqs_op.create_cirq_blqs_op(cirq.CCZ)
+CCX = CCNOT = TOFFOLI = cirq_blqs_op.create_cirq_blqs_op(cirq.CCX)
+CCZ = cirq_blqs_op.create_cirq_blqs_op(cirq.CCZ)
 CSWAP = FREDKIN = cirq_blqs_op.create_cirq_blqs_op(cirq.CSWAP)
 
 # Three qubit gate classes.

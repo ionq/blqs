@@ -59,3 +59,24 @@ def test_cirq_blqs_op_factory_is_a_factory():
 def test_cirq_blqs_op_factory_str():
     assert str(bc.CirqBlqsOpFactory(cirq.HPowGate)) == "HPowGate"
     assert str(bc.CirqBlqsOpFactory(cirq.bit_flip)) == "bit_flip"
+
+
+def test_create_cirq_blqs_op_gate():
+    assert bc.create_cirq_blqs_op(cirq.X) == bc.CirqBlqsOp(gate=cirq.X)
+
+
+def test_create_cirq_blqs_op_class():
+    assert bc.create_cirq_blqs_op(cirq.XPowGate) == bc.CirqBlqsOpFactory(
+        cirq_gate_factory=cirq.XPowGate
+    )
+    assert bc.create_cirq_blqs_op(cirq.XPowGate)(exponent=0.5) == bc.CirqBlqsOp(
+        gate=cirq.XPowGate(exponent=0.5)
+    )
+
+
+def test_create_cirq_blqs_op_function():
+    def x_pow(exponent):
+        return cirq.XPowGate(exponent=exponent)
+
+    my_x_pow = bc.create_cirq_blqs_op(x_pow)
+    assert my_x_pow(exponent=1) == bc.CirqBlqsOp(gate=cirq.XPowGate(exponent=1))

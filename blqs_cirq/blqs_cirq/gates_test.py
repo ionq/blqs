@@ -13,6 +13,7 @@
 # limitations under the License.
 import cirq
 import cirq_google
+import numpy as np
 
 import blqs_cirq as bc
 
@@ -50,7 +51,7 @@ def test_all_gate_subclasses():
         # Interop gates
         cirq.interop.quirk.cells.qubit_permutation_cells.QuirkQubitPermutationGate,
         # Contrib gates.
-        # When cirq.contrib is removed these should be removed.
+        # When cirq.contrib is removed these cases should be removed.
         cirq.contrib.acquaintance.bipartite.BipartiteSwapNetworkGate,
         cirq.contrib.acquaintance.gates.AcquaintanceOpportunityGate,
         cirq.contrib.acquaintance.gates.SwapNetworkGate,
@@ -61,7 +62,7 @@ def test_all_gate_subclasses():
         cirq.contrib.acquaintance.shift_swap_network.ShiftSwapNetworkGate,
         cirq.contrib.acquaintance.permutation.LinearPermutationGate,
         # Google gates
-        # When cirq.google is remove these should be removed.
+        # When cirq.google is remove these cases should be removed.
         cirq_google.ops.sycamore_gate.SycamoreGate,
     }
 
@@ -240,3 +241,107 @@ def test_three_qubit_gate_classes():
             cirq.ThreeQubitDiagonalGate([0.5, 0.25, 0.5, 0.25, 0.5, 0.25, 0.25, 0.5])(q0, q1, q2),
         ]
     )
+
+
+def test_n_qubit_gate_classes():
+    def n_qubit_gate_classes():
+        bc.DiagonalGate([0, 0.5, 0, 0.5])(0, 1)
+        bc.DensePauliString("XXX")(0, 1, 2)
+        bc.IdentityGate(num_qubits=3)(0, 1, 2)
+        bc.MeasurementGate(num_qubits=3, key="x")(0, 1, 2)
+        bc.MatrixGate(np.eye(4))(0, 1)
+        bc.MutableDensePauliString("XXX")(0, 1, 2)
+        bc.QubitPermutationGate([1, 0])(0, 1)
+        bc.QuantumFourierTransformGate(num_qubits=2)(0, 1)
+        bc.PhaseGradientGate(num_qubits=2, exponent=0.5)(0, 1)
+        bc.WaitGate(duration=cirq.Duration(nanos=10), num_qubits=2)(0, 1)
+        bc.ControlledGate(sub_gate=cirq.Y)(0, 1)
+
+    q0, q1, q2 = cirq.LineQubit.range(3)
+    assert bc.build(n_qubit_gate_classes)() == cirq.Circuit(
+        [
+            cirq.DiagonalGate([0, 0.5, 0, 0.5])(q0, q1),
+            cirq.DensePauliString("XXX")(q0, q1, q2),
+            cirq.IdentityGate(num_qubits=3)(q0, q1, q2),
+            cirq.MeasurementGate(num_qubits=3, key="x")(q0, q1, q2),
+            cirq.MatrixGate(np.eye(4))(q0, q1),
+            cirq.MutableDensePauliString("XXX")(q0, q1, q2),
+            cirq.QubitPermutationGate([1, 0])(q0, q1),
+            cirq.QuantumFourierTransformGate(num_qubits=2)(q0, q1),
+            cirq.PhaseGradientGate(num_qubits=2, exponent=0.5)(q0, q1),
+            cirq.WaitGate(duration=cirq.Duration(nanos=10), num_qubits=2)(q0, q1),
+            cirq.ControlledGate(sub_gate=cirq.Y)(q0, q1),
+        ]
+    )
+
+
+def test_noise_classes():
+    def noise_classes():
+        bc.AmplitudeDampingChannel(gamma=0.5)(0)
+        bc.AsymmetricDepolarizingChannel(p_x=0.5, p_y=0.25, p_z=0.25)(0)
+        bc.BitFlipChannel(p=0.4)(0)
+        bc.DepolarizingChannel(p=0.5, n_qubits=2)(0, 1)
+        bc.GeneralizedAmplitudeDampingChannel(p=0.5, gamma=0.2)(0)
+        bc.PhaseDampingChannel(gamma=0.5)(0)
+        bc.PhaseFlipChannel(p=0.5)(0)
+        bc.ResetChannel(dimension=2)(0)
+        bc.RandomGateChannel(sub_gate=cirq.X, probability=0.5)(0)
+
+    q0, q1 = cirq.LineQubit.range(2)
+    assert bc.build(noise_classes)() == cirq.Circuit(
+        [
+            cirq.AmplitudeDampingChannel(gamma=0.5)(q0),
+            cirq.AsymmetricDepolarizingChannel(p_x=0.5, p_y=0.25, p_z=0.25)(q0),
+            cirq.BitFlipChannel(p=0.4)(q0),
+            cirq.DepolarizingChannel(p=0.5, n_qubits=2)(q0, q1),
+            cirq.GeneralizedAmplitudeDampingChannel(p=0.5, gamma=0.2)(q0),
+            cirq.PhaseDampingChannel(gamma=0.5)(q0),
+            cirq.PhaseFlipChannel(p=0.5)(q0),
+            cirq.ResetChannel(dimension=2)(q0),
+            cirq.RandomGateChannel(sub_gate=cirq.X, probability=0.5)(q0),
+        ]
+    )
+
+
+def test_noise_functions():
+    def noise_functions():
+        bc.asymmetric_depolarize(p_x=0.5, p_y=0.25, p_z=0.25)(0)
+        bc.depolarize(p=0.5, n_qubits=2)(0, 1)
+        bc.generalized_amplitude_damp(p=0.5, gamma=0.2)(0)
+        bc.amplitude_damp(gamma=0.5)(0)
+        bc.phase_damp(gamma=0.5)(0)
+        bc.phase_flip(p=0.5)(0)
+        bc.bit_flip(p=0.5)(0)
+
+    q0, q1 = cirq.LineQubit.range(2)
+    assert bc.build(noise_functions)() == cirq.Circuit(
+        [
+            cirq.asymmetric_depolarize(p_x=0.5, p_y=0.25, p_z=0.25)(q0),
+            cirq.depolarize(p=0.5, n_qubits=2)(q0, q1),
+            cirq.generalized_amplitude_damp(p=0.5, gamma=0.2)(q0),
+            cirq.amplitude_damp(gamma=0.5)(q0),
+            cirq.phase_damp(gamma=0.5)(q0),
+            cirq.phase_flip(p=0.5)(q0),
+            cirq.bit_flip(p=0.5)(q0),
+        ]
+    )
+
+
+def test_n_qubit_gate_functions():
+    def n_qubit_gate_functions():
+        bc.measure(0, 1, key="x")
+        bc.qft(0, 1, inverse=True)
+        bc.wait(0, 1, nanos=10)
+
+    q0, q1 = cirq.LineQubit.range(2)
+    assert bc.build(n_qubit_gate_functions)() == cirq.Circuit(
+        [cirq.measure(q0, q1, key="x"), cirq.qft(q0, q1, inverse=True), cirq.wait(q0, q1, nanos=10)]
+    )
+
+
+def test_special_functions():
+    def special_functions():
+        bc.reset(0)
+
+    q0 = cirq.LineQubit(0)
+    assert bc.build(special_functions)() == cirq.Circuit([cirq.reset(q0)])

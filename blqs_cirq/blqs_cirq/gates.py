@@ -63,7 +63,6 @@ XXPowGate = cirq_blqs_op.create_cirq_blqs_op(cirq.XXPowGate)
 YYPowGate = cirq_blqs_op.create_cirq_blqs_op(cirq.YYPowGate)
 ZZPowGate = cirq_blqs_op.create_cirq_blqs_op(cirq.ZZPowGate)
 PhasedFSimGate = cirq_blqs_op.create_cirq_blqs_op(cirq.PhasedFSimGate)
-PauliInteractionGate = cirq_blqs_op.create_cirq_blqs_op(cirq.PauliInteractionGate)
 PhasedISwapPowGate = cirq_blqs_op.create_cirq_blqs_op(cirq.PhasedISwapPowGate)
 ISwapPowGate = cirq_blqs_op.create_cirq_blqs_op(cirq.ISwapPowGate)
 SwapPowGate = cirq_blqs_op.create_cirq_blqs_op(cirq.SwapPowGate)
@@ -216,3 +215,15 @@ class SingleQubitCliffordGate(cirq_blqs_op.CirqBlqsOp):
     def from_unitary(u: np.ndarray) -> Optional[cirq_blqs_op.CirqBlqsOp]:
         gate = cirq.SingleQubitCliffordGate.from_unitary(u=u)
         return cirq_blqs_op.CirqBlqsOp(gate) if gate is not None else None
+
+
+# Special two qubit gate classes
+
+
+class PauliInteractionGate(cirq_blqs_op.CirqBlqsOp):
+    def __init__(self, *args, **kwargs):
+
+        super().__init__(gate=cirq.PauliInteractionGate(*args, **kwargs))
+
+    CZ = cirq_blqs_op.CirqBlqsOp(cirq.PauliInteractionGate.CZ)
+    CNOT = cirq_blqs_op.CirqBlqsOp(cirq.PauliInteractionGate.CNOT)

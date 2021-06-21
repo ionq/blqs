@@ -166,7 +166,6 @@ def test_two_qubit_gate_classes():
         bc.YYPowGate(exponent=0.5)(0, 1)
         bc.ZZPowGate(exponent=0.5)(0, 1)
         bc.PhasedFSimGate(theta=0.5, zeta=0.25, chi=0.25, gamma=0.25, phi=0.125)(0, 1)
-        bc.PauliInteractionGate(cirq.X, False, cirq.X, False, exponent=0.5)(0, 1)
         bc.PhasedISwapPowGate(phase_exponent=0.5, exponent=0.25)(0, 1)
         bc.ISwapPowGate(exponent=0.5)(0, 1)
         bc.SwapPowGate(exponent=0.5)(0, 1)
@@ -182,7 +181,6 @@ def test_two_qubit_gate_classes():
             cirq.YYPowGate(exponent=0.5)(q0, q1),
             cirq.ZZPowGate(exponent=0.5)(q0, q1),
             cirq.PhasedFSimGate(theta=0.5, zeta=0.25, chi=0.25, gamma=0.25, phi=0.125)(q0, q1),
-            cirq.PauliInteractionGate(cirq.X, False, cirq.X, False, exponent=0.5)(q0, q1),
             cirq.PhasedISwapPowGate(phase_exponent=0.5, exponent=0.25)(q0, q1),
             cirq.ISwapPowGate(exponent=0.5)(q0, q1),
             cirq.SwapPowGate(exponent=0.5)(q0, q1),
@@ -406,4 +404,23 @@ def test_special_single_qubit_classes():
 def test_single_qubit_clifford_gate_unknown_unitary():
     assert (
         bc.SingleQubitCliffordGate.from_unitary(np.array([[3 / 5, 4 / 5], [4 / 5, -3 / 5]])) is None
+    )
+
+
+def test_pauli_interaction_gates():
+    def pauli_interaction_gates():
+        bc.PauliInteractionGate(cirq.X, False, cirq.X, False, exponent=0.5)(0, 1)
+        bc.PauliInteractionGate.CZ(0, 1)
+        bc.PauliInteractionGate.CNOT(0, 1)
+
+    q0, q1 = cirq.LineQubit.range(2)
+
+    assert bc.build(pauli_interaction_gates)() == cirq.Circuit(
+        [
+            cirq.PauliInteractionGate(cirq.X, False, cirq.X, False, exponent=0.5)(q0, q1),
+            # pylint: disable=not-callable
+            cirq.PauliInteractionGate.CZ(q0, q1),
+            # pylint: disable=not-callable
+            cirq.PauliInteractionGate.CNOT(q0, q1),
+        ]
     )

@@ -97,28 +97,6 @@ PhaseGradientGate = cirq_blqs_op.create_cirq_blqs_op(cirq.PhaseGradientGate)
 WaitGate = cirq_blqs_op.create_cirq_blqs_op(cirq.WaitGate)
 ControlledGate = cirq_blqs_op.create_cirq_blqs_op(cirq.ControlledGate)
 
-# Noise classes
-AmplitudeDampingChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.AmplitudeDampingChannel)
-AsymmetricDepolarizingChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.AsymmetricDepolarizingChannel)
-BitFlipChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.BitFlipChannel)
-DepolarizingChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.DepolarizingChannel)
-GeneralizedAmplitudeDampingChannel = cirq_blqs_op.create_cirq_blqs_op(
-    cirq.GeneralizedAmplitudeDampingChannel
-)
-PhaseDampingChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.PhaseDampingChannel)
-PhaseFlipChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.PhaseFlipChannel)
-ResetChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.ResetChannel)
-RandomGateChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.RandomGateChannel)
-
-# Noise functions
-asymmetric_depolarize = cirq_blqs_op.create_cirq_blqs_op(cirq.asymmetric_depolarize)
-depolarize = cirq_blqs_op.create_cirq_blqs_op(cirq.depolarize)
-generalized_amplitude_damp = cirq_blqs_op.create_cirq_blqs_op(cirq.generalized_amplitude_damp)
-amplitude_damp = cirq_blqs_op.create_cirq_blqs_op(cirq.amplitude_damp)
-phase_damp = cirq_blqs_op.create_cirq_blqs_op(cirq.phase_damp)
-phase_flip = cirq_blqs_op.create_cirq_blqs_op(cirq.phase_flip)
-bit_flip = cirq_blqs_op.create_cirq_blqs_op(cirq.bit_flip)
-
 # N qubit gate functions.
 def measure(*targets, key=None, invert_mask=()) -> blqs.Instruction:
     measurement_fn = functools.partial(cirq.measure, key=key, invert_mask=invert_mask)
@@ -144,6 +122,29 @@ def wait(
     return cirq_blqs_op.CirqBlqsOp(wait_fn, "wait")(*targets)
 
 
-# Special functions
+# Noise classes.
+AmplitudeDampingChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.AmplitudeDampingChannel)
+AsymmetricDepolarizingChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.AsymmetricDepolarizingChannel)
+BitFlipChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.BitFlipChannel)
+DepolarizingChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.DepolarizingChannel)
+GeneralizedAmplitudeDampingChannel = cirq_blqs_op.create_cirq_blqs_op(
+    cirq.GeneralizedAmplitudeDampingChannel
+)
+PhaseDampingChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.PhaseDampingChannel)
+PhaseFlipChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.PhaseFlipChannel)
+ResetChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.ResetChannel)
+RandomGateChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.RandomGateChannel)
+
+# Noise functions.
+asymmetric_depolarize = cirq_blqs_op.create_cirq_blqs_op(cirq.asymmetric_depolarize)
+depolarize = cirq_blqs_op.create_cirq_blqs_op(cirq.depolarize)
+generalized_amplitude_damp = cirq_blqs_op.create_cirq_blqs_op(cirq.generalized_amplitude_damp)
+amplitude_damp = cirq_blqs_op.create_cirq_blqs_op(cirq.amplitude_damp)
+phase_damp = cirq_blqs_op.create_cirq_blqs_op(cirq.phase_damp)
+phase_flip = cirq_blqs_op.create_cirq_blqs_op(cirq.phase_flip)
+bit_flip = cirq_blqs_op.create_cirq_blqs_op(cirq.bit_flip)
+
+
+# Special functions.
 def reset(qubit) -> blqs.Instruction:
     return cirq_blqs_op.CirqBlqsOp(cirq.ResetChannel(getattr(qubit, "dimension", 2)))(qubit)

@@ -16,6 +16,7 @@ import inspect
 import cirq
 import cirq_google
 
+import blqs_cirq as bc
 from blqs_cirq import google as bcg
 
 
@@ -34,3 +35,12 @@ def test_all_gate_subclasses_in_cirq_google():
 
     for clz in cirq_google_gate_subclasses:
         assert hasattr(bcg, clz.__name__)
+
+
+def test_google_gates():
+    def google_gates():
+        bcg.SycamoreGate()(0, 1)
+
+    q0, q1 = cirq.LineQubit.range(2)
+
+    assert bc.build(google_gates)() == cirq.Circuit([cirq_google.SycamoreGate()(q0, q1)])

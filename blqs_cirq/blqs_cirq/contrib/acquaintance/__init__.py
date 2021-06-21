@@ -17,8 +17,6 @@ from blqs_cirq.contrib.acquaintance.acquaintance_gates import (
     BipartiteSwapNetworkGate,
     CircularShiftGate,
     LinearPermutationGate,
-    MappingDisplayGate,
-    PermutationGate,
     ShiftSwapNetworkGate,
     SwapNetworkGate,
     SwapPermutationGate,

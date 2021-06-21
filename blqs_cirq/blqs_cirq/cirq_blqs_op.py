@@ -46,7 +46,7 @@ class CirqBlqsOp(blqs.Op):
                 return "Gate has no documentation."
             return f"From Cirq documentation:\n{self._gate.__doc__}"
         else:
-            return super(blqs.Op, self).__getattribute__(name)
+            return super().__getattribute__(name)
 
     def __eq__(self, other):
         if not isinstance(other, type(self)):
@@ -87,7 +87,7 @@ class CirqBlqsOpFactory:
                 return "Gate factory has no documentation."
             return f"From Cirq documentation:\n{self._cirq_gate_factory.__doc__}"
         else:
-            return super(CirqBlqsOpFactory, self).__getattribute__(name)
+            return super().__getattribute__(name)
 
     def __str__(self):
         return str(self._cirq_gate_factory.__name__)

@@ -4,43 +4,15 @@ Blqs is a framework for building domain specific language that can be written in
 It was inspired by TensorFlow's autograph library, and motivated by the state of the art
 in quantum programming frameworks like Cirq and Qiskit.
 
-Here is a motivating example.  In many traditional quantum programming frameworks one writes
-a quantum program via appending to a container object, (here is an example from Cirq):
-```python
-import cirq
-circuit = cirq.Circuit()
-q0, q1 = cirq.LineQubit.range(2)
-circuit.append(cirq.H(q0))
-circuit.append(cirq.CX(q0, q1))
-```
-In blqs instead one can define functions that return programs.
+In short blqs let you define domain specific languages and gives you access to use native Python features like `if`, `while`, or `for` in these languages. This fills in a missing feature for Python, which while they do have operator overloading, does not allow for overloading these built in constructions.
+
+Example:
 ```python
 import blqs
-
-H = blqs.Operand('H')
-CX = blqs.Operand('CX')
+H, M, CX = blqs.Operand('H'), blqs.Operand('M'), blqs.Operand('CX')
 
 @blqs.build
 def hello_blqs():
-    H(0)
-    CX(0, 1)
-
-program = hello_blqs()
-print(program)
-> prints
-> H 0
-> H 1
-```
-Here `program` is `blqs.Program` container of the listed `blqs.Statement`s. The
-function annotation turns the `hello_blqs` function into a builder that,
- when called, returns the built program.
-
-More interestingly, blqs programs can also take native python functionality,
-like `if` statements, and capture them in blqs objects:
-```python
-M = blqs.Operand('M')
-
-def hello_if_blqs():
     a = blqs.Register('a')
     H(0)
     M(0, 'a')
@@ -48,18 +20,10 @@ def hello_if_blqs():
         CX(0, 1)
     else:
         CX(1, 0)
-
-program = hello_if_blqs()
-print(program)
-> prints
-> H 0
-> M 0,a
-> if a:
->     CX 0,1
-> else:
->     CX 1,0
-
-# This is three statements, the last having captured the if.
+```
+Then if we run this function, we will produce a `blqs.Program` that includes both statements, like `H(0)` but also the `if` and `else` statements.
+```python
+program = hello_blqs()
 for s in program:
     print(type(s))
 > prints
@@ -67,26 +31,12 @@ for s in program:
 > <class 'blqs.instruction.Instruction'>
 > <class 'blqs.conditional.If'>
 ```
+Where the last statement contains blocks that hold the `CX` statements.
 
-Further we can mix and match native and captured Python. For example,
-here `a` is just a normal python boolean variable, and we
-can use it in to build one of two different cases:
-```python
+# Installation
 
-def hello_native(a):
-    if a:
-        H(0)
-    else:
-        H(1)
-print(hello_native(True))
-> prints
-> H 0
-print(hello_native(False))
-> prints
-> H 1
-```
+TODO
 
-Blqs is meant to be all about building programs and the intermediate representation
-of that program.  In many ways it is meant to be a framework to help you build other
-frameworks.  As such, every attempt will be made to keep blqs simple, the ideas is that other
-frameworks can be built on top of it.
+# Documentation
+
+[]

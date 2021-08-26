@@ -2,22 +2,22 @@
 
 ![example workflow](https://github.com/ionq/blqs/actions/workflows/blqs-ci.yml/badge.svg)
 
-Blqs is a framework for building domain specific language that can be written in native Python.
+Blqs is a framework for building domain specific languages in native Python.
 It was inspired by TensorFlow's
 [autograph](https://blog.tensorflow.org/2018/07/autograph-converts-python-into-tensorflow-graphs.html)
 library, and motivated by attempting to improve quantum computing programming frameworks like
-[Cirq](https://quantumai.google/cirq) and [Qiskit](https://qiskit.org).
+[Cirq](https://quantumai.google/cirq) and [Qiskit](https://qiskit.org).  If you want to write a domain specific language that use native python code for if statements or for statements or while statements, blqs is for you!
 
 # Packages
 
 This repo contains two packages, follow the links for installation instructions and documentation.
 
 * [blqs](blqs) The base blqs framework.
-* [blqs_cirq](blqs_cirq) An application of blqs to [Cirq](https://quantumai.google/cirq)
+* [blqs_cirq](blqs_cirq) An application of blqs to [Cirq](https://quantumai.google/cirq).
 
 # Contributing
 
-
+TODO
 
 # Motivating example
 
@@ -57,6 +57,7 @@ like `if` statements, and capture them in blqs objects:
 ```python
 M = blqs.Operand('M')
 
+@blqs.build
 def hello_if_blqs():
     a = blqs.Register('a')
     H(0)
@@ -89,7 +90,7 @@ Further we can mix and match native and captured Python. For example,
 here `a` is just a normal python boolean variable, and we
 can use it in to build one of two different cases:
 ```python
-
+@blqs.build
 def hello_native(a):
     if a:
         H(0)

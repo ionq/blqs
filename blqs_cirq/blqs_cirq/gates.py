@@ -128,6 +128,8 @@ DepolarizingChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.DepolarizingChannel)
 GeneralizedAmplitudeDampingChannel = cirq_blqs_op.create_cirq_blqs_op(
     cirq.GeneralizedAmplitudeDampingChannel
 )
+KrausChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.KrausChannel)
+MixedUnitaryChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.MixedUnitaryChannel)
 PhaseDampingChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.PhaseDampingChannel)
 PhaseFlipChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.PhaseFlipChannel)
 ResetChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.ResetChannel)

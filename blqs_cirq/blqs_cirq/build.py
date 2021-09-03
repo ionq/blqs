@@ -75,8 +75,10 @@ def _build_circuit(program, build_config):
     circuit = cirq.Circuit()
     for statement in program:
         if isinstance(statement, blqs.Instruction):
-            qubits = [protocols.decode(build_config.qubit_decoder, t) for t in statement.targets()]
             if hasattr(statement.op(), "gate"):
+                qubits = [
+                    protocols.decode(build_config.qubit_decoder, t) for t in statement.targets()
+                ]
                 circuit.append(statement.op().gate()(*qubits))
             else:
                 raise ValueError(

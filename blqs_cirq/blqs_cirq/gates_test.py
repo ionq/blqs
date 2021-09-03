@@ -64,6 +64,7 @@ def test_all_gate_subclasses():
         # Google gates
         # When cirq.google is remove these cases should be removed.
         cirq_google.ops.sycamore_gate.SycamoreGate,
+        cirq_google.experimental.ops.CouplerPulse,
     }
 
     for clz in cirq_gate_subclasses:
@@ -280,6 +281,18 @@ def test_noise_classes():
         bc.BitFlipChannel(p=0.4)(0)
         bc.DepolarizingChannel(p=0.5, n_qubits=2)(0, 1)
         bc.GeneralizedAmplitudeDampingChannel(p=0.5, gamma=0.2)(0)
+        bc.KrausChannel(
+            [
+                np.array([[1, 1], [1, 1]]) * 0.5,
+                np.array([[1, -1], [-1, 1]]) * 0.5,
+            ]
+        )(0)
+        bc.MixedUnitaryChannel(
+            [
+                (0.5, np.array([[1, 0], [0, 1]], dtype=np.complex64)),
+                (0.5, np.array([[0, 1], [1, 0]], dtype=np.complex64)),
+            ]
+        )(0)
         bc.PhaseDampingChannel(gamma=0.5)(0)
         bc.PhaseFlipChannel(p=0.5)(0)
         bc.ResetChannel(dimension=2)(0)
@@ -293,6 +306,18 @@ def test_noise_classes():
             cirq.BitFlipChannel(p=0.4)(q0),
             cirq.DepolarizingChannel(p=0.5, n_qubits=2)(q0, q1),
             cirq.GeneralizedAmplitudeDampingChannel(p=0.5, gamma=0.2)(q0),
+            cirq.KrausChannel(
+                [
+                    np.array([[1, 1], [1, 1]]) * 0.5,
+                    np.array([[1, -1], [-1, 1]]) * 0.5,
+                ]
+            )(q0),
+            cirq.MixedUnitaryChannel(
+                [
+                    (0.5, np.array([[1, 0], [0, 1]], dtype=np.complex64)),
+                    (0.5, np.array([[0, 1], [1, 0]], dtype=np.complex64)),
+                ]
+            )(q0),
             cirq.PhaseDampingChannel(gamma=0.5)(q0),
             cirq.PhaseFlipChannel(p=0.5)(q0),
             cirq.ResetChannel(dimension=2)(q0),

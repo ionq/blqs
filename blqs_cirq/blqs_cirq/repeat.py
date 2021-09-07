@@ -46,6 +46,9 @@ class CircuitOperation(blqs.Statement):
             and self._circuit_op_kwargs == other._circuit_op_kwargs
         )
 
+    def __hash__(self):
+        return hash((self._circuit_op_block, frozenset(self._circuit_op_block)))
+
 
 class Repeat(CircuitOperation):
     def __init__(self, repetitions: int):

@@ -47,3 +47,12 @@ def my_circuit():
         H(0)
         CX(0, 1)
 ```
+
+* Support for Cirq's insertion strategies:
+```python
+@bc.build
+def my_circuit():
+    with bc.InsertStrategy(cirq.InsertStrategy.NEW):
+        H(0)
+        H(1)
+```

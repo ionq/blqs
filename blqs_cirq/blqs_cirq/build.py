@@ -109,33 +109,3 @@ def _build_circuit(program, build_config, inside_insert_strategy=False):
                 f"Unsupported statement type {type(statement)}. Statement: {statement}."
             )
     return circuit
-
-
-def _build_circuit_ops(program, build_config):
-    ops = []
-    for statement in program:
-        if isinstance(statement, blqs.Instruction):
-            targets = statement.targets()
-            if hasattr(statement.op(), "gate"):
-                qubits = [protocols.decode(build_config.qubit_decoder, t) for t in targets]
-                ops.append(statement.op().gate()(*qubits))
-            else:
-                raise ValueError(
-                    f"Unsupported instruction type: {type(statement)}. Instruction: {statement}."
-                )
-        elif isinstance(statement, repeat.CircuitOperation):
-            if build_config.support_circuit_operation:
-                subcircuit = _build_circuit(
-                    statement.circuit_op_block().statements(), build_config
-                ).freeze()
-                ops.append(cirq.CircuitOperation(subcircuit, **statement.circuit_op_kwargs()))
-            else:
-                raise ValueError(
-                    "Encountered CircuitOperation or Repeat block, but support for such blocks is "
-                    "disabled in build config."
-                )
-        elif not isinstance(statement, insert_strategy.InsertStrategy):
-            raise ValueError(
-                f"Unsupported statement type {type(statement)}. Statement: {statement}."
-            )
-    return ops

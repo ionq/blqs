@@ -35,12 +35,15 @@ class BuildConfig:
         blqs_build_config: If supplied an extra config passed to the build stage of blqs.
         support_circuit_operation: Whether or not `CircuitOperation` or `Repeat` ops are supported.
             If they are included and support is off, a `ValueError` is thrown.
+        support_insert_strategy: Whether or not `InsertStrategy` is supported.
+
     """
 
     output_circuit: bool = True
     qubit_decoder: qubits.DefaultQubitDecoder = qubits.DEFAULT_QUBIT_DECODER
     blqs_build_config: Optional[blqs.BuildConfig] = None
     support_circuit_operation: bool = True
+    support_insert_strategy: bool = True
 
 
 def build(func: Callable) -> Callable:
@@ -92,18 +95,24 @@ def _build_circuit(program, build_config, inside_insert_strategy=False):
             else:
                 raise ValueError(
                     "Encountered CircuitOperation or Repeat block, but support for such blocks is "
-                    "disabled in build config."
+                    "disabled in the build config."
                 )
         elif isinstance(statement, insert_strategy.InsertStrategy):
-            if inside_insert_strategy:
-                raise ValueError("InsertStrategies cannot be nested, as the this is ambiguous.")
-            ops = [
-                _build_circuit(
-                    [statement], build_config, inside_insert_strategy=True
-                ).all_operations()
-                for statement in statement.insert_strategy_block().statements()
-            ]
-            circuit.append(ops, strategy=statement.strategy())
+            if build_config.support_insert_strategy:
+                if inside_insert_strategy:
+                    raise ValueError("InsertStrategies cannot be nested, as the this is ambiguous.")
+                ops = [
+                    _build_circuit(
+                        [statement], build_config, inside_insert_strategy=True
+                    ).all_operations()
+                    for statement in statement.insert_strategy_block().statements()
+                ]
+                circuit.append(ops, strategy=statement.strategy())
+            else:
+                raise ValueError(
+                    "Encountered InsertStrategy block, but support for such block is "
+                    "disabled in the build config."
+                )
         else:
             raise ValueError(
                 f"Unsupported statement type {type(statement)}. Statement: {statement}."

@@ -35,6 +35,42 @@ def test_build_statements():
     )
 
 
+def test_build_insert_strategy():
+    a, b = cirq.NamedQubit("a"), cirq.NamedQubit("b")
+    # This order insures that each of the different strategies produce different moment
+    # structures.
+    stream = [cirq.X(a), cirq.CZ(a, b), cirq.X(b), cirq.X(b), cirq.X(a)]
+
+    def fn(strategy):
+        with bc.InsertStrategy(strategy):
+            bc.X("a")
+            bc.CZ("a", "b")
+            bc.X("b")
+            bc.X("b")
+            bc.X("a")
+
+    for strategy in (
+        cirq.InsertStrategy.NEW,
+        cirq.InsertStrategy.INLINE,
+        cirq.InsertStrategy.NEW_THEN_INLINE,
+        cirq.InsertStrategy.EARLIEST,
+    ):
+        circuit = cirq.Circuit()
+        circuit.append(stream, strategy=strategy)
+        assert bc.build(fn)(strategy) == circuit
+
+
+def test_build_insert_strategy_nesting_disallowed():
+    def fn():
+        with bc.InsertStrategy(cirq.InsertStrategy.NEW):
+            bc.X(0)
+            with bc.InsertStrategy(cirq.InsertStrategy.INLINE):
+                bc.X(1)
+
+    with pytest.raises(ValueError, match="InsertStrategies"):
+        bc.build(fn)()
+
+
 def test_build_statements_instruction_unsupported():
     def fn():
         blqs.Op("H")(0)

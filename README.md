@@ -6,7 +6,9 @@ Blqs is a framework for building domain specific languages in native Python.
 It was inspired by TensorFlow's
 [autograph](https://blog.tensorflow.org/2018/07/autograph-converts-python-into-tensorflow-graphs.html)
 library, and motivated by attempting to improve quantum computing programming frameworks like
-[Cirq](https://quantumai.google/cirq) and [Qiskit](https://qiskit.org).  If you want to write a domain specific language that use native python code for if statements or for statements or while statements, blqs is for you!
+[Cirq](https://quantumai.google/cirq) and [Qiskit](https://qiskit.org).  If you want to write a
+domain specific language that use native python code for if statements or for statements or
+while statements, blqs is for you!
 
 # Packages
 

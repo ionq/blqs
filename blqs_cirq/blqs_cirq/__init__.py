@@ -111,6 +111,10 @@ from blqs_cirq.gates import (
     ZZPowGate,
 )
 
+from blqs_cirq.insert_strategy import (
+    InsertStrategy,
+)
+
 from blqs_cirq.protocols import (
     decode,
     SupportsDecoding,

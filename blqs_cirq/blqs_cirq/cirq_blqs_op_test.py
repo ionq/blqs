@@ -49,7 +49,7 @@ def test_cirq_blqs_op_doc_delegation_no_documentation():
         pass
 
     op = bc.CirqBlqsOp(NoDocumentationGate())
-    assert op.__doc__ == "Gate has no documentation."
+    assert op.__doc__ == "Gate has no documentation in Cirq."
 
     # Clean up the gate class, otherwise it shows up as a subclass of cirq.Gate and
     # this can interfere with other tests (!).

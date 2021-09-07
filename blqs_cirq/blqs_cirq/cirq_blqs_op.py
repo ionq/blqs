@@ -43,7 +43,7 @@ class CirqBlqsOp(blqs.Op):
     def __getattribute__(self, name: str):
         if name == "__doc__":
             if self._gate.__doc__ is None:
-                return "Gate has no documentation."
+                return "Gate has no documentation in Cirq."
             return f"From Cirq documentation:\n{self._gate.__doc__}"
         else:
             return super().__getattribute__(name)

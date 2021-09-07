@@ -14,7 +14,6 @@
 
 import cirq_google
 
-
 from blqs_cirq import cirq_blqs_op
 
-SycamoreGate = cirq_blqs_op.create_cirq_blqs_op(cirq_google.SycamoreGate)
+CouplerPulse = cirq_blqs_op.create_cirq_blqs_op(cirq_google.experimental.CouplerPulse)

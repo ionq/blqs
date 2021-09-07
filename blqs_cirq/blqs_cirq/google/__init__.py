@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from blqs_cirq.google import experimental
+
 from blqs_cirq.google.google_gates import (
-    CouplerPulse,
     SycamoreGate,
 )

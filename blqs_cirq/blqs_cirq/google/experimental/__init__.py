@@ -12,9 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import cirq_google
-
-
-from blqs_cirq import cirq_blqs_op
-
-SycamoreGate = cirq_blqs_op.create_cirq_blqs_op(cirq_google.SycamoreGate)
+from blqs_cirq.google.experimental.experimental_gates import (
+    CouplerPulse,
+)

@@ -40,23 +40,11 @@ def test_all_gate_subclasses_in_cirq_google():
 def test_google_gates():
     def google_gates():
         bcg.SycamoreGate()(0, 1)
-        bcg.CouplerPulse(
-            hold_time=cirq.Duration(nanos=10),
-            coupling_mhz=25.0,
-            rise_time=cirq.Duration(nanos=18),
-            padding_time=cirq.Duration(nanos=4),
-        )(0, 1)
 
     q0, q1 = cirq.LineQubit.range(2)
 
     assert bc.build(google_gates)() == cirq.Circuit(
         [
             cirq_google.SycamoreGate()(q0, q1),
-            cirq_google.experimental.CouplerPulse(
-                hold_time=cirq.Duration(nanos=10),
-                coupling_mhz=25.0,
-                rise_time=cirq.Duration(nanos=18),
-                padding_time=cirq.Duration(nanos=4),
-            )(q0, q1),
         ]
     )

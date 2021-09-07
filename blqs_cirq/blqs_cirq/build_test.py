@@ -71,6 +71,17 @@ def test_build_insert_strategy_nesting_disallowed():
         bc.build(fn)()
 
 
+def test_build_insert_strategy_disabled():
+    def fn():
+        with bc.InsertStrategy(cirq.InsertStrategy.NEW):
+            bc.X(0)
+
+    build_config = bc.BuildConfig(support_insert_strategy=False)
+
+    with pytest.raises(ValueError, match="InsertStrategy"):
+        bc.build_with_config(build_config)(fn)()
+
+
 def test_build_statements_instruction_unsupported():
     def fn():
         blqs.Op("H")(0)

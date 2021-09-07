@@ -12,11 +12,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import inspect
+
 import cirq
 import cirq_google
 
 import blqs_cirq as bc
 from blqs_cirq.google import experimental as bcge
+
+
+def test_all_gate_subclasses_in_cirq_google_experimental():
+    def all_subclasses(cls):
+        return set(cls.__subclasses__()).union(
+            [s for c in cls.__subclasses__() for s in all_subclasses(c)]
+        )
+
+    cirq_gate_subclasses = all_subclasses(cirq.Gate)
+
+    cirq_google_members = set(
+        x for _, x in inspect.getmembers(cirq_google.experimental, inspect.isclass)
+    )
+    cirq_google_gate_subclasses = {
+        clz for clz in cirq_gate_subclasses if clz in cirq_google_members
+    }
+
+    for clz in cirq_google_gate_subclasses:
+        assert hasattr(bcge, clz.__name__)
 
 
 def test_google_experimental_gates():

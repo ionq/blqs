@@ -14,11 +14,14 @@
 import functools
 import inspect
 
-from typing import Callable, Type, Union
+from typing import cast, Collection, Callable, Optional, Sequence, Tuple, Type, TYPE_CHECKING, Union
 
 import cirq
 
 import blqs
+
+if TYPE_CHECKING:
+    import blqs_cirq
 
 GateLikeType = Union[cirq.Gate, Callable[[], cirq.Gate], functools.partial]
 
@@ -47,6 +50,25 @@ class CirqBlqsOp(blqs.Op):
             return f"From Cirq documentation:\n{self._gate.__doc__}"
         else:
             return super().__getattribute__(name)
+
+    def __pow__(self, power) -> "blqs_cirq.CirqBlqsOp":
+        delegate = cast(cirq.Gate, self._gate).__pow__(power)
+        return CirqBlqsOp(delegate, op_name=self._name)
+
+    def with_probability(self, probability: "cirq.TParamVal") -> "blqs_cirq.CirqBlqsOp":
+        delegate = cast(cirq.Gate, self._gate).with_probability(probability)
+        return CirqBlqsOp(delegate, op_name=self._name)
+
+    def controlled(
+        self,
+        num_controls: int = None,
+        control_values: Optional[Sequence[Union[int, Collection[int]]]] = None,
+        control_qid_shape: Optional[Tuple[int, ...]] = None,
+    ) -> "blqs_cirq.CirqBlqsOp":
+        delegate = cast(cirq.Gate, self._gate).controlled(
+            num_controls, control_values, control_qid_shape
+        )
+        return CirqBlqsOp(delegate, op_name=self._name)
 
     def __eq__(self, other):
         if not isinstance(other, type(self)):

@@ -82,7 +82,10 @@ def build_with_config(build_config: BuildConfig) -> Callable:
 
 
 def _build(func: Callable, build_config: Optional[BuildConfig] = None) -> Callable:
-    """Turn the supplied function into a builder for the code the function contains."""
+    """Turn the supplied function into a builder for the code the function contains.
+
+    This method is not intended to be called directly, use build or build_with_config above.
+    """
 
     @functools.wraps(func)
     def wrapper(*args, **kwargs):

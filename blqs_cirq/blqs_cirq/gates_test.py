@@ -449,3 +449,10 @@ def test_pauli_interaction_gates():
             cirq.PauliInteractionGate.CNOT(q0, q1),
         ]
     )
+
+
+def test_exponentiation():
+    def fn():
+        (bc.H ** 0.1)(0)
+
+    assert bc.build(fn)() == cirq.Circuit([(cirq.H ** 0.1)(cirq.LineQubit(0))])

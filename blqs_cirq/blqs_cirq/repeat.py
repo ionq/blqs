@@ -17,6 +17,19 @@ import blqs
 
 
 class CircuitOperation(blqs.Statement):
+    """A statement which contains information relevant to construction a cirq.CircuitOperation.
+
+    A `cirq.CircuitOperation` is a subcircuit which can be nested.  To create these one typically
+    does something like
+    ```
+    with blqs_cirq.CircuitOperation(repetitions=3, param_resolver={sympy.Symbol("x"): 0.1}):
+       Z(1)
+       HPowGate(exponent=sympy.Symbol("x"))(1)
+    ```
+
+    See `Repeat` if all one wants to do is to do repetitions.
+    """
+
     def __init__(self, **circuit_op_kwargs):
         super().__init__()
         self._circuit_op_block = blqs.Block(parent_statement=self)
@@ -51,6 +64,15 @@ class CircuitOperation(blqs.Statement):
 
 
 class Repeat(CircuitOperation):
+    """A statement that creates a `cirq.CircuitOperation` that only does repeats.
+
+    Typical usage is
+    ```
+    with blqs_cirq.Repeat(10):
+        H(0)
+        Z(1)
+    """
+
     def __init__(self, repetitions: int):
         super().__init__(repetitions=repetitions)
 

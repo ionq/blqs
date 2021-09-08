@@ -44,6 +44,25 @@ def test_cirq_blqs_op_doc_delegation():
     assert "X" in op.__doc__
 
 
+def test_cirq_blqs_op_delegated_power():
+    op = bc.CirqBlqsOp(cirq.X)
+    assert op ** 0.1 == bc.CirqBlqsOp(gate=cirq.X ** 0.1, op_name="X")
+
+
+def test_cirq_blqs_op_delegated_with_probability():
+    op = bc.CirqBlqsOp(cirq.X)
+    assert op.with_probability(0.1) == bc.CirqBlqsOp(gate=cirq.X.with_probability(0.1), op_name="X")
+
+
+def test_cirq_blqs_op_delegated_controlled():
+    op = bc.CirqBlqsOp(cirq.X)
+    delegated = op.controlled(1, control_values=[0], control_qid_shape=(3,))
+    expected = bc.CirqBlqsOp(
+        gate=cirq.X.controlled(1, control_values=[0], control_qid_shape=(3,)), op_name="X"
+    )
+    assert delegated == expected
+
+
 def test_cirq_blqs_op_doc_delegation_no_documentation():
     class NoDocumentationGate(cirq.SingleQubitGate):
         pass

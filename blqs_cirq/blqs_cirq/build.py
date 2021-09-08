@@ -47,10 +47,42 @@ class BuildConfig:
 
 
 def build(func: Callable) -> Callable:
+    """Turn the supplied function into a builder for the Circuit the function specifies.
+
+    Typical use is as a decorator
+    ```
+    @build
+    def my_func(my_arg):
+         my_code
+
+    circuit = my_func(a_arg)
+    ```
+    but can also be called directly
+    ```
+    def my_func(my_arg):
+         my_code
+
+    circuit = build(my_func)(a_arg)
+    ```
+
+    If one wants to pass in a configuration for how the builder works, see `build_with_config`.
+    """
+
     return _build(func)
 
 
 def build_with_config(build_config: BuildConfig):
+    """A factory for producting a `blqs_cirq.build` decorator with the given configuration.
+
+    Typical use is in creating a decorator with the given config
+        ```
+        @build_with_config(build_config=my_config)
+        def my_func(my_arg):
+            my_code
+
+        circuit = my_func(a_arg)
+        ```
+    """
     return functools.partial(_build, build_config=build_config)
 
 

@@ -57,7 +57,7 @@ def test_for_str():
 
 
 def test_for_iterable_not_iterable():
-    with pytest.raises(AssertionError, match="SupportsIsIterable"):
+    with pytest.raises(AssertionError, match="SupportsIterable"):
         _ = blqs.For(1)
 
 

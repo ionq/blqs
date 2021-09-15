@@ -34,7 +34,7 @@ class Iterable:
     def name(self):
         return self._name
 
-    def loop_vars(self):
+    def _loop_vars_(self):
         return self._loop_vars
 
     def _is_iterable_(self):

@@ -31,13 +31,17 @@ def test_iterable_str():
 def test_iterable_fields():
     i = blqs.Iterable("name", blqs.Register("var"))
     assert i.name() == "name"
-    assert i.loop_vars() == (blqs.Register("var"),)
-
-    i = blqs.Iterable("name", blqs.Register("var"), blqs.Register("var1"))
-    assert i.name() == "name"
-    assert i.loop_vars() == (blqs.Register("var"), blqs.Register("var1"))
 
 
 def test_iterable_is_iterable():
     assert blqs.Iterable("name", blqs.Register("var"))._is_iterable_()
     assert blqs.is_iterable(blqs.Iterable("name", blqs.Register("var")))
+
+
+def test_iterable_loop_vars():
+    i = blqs.Iterable("name", blqs.Register("var"))
+    assert blqs.loop_vars(i) == (blqs.Register("var"),)
+
+    i = blqs.Iterable("name", blqs.Register("var"), blqs.Register("var1"))
+    assert i.name() == "name"
+    assert blqs.loop_vars(i) == (blqs.Register("var"), blqs.Register("var1"))

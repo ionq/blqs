@@ -36,7 +36,7 @@ Note that python also contains an `elif` statement. These are treated just as
 they are in python, as an if statement inside of an else. A terminal else is then
 associated with that inner if statement.
 
-####  example
+#### If example
 
 ```python
 @blqs.build
@@ -55,7 +55,7 @@ print(program)
 > else:
 >   A 2
 ```
-We see that the annotation has captured the python native if statement.
+We see that the build decorator has captured the python native if statement.
 ```python
 for statement in program:
     print(type(statement))
@@ -73,3 +73,89 @@ print(if_statement.else_block())
 > prints
 >   A 2
 ```
+
+## For statements
+
+For statements are captured into blqs statements if the iterator portion
+of the for statement supports the `_is_iterable_` and `_loop_vars_` methods.
+Classes that support these methods implement the `SupportsIterable` protocol.
+```python
+class SupportsIterable(Protocol):
+    """A protocol for objects that are iterable.
+
+    Iterable objects can be used in for loops.
+    """
+
+    def _is_iterable_(self) -> bool:
+        """Returns whether the object is iterable."""
+
+    def _loop_vars_(self) -> Tuple:
+        """Returns the objects loop variables."""
+```
+The iterator portion of the for statement is the `iter` in `for targets in iter:`.
+The `_is_iterable_` method should return True if the object is iterable,
+while the `_loop_vars_` should return the object that that will be assigned
+to the targets in the for statement. In other words the `targets` in `for targets in iter`
+will be assigned the `_loop_vars_`.  When blqs captures the for loop, it stores
+the results in a `blqs.For` statement.
+
+A `blqs.For` statement contains methods for getting the portions of the code that
+were captured by the blqs build process. The iterator portion itself is captured
+in the `iterable` method. One can get the loop variables of this iterator from the
+`loop_vars` method. The code inside the for loop is then capture into a `loop_block`
+method.
+
+Finally, a little used portion of python is a `for` `else` clause statement, like
+```python
+found = None
+for x in my_list:
+    if my_list % 4 == 0:
+        found = x
+        break
+else:
+    raise NoFoundException()
+```
+The else portion of this code only executes in python if the for loop executes to
+exhaustion, if it hits the break, it does not execute.  Blqs will capture the
+else block in an `else_block`.
+
+#### For example
+
+```python
+op = blqs.Op("A")
+
+@blqs.build
+def my_program():
+    for x in blqs.Iterable("range(5)", blqs.Register("a")):
+        op(x)
+    else:
+        op(1)
+
+program = my_program()
+print(program)
+> prints
+> for R(a) in range(5):
+>   A R(a)
+> else:
+>   A 1
+```
+We see that the build decorator has captured a single `blqs.For` statement
+```python
+for statement in program:
+    print(type(statement))
+> prints
+> <class 'blqs.loops.For'>
+```
+That statement has, in turn, captured the iterable and the for and else blocks
+```python
+for_statement = program[0]
+print(for_statement.loop_block())
+> prints
+>   A R(a)
+print(for_statement.else_block())
+> prints
+>   A 1
+```
+Notice how we have used the python `x` variable which was bound to the
+`_loop_vars_` of the iterable.
+

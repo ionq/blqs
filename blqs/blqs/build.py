@@ -251,7 +251,8 @@ class _BuildTransformer(gast.NodeTransformer):
         template = """
         is_iterable = blqs.is_iterable(iter)
         for_statement = blqs.For(iter) if is_iterable else None
-        for target in ([iter.loop_vars() if len(iter.loop_vars()) > 1 else iter.loop_vars()[0]]
+        loop_vars = blqs.loop_vars(iter) if is_iterable else None
+        for target in ([loop_vars if len(loop_vars) > 1 else loop_vars[0]]
                        if is_iterable else iter):
             with for_statement.loop_block() if for_statement else contextlib.nullcontext():
                 loop_body
@@ -263,6 +264,7 @@ class _BuildTransformer(gast.NodeTransformer):
             template,
             is_iterable=self._namer.new_name("is_iterable"),
             for_statement=self._namer.new_name("for_statement"),
+            loop_vars=self._namer.new_name("loop_vars"),
             target=node.target,
             iter=node.iter,
             loop_body=node.body,

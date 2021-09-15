@@ -15,21 +15,21 @@ from blqs import block, protocols, statement
 
 
 class For(statement.Statement):
-    def __init__(self, iterable: protocols.SupportsIsIterable):
+    def __init__(self, iterable: protocols.SupportsIterable):
         super().__init__()
         assert protocols.is_iterable(iterable), (
             "For's iterable parameter must be iterable. "
-            f"See {protocols.SupportsIsIterable.__name__}."
+            f"See {protocols.SupportsIterable.__name__}."
         )
         self._iterable = iterable
         self._loop_block = block.Block(parent_statement=self)
         self._else_block = block.Block(parent_statement=self)
 
-    def iterable(self) -> protocols.SupportsIsIterable:
+    def iterable(self) -> protocols.SupportsIterable:
         return self._iterable
 
     def loop_vars(self):
-        return self._iterable.loop_vars()
+        return protocols.loop_vars(self._iterable)
 
     def loop_block(self) -> block.Block:
         return self._loop_block
@@ -38,7 +38,7 @@ class For(statement.Statement):
         return self._else_block
 
     def __str__(self):
-        loop_var_str = ", ".join(str(x) for x in self._iterable.loop_vars())
+        loop_var_str = ", ".join(str(x) for x in protocols.loop_vars(self._iterable))
         loop_str = f"for {loop_var_str} in {self._iterable}:\n{self._loop_block}"
         else_str = f"\nelse:\n{self._else_block}"
         return loop_str + else_str if self._else_block else loop_str

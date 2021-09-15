@@ -61,7 +61,7 @@ def is_writable(val: Any) -> bool:
     return hasattr(val, "_is_writable_") and val._is_writable_()
 
 
-class SupportsIsIterable(Protocol):
+class SupportsIterable(Protocol):
     """A protocol for objects that are iterable.
 
     Iterable objects can be used in for loops.
@@ -70,16 +70,37 @@ class SupportsIsIterable(Protocol):
     def _is_iterable_(self) -> bool:
         """Returns whether the object is iterable."""
 
+    def _loop_vars_(self) -> Tuple:
+        """Returns the objects loop variables.
+
+        These variables will be assigned to the variables of the for loop. In other words,
+        for a loop like
+        ```
+            for x, y in supports_is_iterable:
+              ...
+        ```
+        the variable x and y will be assigned these variables.
+        """
+
 
 def is_iterable(val: Any) -> bool:
     """Determine whether an object is iterable.
 
-    Iterable objects can be used in conditionals and loops.
+    Iterable objects can be used in loops.
 
-    Checks to see if the value has the `_is_iterable_` attribute and then returns the value of
-    that attribute.
+    Checks to see if the value has the `_is_iterable_` and `_loop_vars_` attributes and then
+    returns the value of the `_is_iterable_` attribute.
     """
-    return hasattr(val, "_is_iterable_") and val._is_iterable_()
+    return hasattr(val, "_is_iterable_") and val._is_iterable_() and hasattr(val, "_loop_vars_")
+
+
+def loop_vars(val: Any) -> Tuple:
+    """Return the loop variables for an iterable object.
+
+    This raises an assertion error if the value does not return true from `is_iterable`.
+    """
+    assert is_iterable(val), f"{val} is not iterable."
+    return val._loop_vars_()
 
 
 class SupportsReadableTargets(Protocol):

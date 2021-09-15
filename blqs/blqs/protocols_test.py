@@ -47,19 +47,45 @@ def test_is_writable():
 
 
 def test_is_iterable():
-    class Iterable(blqs.SupportsIsIterable):
+    class Iterable(blqs.SupportsIterable):
         def _is_iterable_(self):
             return True
 
+        def _loop_vars_(self):
+            return ("a",)
+
     assert blqs.is_iterable(Iterable())
 
-    class NotIterable(blqs.SupportsIsIterable):
+    class NotIterable(blqs.SupportsIterable):
         def _is_iterable_(self):
             return False
 
     assert not blqs.is_iterable(NotIterable())
 
+    class NoLoopVars:
+        def _is_iterable_(self):
+            return True
+
+    assert not blqs.is_iterable(NoLoopVars())
+
+    class NoIsIterable:
+        def _loop_vars_(self):
+            return True
+
+    assert not blqs.is_iterable(NoIsIterable())
+
     assert not blqs.is_iterable("a")
+
+
+def test_loop_vars():
+    class Iterable(blqs.SupportsIterable):
+        def _is_iterable_(self):
+            return True
+
+        def _loop_vars_(self):
+            return ("a", "b")
+
+    assert blqs.loop_vars(Iterable()) == ("a", "b")
 
 
 def test_readable_targets():

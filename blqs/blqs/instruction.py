@@ -36,7 +36,7 @@ class Instruction(statement.Statement):
 
     def __str__(self):
         return (
-            f"{self._op} {','.join(str(t) for t in self._targets)}"
+            f"{self._op} {', '.join(str(t) for t in self._targets)}"
             if self._targets
             else f"{self._op}"
         )

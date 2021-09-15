@@ -2,20 +2,20 @@
 
 ![example workflow](https://github.com/ionq/blqs/actions/workflows/blqs-ci.yml/badge.svg)
 
-Blqs is a framework for building domain specific languages in native Python.
+Blqs is a framework for building (internal) domain specific languages in Python.
 It was inspired by TensorFlow's
 [autograph](https://blog.tensorflow.org/2018/07/autograph-converts-python-into-tensorflow-graphs.html)
 library, and motivated by attempting to improve quantum computing programming frameworks like
-[Cirq](https://quantumai.google/cirq) and [Qiskit](https://qiskit.org).  If you want to write a
-domain specific language that use native python code for if statements or for statements or
-while statements, blqs is for you!
+[Cirq](https://quantumai.google/cirq) and [Qiskit](https://qiskit.org).  If you want to write an
+domain specific language that use native python code for "if" statements or "for" statements or
+"while" statements, blqs is for you!
 
 # Packages
 
 This repo contains two packages, follow the links for installation instructions and documentation.
 
-* [blqs](blqs) The base blqs framework.
-* [blqs_cirq](blqs_cirq) An application of blqs to [Cirq](https://quantumai.google/cirq).
+* [blqs](blqs) The base blqs framework ([installation instructions](blqs/README.md#installation))
+* [blqs_cirq](blqs_cirq) An application of blqs to [Cirq](https://quantumai.google/cirq) ([installation instructions](blqs_cirq/README.md#installation)).
 
 # Contributing
 
@@ -108,5 +108,5 @@ print(hello_native(False))
 
 Blqs is meant to be all about building programs and the intermediate representation
 of that program.  In many ways it is meant to be a framework to help you build other
-frameworks.  As such, every attempt will be made to keep blqs simple, the ideas is that other
+frameworks.  As such, every attempt will be made to keep blqs simple so that other
 frameworks can be built on top of it.

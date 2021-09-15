@@ -48,12 +48,12 @@ def test_for_str():
     with loop.loop_block():
         op = blqs.Op("MOV")
         op(0, 1)
-    assert str(loop) == "for R(a) in range(5):\n  MOV 0,1"
+    assert str(loop) == "for R(a) in range(5):\n  MOV 0, 1"
 
     with loop.else_block():
         op = blqs.Op("H")
         op(0)
-    assert str(loop) == "for R(a) in range(5):\n  MOV 0,1\nelse:\n  H 0"
+    assert str(loop) == "for R(a) in range(5):\n  MOV 0, 1\nelse:\n  H 0"
 
 
 def test_for_iterable_not_iterable():
@@ -102,11 +102,11 @@ def test_while_str():
     with loop.loop_block():
         op = blqs.Op("MOV")
         op(0, 1)
-    assert str(loop) == "while R(a):\n  MOV 0,1\n"
+    assert str(loop) == "while R(a):\n  MOV 0, 1\n"
     with loop.else_block():
         op = blqs.Op("H")
         op(0)
-    assert str(loop) == "while R(a):\n  MOV 0,1\nelse:\n  H 0"
+    assert str(loop) == "while R(a):\n  MOV 0, 1\nelse:\n  H 0"
 
 
 def test_while_condition_not_readable():

@@ -87,6 +87,10 @@ def build_with_config(build_config: BuildConfig):
 
 
 def _build(func: Callable, build_config: Optional[BuildConfig] = None) -> Callable:
+    """Turn the supplied function into a circuit for the code the function contains.
+
+    This method is not intended to be called directly, use build or build_with_config above.
+    """
     build_config = build_config or BuildConfig()
 
     @functools.wraps(func)

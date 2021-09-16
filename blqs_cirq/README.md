@@ -63,4 +63,4 @@ TODO
 
 # Documentation
 
-TODO
+A good place to start is with the (introduction)[docs/intro.md]

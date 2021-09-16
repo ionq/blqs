@@ -90,7 +90,7 @@ NPC agents in your game.
 ## Learn More
 
 * [Concepts](concepts.md)
-* [Protocols and Capturing Native Python](protocols)
+* [Protocols and Capturing Native Python](protocols.md)
 
 
 ## What Blqs Isn't

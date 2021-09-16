@@ -41,10 +41,7 @@ def is_readable(val: Any) -> bool:
 
 
 class SupportsIsWritable(Protocol):
-    """A protocol for objects that are writable.
-
-    Writable objects can be used in assign statements.
-    """
+    """A protocol for objects that are writable."""
 
     def _is_writeable_(self) -> bool:
         """Returns whether the object is writable."""
@@ -119,7 +116,7 @@ def readable_targets(val: Any) -> Tuple:
     An object has readable targets if either
 
         * it implements the SupportsReadableTargets protocol, in which case the readable targets
-            will be those returned by the `readable_targets` property.
+            will be those returned by the `_readable_targets_` property.
 
         * it implements the SupportsIsReadableProtocol, in which case the readable targets will
             be the this object itself (as a single element of a tuple).

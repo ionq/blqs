@@ -7,19 +7,16 @@ It was inspired by TensorFlow's
 [autograph](https://blog.tensorflow.org/2018/07/autograph-converts-python-into-tensorflow-graphs.html)
 library, and motivated by attempting to improve quantum computing programming frameworks like
 [Cirq](https://quantumai.google/cirq) and [Qiskit](https://qiskit.org).  If you want to write an
-domain specific language that use native python code for "if" statements or "for" statements or
+domain specific language that uses native python code for "if" statements or "for" statements or
 "while" statements, blqs is for you!
 
 # Packages
 
-This repo contains two packages, follow the links for installation instructions and documentation.
+This repo contains two packages (see links for documentation):
 
 * [blqs](blqs) The base blqs framework ([installation instructions](blqs/README.md#installation))
-* [blqs_cirq](blqs_cirq) An application of blqs to [Cirq](https://quantumai.google/cirq) ([installation instructions](blqs_cirq/README.md#installation)).
-
-# Contributing
-
-TODO
+* [blqs_cirq](blqs_cirq) An application of blqs to [Cirq](https://quantumai.google/cirq)
+([installation instructions](blqs_cirq/README.md#installation)).
 
 # Motivating example
 
@@ -27,6 +24,7 @@ Here is a motivating example.  In many traditional quantum programming framework
 a quantum program via appending to a container object, (here is an example from Cirq):
 ```python
 import cirq
+
 circuit = cirq.Circuit()
 q0, q1 = cirq.LineQubit.range(2)
 circuit.append(cirq.H(q0))
@@ -110,3 +108,11 @@ Blqs is meant to be all about building programs and the intermediate representat
 of that program.  In many ways it is meant to be a framework to help you build other
 frameworks.  As such, every attempt will be made to keep blqs simple so that other
 frameworks can be built on top of it.
+
+# Contributing
+
+TODO
+
+# License
+
+Both blqs and blqs_cirq are licensed under Apache 2.0.

@@ -68,7 +68,7 @@ class SupportsIterable(Protocol):
         """Returns whether the object is iterable."""
 
     def _loop_vars_(self) -> Tuple:
-        """Returns the objects loop variables.
+        """Returns the object's loop variables.
 
         These variables will be assigned to the variables of the for loop. In other words,
         for a loop like

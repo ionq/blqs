@@ -12,9 +12,9 @@ Behind the scenes Blqs uses introspection of Python's representation of programs
 its abstract syntax tree, combined with code generation.  You don't really need
 to know what this means, but one of the fun parts of writing Blqs was getting
 it to work without have to do any static analysis of the Python code (which,
-because Python is dynamically typed, is a rather hard and messy).  In many ways
+because Python is dynamically typed, is rather hard and messy).  In many ways
 Blqs is just a variation of Python's abstract syntax tree, but hopefully it
-can be used to avoid a the complexity of dealing with the full AST.
+can be used to avoid the complexity of dealing with the full AST.
 
 ## Simple Example
 
@@ -29,7 +29,7 @@ import blqs
 mov = blqs.Op("MOV")
 ```
 We can then write a simple program to move in a square, using the `blqs.build`
-annotation to indicate this program should be interpreted as our domain
+decorator to indicate this program should be interpreted as our domain
 specific language.
 ```python
 @blqs.build
@@ -57,6 +57,8 @@ Just moving around is good exercise, but we also want our NPCs to react to their
 environment. For example we might want them to be able look and see if their is
 a barrier in some direction and if not move in that direction
 ```python
+is_empty = blqs.Op("IS_EMPTY")
+
 @blqs.build
 def walk():
     x = blqs.Register('X')
@@ -91,7 +93,6 @@ NPC agents in your game.
 
 * [Concepts](concepts.md)
 * [Protocols and Capturing Native Python](protocols.md)
-
 
 ## What Blqs Isn't
 

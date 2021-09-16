@@ -63,4 +63,5 @@ TODO
 
 # Documentation
 
-A good place to start is with the (introduction)[docs/intro.md]
+A good place to start is with the [introduction](docs/intro.md), followed by a look
+at the important [features](docs/features.md).

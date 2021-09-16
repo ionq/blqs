@@ -243,18 +243,18 @@ it as a normal if statement conditional on that variable's value.
 
 How does blqs decide when to do this?  Well notice above that we passed
 in a blqs object in the first conditional, a `blqs.Register`.  The
-important property of this object is that it supports the `_is_readable_`
+important property of this object is that it supports the *is readable*
 protocol (Here we are thinking about a register as a something that can
 store a value, but we could use this for other objects we create.)  What
-does it mean that it supports the `_is_readable_` protocol, it means that
+does it mean that it supports the *is readable* protocol, it means that
 if you look at the `Register` class it has a method `_is_readable_` that
 return True or False whether the object is readable.  If an object is
 readable, then when blqs encounters it during the build stage, it will
 threat this as something that it should capture into a `blqs.If` statement.
 Whereas, in contrast, our `x` variable above is just a `bool` which does not
-have the `_is_readable_` methods.
+have the `_is_readable_` method.
 
-Classes that implement methods such as `_is_readable_` which then allows
+Classes that implement methods, such as `_is_readable_`, which then allows
 these classes to have different behavior are an example of a protocol, also
 known as structural subtyping. In structure subtyping an element is considered
 of the same type if has the same feature. What this means for us is that
@@ -272,4 +272,4 @@ see the document on [protocols and capturing native python](protocols.md).
 ## Learn More
 
 * [Intro](intro.md)
-* [Protocols and Capturing Native Python](protocols)
+* [Protocols and Capturing Native Python](protocols.md)

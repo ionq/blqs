@@ -1,2 +1,3 @@
+blqs
 cirq
 cirq-google

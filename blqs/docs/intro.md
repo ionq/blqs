@@ -87,9 +87,10 @@ Here we also see that the assignment has been captured.  This `blqs.Program`
 object can then be consumed by other Python code, i.e. an executor of these
 NPC agents in your game.
 
-## Learn more
+## Learn More
 
 * [Concepts](concepts.md)
+* [Protocols and Capturing Native Python](protocols)
 
 
 ## What Blqs Isn't

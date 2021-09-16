@@ -10,10 +10,10 @@ when it should capture a python statement or to interpret it as normal
 python code.  Here we describe the supported statements and the protocols
 that they use.
 
-## If statements
+## If Statements
 
 If statements are captured into blqs statements if the condition in the
-if statement supports the `SupportsIsReadable` protocol and this protocol
+if statement implements the `SupportsIsReadable` protocol and this protocol
 returns `True`.  An example of such an object is a `blqs.Register` (in its
 default configuration).
 ```python
@@ -74,7 +74,7 @@ print(if_statement.else_block())
 >   A 2
 ```
 
-## For statements
+## For Statements
 
 For statements are captured into blqs statements if the iterator portion
 of the for statement supports the `_is_iterable_` and `_loop_vars_` methods.
@@ -159,3 +159,88 @@ print(for_statement.else_block())
 Notice how we have used the python `x` variable which was bound to the
 `_loop_vars_` of the iterable.
 
+## While statements
+
+While statements are captured into blqs statements if the condition in the
+while statement implements the `SupportsIsReadable` protocol and this protocol
+returns `True`.  An example of such an object is a `blqs.Register` (in its
+default configuration).
+```python
+class SupportsIsReadable(Protocol):
+    """A protocol for objects that are readable.
+
+    Readable objects can be used in conditionals and loops.
+    """
+
+    def _is_readable_(self) -> bool:
+        """Returns whether the object is readable."""
+```
+When the conditional part of an `while` statement conditional `SupportsIsReadable`, then
+blqs captures the code in the conditional code for this statement in a
+`blqs.While` statement. In particular it captures the portion in the while loop
+in the`loop_block` of that statement.  The `blqs.While` also capture the conditional
+itself.
+
+In addition while loops in python can also have an else clause. In python the else
+portion executes if the while statement terminates without breaking out of the
+conditional (i.e. by the conditional going false).  Blqs will also capture any
+else statements in the `else_block`.
+
+#### While example
+
+```python
+op = blqs.Op("A")
+
+@blqs.build
+def my_program():
+    while blqs.Register("a"):
+        op(1)
+    else:
+        op(2)
+
+program = my_program()
+print(program)
+> prints
+> while R(a):
+>   A 1
+> else:
+>   A 2
+```
+We see that the build decorator has captured a single `blqs.While` statement
+```python
+for statement in program:
+    print(type(statement))
+> prints
+> <class 'blqs.loops.While'>
+```
+That statement has, in turn, captured the condition, loop, and else blocks
+```python
+while_statement = program[0]
+print(while_statement.condition())
+> prints
+> R(a)
+print(while_statement.loop_block())
+> prints
+>   A 1
+print(while_statement.else_block())
+> prints
+>   A 2
+```
+
+Notice that the conditional is just an object that is readable. It is very
+common to have conditionals in while statements that are expressions that
+evaluate to a Truthy or Falsy value. Because python supports overriding
+many of the operators used in creating expressions, i.e. `>`, `<`, `==`,
+when you encounter this case you should likely use pythons build in overloading
+to capture these expressions.
+
+## Assignment statements
+
+
+
+## Del statements
+
+## Learn More
+
+* [Intro](intro.md)
+* [Concepts](concepts.md)

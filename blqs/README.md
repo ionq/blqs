@@ -1,12 +1,12 @@
 # blqs: Building Blocks for Domain Specific Languages
 
-Blqs is a framework for building (internal) domain specific language that can be written 
-in Python. It was inspired by TensorFlow's autograph library, and motivated by the state of 
+Blqs is a framework for building (internal) domain specific language that can be written
+in Python. It was inspired by TensorFlow's autograph library, and motivated by the state of
 the art (circa 2021) in quantum programming frameworks like Cirq and Qiskit.
 
-In short blqs let you define domain specific languages and gives you access to use native 
-Python features like `if`, `while`, or `for` in these languages. This fills in a missing 
-feature for Python, which while they do have operator overloading, does not allow for 
+In short blqs let you define domain specific languages and gives you access to use native
+Python features like `if`, `while`, or `for` in these languages. This fills in a missing
+feature for Python, which while they do have operator overloading, does not allow for
 overloading these built in constructions.
 
 Example:
@@ -24,7 +24,7 @@ def hello_blqs():
     else:
         CX(1, 0)
 ```
-Then if we run this function, we will produce a `blqs.Program` that includes both statements, 
+Then if we run this function, we will produce a `blqs.Program` that includes both statements,
 like `H(0)` but also the `if` and `else` statements.
 ```python
 program = hello_blqs()
@@ -43,4 +43,7 @@ TODO
 
 # Documentation
 
-TODO
+A good place to get started is to read the [introduction to blqs](docs/intro.md).
+After that what are the ideas and abstractions in blqs is described in the
+[concept guide](docs/concepts.md). To learn about support for capturing native
+python code, see refer to the [protocols section](docs/protocols.md) of the docs.

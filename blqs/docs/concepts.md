@@ -265,3 +265,11 @@ how this object should be treated. In our case if `_is_readable_` is
 implemented, then blqs knows that it should capture the `if` expression,
 otherwise it should not.
 
+Blqs in general uses protocols to determine how it should capture
+the content of a python program that it is building. For more details,
+see the document on [protocols and capturing native python](protocols.md).
+
+## Learn More
+
+* [Intro](intro.md)
+* [Protocols and Capturing Native Python](protocols)

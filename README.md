@@ -2,8 +2,8 @@
 
 ![example workflow](https://github.com/ionq/blqs/actions/workflows/blqs-ci.yml/badge.svg)
 
-Blqs is a framework for building (internal) domain specific languages in Python.
-It was inspired by TensorFlow's
+Blqs (pronounced "blocks") is a framework for building (internal) domain specific languages
+in Python. It was inspired by TensorFlow's
 [autograph](https://blog.tensorflow.org/2018/07/autograph-converts-python-into-tensorflow-graphs.html)
 library, and motivated by attempting to improve quantum computing programming frameworks like
 [Cirq](https://quantumai.google/cirq) and [Qiskit](https://qiskit.org).  If you want to write an
@@ -71,11 +71,11 @@ program = hello_if_blqs()
 print(program)
 > prints
 > H 0
-> M 0,a
+> M 0, a
 > if a:
->     CX 0,1
+>     CX 0, 1
 > else:
->     CX 1,0
+>     CX 1, 0
 
 # This is three statements, the last having captured the if.
 for s in program:

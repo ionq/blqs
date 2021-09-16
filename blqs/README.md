@@ -24,7 +24,7 @@ def hello_blqs():
     else:
         CX(1, 0)
 ```
-Then if we run this function, we will produce a `blqs.Program` that includes both statements,
+Then if we call this method, we will produce a `blqs.Program` that includes both statements,
 like `H(0)` but also the `if` and `else` statements.
 ```python
 program = hello_blqs()
@@ -44,6 +44,7 @@ TODO
 # Documentation
 
 A good place to get started is to read the [introduction to blqs](docs/intro.md).
-After that what are the ideas and abstractions in blqs is described in the
-[concept guide](docs/concepts.md). To learn about support for capturing native
+After that, the ideas and abstractions in blqs are described in the
+[concepts guide](docs/concepts.md). To learn about support for capturing native
 python code, see refer to the [protocols section](docs/protocols.md) of the docs.
+For a quick intro via a jupyter notebook, see [hello blqs](hello_blqs.ipynb).

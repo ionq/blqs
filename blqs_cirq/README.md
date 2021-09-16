@@ -64,4 +64,6 @@ TODO
 # Documentation
 
 A good place to start is with the [introduction](docs/intro.md), followed by a look
-at the important [features](docs/features.md).
+at the important [features](docs/features.md). For a quick intro via a jupyter notebook,
+see [hello blqs_cirq](hello_blqs_cirq.ipynb).
+

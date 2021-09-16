@@ -23,8 +23,8 @@ class SupportsIsReadable(Protocol):
     def _is_readable_(self) -> bool:
         """Returns whether the object is readable."""
 ```
-When the conditional part of an `if` statement conditional implements the
-`_is_readable` method, then blqs captures the code in the conditional code
+When the conditional part of an `if` statement implements the
+`_is_readable_` method, then blqs captures the code in the conditional code
 for this statement in a `blqs.If` statement. In particular it captures
 the portion which is true for the conditional in the `if_block` method
 and the portion which is false for the conditional in the  `else_block`
@@ -86,7 +86,7 @@ class SupportsIterable(Protocol):
         """Returns whether the object is iterable."""
 
     def _loop_vars_(self) -> Tuple:
-        """Returns the objects loop variables."""
+        """Returns the object's loop variables."""
 ```
 The iterator portion of the for statement is the `iter` in `for targets in iter:`.
 The `_is_iterable_` method should return True if the object is iterable,
@@ -171,7 +171,7 @@ class SupportsIsReadable(Protocol):
 When the conditional part of an `while` statement conditional supports the
 *is readable* protocol, then blqs captures the code in the conditional code
 for this statement in a `blqs.While` statement. In particular it captures
-the portion in the while loop and this is accessed via the `oop_block` of
+the portion in the while loop and this is accessed via the `loop_block` of
 the `blqs.While` object.  The `blqs.While` also capture the conditional itself,
 in the `conditional` method.
 
@@ -226,7 +226,7 @@ Notice that the conditional is just an object that is readable. It is very
 common to have conditionals in while statements that are expressions that
 evaluate to a Truthy or Falsy value. Because python supports overriding
 many of the operators used in creating expressions, i.e. `>`, `<`, `==`, etc,
-when you encounter this case you should likely use pythons build in overloading
+when you encounter this case you should likely use python's overloading
 to capture these expressions.
 
 ## Assignment Statements
@@ -257,7 +257,7 @@ correctly assigned with the right hand side (the readable targets).
 #### Assignment example
 
 ```python
-p = blqs.Op("A")
+op = blqs.Op("A")
 
 @blqs.build
 def my_program():
@@ -272,7 +272,7 @@ print(program)
 ```
 Notice how the python variable b is bound to the register object, and can be
 used later, just as it would in any normal python program.  We can see that
-the decorator has captures the assignment:
+the decorator has captured the assignment:
 ```python
 for statement in program:
     print(type(statement))
@@ -292,7 +292,7 @@ print(assign_statement.value())
 ```
 
 One interesting part of blqs is that `blqs.Instruction`s will return targets
-that are readable.
+that are readable when calling `_readable_targets_` on the instruction.
 ```python
 meas = blqs.Op("MEAS")
 

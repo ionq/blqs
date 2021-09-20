@@ -19,7 +19,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r blqs/requirements.txt
         cat blqs_cirq/requirements.txt | grep -v blqs | xargs pip install
-        pip install -r blqs_cirq/requirements.txt
         cat ci/requirements-dev.txt | grep pytest | xargs pip install
     - name: Test with pytest
       run: |

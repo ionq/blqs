@@ -39,7 +39,12 @@ Where the last statement contains blocks that hold the `CX` statements.
 
 # Installation
 
-TODO
+To install blqs one can simply pip install the appropriate package
+```
+pip install blqs
+```
+See [requirements.txt](requirement.txt) for the dependencies that blqs will
+pull in.
 
 # Documentation
 

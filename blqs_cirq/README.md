@@ -59,7 +59,11 @@ def my_circuit():
 
 # Installation
 
-TODO
+To install blqs_cirq one can simply pip install the appropriate package
+```
+pip install blqs_cirq
+```
+Note that installing blqs_cirq will also install blqs and cirq.
 
 # Documentation
 

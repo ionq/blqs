@@ -2,7 +2,7 @@
 
 ## Gates, gate methods, and factories
 
-Blqs_cirq aims to retain all of the gates with identical notation to the
+Blqs_cirq aims to retain all the gates with identical notation to the
 latest version of Cirq.  This means that all `cirq.Gate` subclasses
 are supported (modulo some private gates and a few odd exceptions).
 So for `cirq.H` there is a `bc.H`, and `cirq.CNOT` there is a `bc.CNOT`,
@@ -19,7 +19,7 @@ parameter describing the key and produces the `cirq.Operation` that acts on
 these qubits with a `cirq.MeasurementGate`.  Blqs_cirq also supports these
 methods.  `bc.measure(0, key='x')` is equivalent to `cirq.measure(cirq.LineQubit(0), key='x')`.
 
-Finally there are some stranger patterns in Cirq which are supported. For example
+Finally, there are some stranger patterns in Cirq which are supported. For example
 `cirq.SingleQubitCliffordGate` has class variable constants like
 `cirq.SingleQubitCliffordGate.H`.  Blqs_cirq has the equivalent `bc.SingleQubitCliffordGate.H`.
 
@@ -80,7 +80,7 @@ For access to more of the parameters of `cirq.CircuitOperation` beyond just
 When creating `cirq.Circuit`s one can use different `cirq.InsertStrategy`s. The
 change how the stream of operations being fed into the circuit via append are
 added to the circuit. Cirq's default insertion strategy is `EARLIEST` and this
-is what blqs_cirq uses by default. However if one want to use one of the other
+is what blqs_cirq uses by default. However, if one want to use one of the other
 insert strategies, one can switch over to do this by using the `cirq.InsertStrategy`
 context manager.
 

@@ -19,9 +19,9 @@ can be used to avoid the complexity of dealing with the full AST.
 ## Simple Example
 
 Let's suppose we are building a simple game in which players and non-player
-characters (NPCs) live on a square grid.  We'd like to be able design simple
+characters (NPCs) live on a square grid.  We'd like to be able to design simple
 programs for our NPCs to follow, let's do this as a domain specific language.
-For example you might want your NPC to be able to move in different cardinal
+For example, you might want your NPC to be able to move in different cardinal
 directions. So we can define an op "MOV".
 ```python
 import blqs
@@ -54,7 +54,7 @@ print(program)
 > MOV W
 ```
 Just moving around is good exercise, but we also want our NPCs to react to their
-environment. For example we might want them to be able look and see if their is
+environment. For example, we might want them to be able to look and see if there is
 a barrier in some direction and if not move in that direction
 ```python
 is_empty = blqs.Op("IS_EMPTY")

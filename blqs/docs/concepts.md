@@ -1,13 +1,13 @@
 # Concepts
 
-Here we explain some of the main concepts in blqs.
+Here we explain some main concepts in blqs.
 
 The main goal of blqs is to allow one to write Python code, and for this code to
 be capture into an object which one can then process to get meaning (semantics)
 to this code.  Before jumping into this it is interesting to examine ways to do
 this without using blqs.  Two of the patterns that you might encounter to
 achieve this are builders and containers. For example in a builder pattern you
-might doing something like
+might do something like
 ```python
 my_program = MyBuilder().statement1().statement2().build()
 ```
@@ -40,8 +40,8 @@ my_program = (MyBuilder()
               .then_block(MyBuilder().statement1())
               .else_block(MyBuilder().statement2().statement3())
 ```
-Similarly over in container land. In blqs we want to alleviate this problem an
-allow one to write
+A similar problem occurs over in container land. In blqs we want to alleviate 
+this problem and allow one to write
 ```
 Statement1()
 if x < 1:
@@ -74,7 +74,7 @@ print(len(p))
 > prints
 > 2
 ```
-This isn't that different than the container code above! But the key is that
+This isn't that different from the container code above! But the key is that
 while we can build up programs out of statements this way, we could also write
 this in an imperative form in a function, and using the `blqs.build` decorator,
 we can transform this form into something that returns the program corresponding
@@ -132,7 +132,7 @@ we see that the second statement is a block.
 
 ## Ops and Instructions
 
-Above we have seen some simple programs and block with statements.  In general
+Above we have seen some simple programs and block with statements.  In general,
 you will want to create your own classes that correspond to statements.  A common
 pattern in many domain specific languages creates statements via *instructions*.
 An *instruction* is an op code, called an *op* in blqs, along with the operands,
@@ -250,7 +250,7 @@ does it mean that it supports the *is readable* protocol, it means that
 if you look at the `Register` class it has a method `_is_readable_` that
 return True or False whether the object is readable.  If an object is
 readable, then when blqs encounters it during the build stage, it will
-threat this as something that it should capture into a `blqs.If` statement.
+treat this as something that it should capture into a `blqs.If` statement.
 Whereas, in contrast, our `x` variable above is just a `bool` which does not
 have the `_is_readable_` method.
 

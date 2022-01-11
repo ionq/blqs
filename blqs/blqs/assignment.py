@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from __future__ import annotations
 from typing import Sequence, TYPE_CHECKING
 
 from blqs import statement
@@ -27,7 +28,7 @@ class Assign(statement.Statement):
     to which these names have been assigned.
     """
 
-    def __init__(self, assign_names: Sequence[str], value: "blqs.SupportsIsReadable"):
+    def __init__(self, assign_names: Sequence[str], value: blqs.SupportsIsReadable):
         super().__init__()
         self._assign_names = assign_names
         self._value = value
@@ -35,7 +36,7 @@ class Assign(statement.Statement):
     def assign_names(self) -> Sequence[str]:
         return self._assign_names
 
-    def value(self) -> "blqs.SupportsIsReadable":
+    def value(self) -> blqs.SupportsIsReadable:
         return self._value
 
     def __eq__(self, other):

@@ -16,12 +16,16 @@
 class Register:
     """A register containing a value.
 
-    Registers implement protocols `SupportsIsReadable`, `SupportsIsWritable` and
-    `SupporstIsDeletable`.
+    Registers implement protocols `blqs.SupportsIsReadable`, `blqs.SupportsIsWritable` and
+    `blqs.SupporstIsDeletable`.
     """
 
     def __init__(
-        self, name: str, is_readable=True, is_writable: bool = True, is_deletable: bool = True
+        self,
+        name: str,
+        is_readable=True,
+        is_writable: bool = True,
+        is_deletable: bool = True,
     ):
         """Create a register.
 

@@ -14,7 +14,17 @@
 import functools
 import inspect
 
-from typing import cast, Collection, Callable, Optional, Sequence, Tuple, Type, TYPE_CHECKING, Union
+from typing import (
+    cast,
+    Collection,
+    Callable,
+    Optional,
+    Sequence,
+    Tuple,
+    Type,
+    TYPE_CHECKING,
+    Union,
+)
 
 import cirq
 
@@ -83,7 +93,7 @@ class CirqBlqsOpFactory:
     """A wrapper for Cirq gate classes or methods with params that when called give a `cirq.Gate`.
 
     Example, supposing that `MyGateClass` is a `cirq.Gate` subclass and it uses an
-    `__init__` with two args and two keywork args:
+    `__init__` with two args and two keyword args:
         ```
         factory = CirqBlqsOpFactory(MyGateClass)
         cirq_blqs_op = factory(arg1, arg2, kw1=val1, kw2=val2)

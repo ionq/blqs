@@ -11,21 +11,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from blqs import protocols, statement
 
 if TYPE_CHECKING:
-    from blqs import op
+    import blqs  # coverage: ignore
 
 
 class Instruction(statement.Statement):
-    def __init__(self, op: "op.Op", *targets):
+    def __init__(self, op: blqs.Op, *targets):
         super().__init__()
         self._op = op
         self._targets = tuple(targets)
 
-    def op(self) -> "op.Op":
+    def op(self) -> blqs.Op:
         return self._op
 
     def targets(self):

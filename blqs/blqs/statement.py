@@ -17,8 +17,8 @@ from blqs import block_stack
 class Statement:
     """Statements are the basic building blocks of a blqs program.
 
-    If statement are created within the context of a `Block`, then the
-    statement constructure adds this statement to the block.
+    If statement are created within the context of a `blqs.Block`, then the
+    statement constructor adds this statement to the block.
 
     ```
     with blqs.Block() as b:

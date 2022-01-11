@@ -14,8 +14,7 @@
 import dataclasses
 import inspect
 import types
-
-from typing import Any, Callable, Dict, Sequence, Set
+from typing import Any, Callable, Dict, Iterable, Sequence, Set
 
 import gast
 
@@ -52,7 +51,9 @@ class DecoratorSpec:
     method: Callable
 
 
-def _remove_decorators(decorators: Sequence, module_aliases, method_aliases):
+def _remove_decorators(
+    decorators: Sequence, module_aliases: Iterable[str], method_aliases: Iterable[str]
+) -> Sequence:
     """Removes decorators specified as a `blqs.DecoratorSpec` from the decorator node list.
 
     This performs a best effort to remove these annotations. It supports the case where the
@@ -73,9 +74,8 @@ def _remove_decorators(decorators: Sequence, module_aliases, method_aliases):
 
     Args:
         decorators: The list of AST nodes coming from a function type.
-        match_decorators: The matching decorators to remove.
-        captured_globals: A `__globals__` in which the original function is defined. This is used
-            to remove aliases.
+        module_aliases: The matching module aliases to remove.
+        method_aliases: The matching method names to remove.
     """
     if len(decorators) == 0:
         return decorators

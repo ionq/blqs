@@ -11,11 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
 from blqs import block, protocols, statement
 
 
+if TYPE_CHECKING:
+    import blqs  # coverage: ignore
+
+
 class For(statement.Statement):
-    def __init__(self, iterable: protocols.SupportsIterable):
+    def __init__(self, iterable: blqs.SupportsIterable):
         super().__init__()
         assert protocols.is_iterable(iterable), (
             "For's iterable parameter must be iterable. "
@@ -25,16 +32,16 @@ class For(statement.Statement):
         self._loop_block = block.Block(parent_statement=self)
         self._else_block = block.Block(parent_statement=self)
 
-    def iterable(self) -> protocols.SupportsIterable:
+    def iterable(self) -> blqs.SupportsIterable:
         return self._iterable
 
     def loop_vars(self):
         return protocols.loop_vars(self._iterable)
 
-    def loop_block(self) -> block.Block:
+    def loop_block(self) -> blqs.Block:
         return self._loop_block
 
-    def else_block(self) -> block.Block:
+    def else_block(self) -> blqs.Block:
         return self._else_block
 
     def __str__(self):
@@ -67,13 +74,13 @@ class While(statement.Statement):
         self._loop_block = block.Block(parent_statement=self)
         self._else_block = block.Block(parent_statement=self)
 
-    def condition(self) -> protocols.SupportsIsReadable:
+    def condition(self) -> blqs.SupportsIsReadable:
         return self._condition
 
-    def loop_block(self) -> block.Block:
+    def loop_block(self) -> blqs.Block:
         return self._loop_block
 
-    def else_block(self) -> block.Block:
+    def else_block(self) -> blqs.Block:
         return self._else_block
 
     def __str__(self):

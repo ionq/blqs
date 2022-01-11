@@ -1,6 +1,7 @@
 pytest
 pytest-cov
 black
+black[jupyter]
 pymore
 mypy
 pylint

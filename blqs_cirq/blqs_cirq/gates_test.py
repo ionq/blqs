@@ -46,8 +46,11 @@ def test_all_gate_subclasses():
         # Gate features
         cirq.ops.gate_features.SingleQubitGate,
         cirq.ops.gate_features.SupportsOnEachGate,
-        cirq.ops.gate_features.TwoQubitGate,
         cirq.ops.gate_features.ThreeQubitGate,
+        cirq.ops.gate_features.TwoQubitGate,
+        # Testing gate features
+        cirq.testing.gate_features.ThreeQubitGate,
+        cirq.testing.gate_features.TwoQubitGate,
         # Interop gates
         cirq.interop.quirk.cells.qubit_permutation_cells.QuirkQubitPermutationGate,
         # Contrib gates.
@@ -252,6 +255,7 @@ def test_n_qubit_gate_classes():
         bc.MutableDensePauliString("XXX")(0, 1, 2)
         bc.QubitPermutationGate([1, 0])(0, 1)
         bc.QuantumFourierTransformGate(num_qubits=2)(0, 1)
+        bc.ParallelGate(sub_gate=cirq.Y, num_copies=3)(0, 1, 2)
         bc.PhaseGradientGate(num_qubits=2, exponent=0.5)(0, 1)
         bc.WaitGate(duration=cirq.Duration(nanos=10), num_qubits=2)(0, 1)
         bc.ControlledGate(sub_gate=cirq.Y)(0, 1)
@@ -267,6 +271,7 @@ def test_n_qubit_gate_classes():
             cirq.MutableDensePauliString("XXX")(q0, q1, q2),
             cirq.QubitPermutationGate([1, 0])(q0, q1),
             cirq.QuantumFourierTransformGate(num_qubits=2)(q0, q1),
+            cirq.ParallelGate(sub_gate=cirq.Y, num_copies=3)(q0, q1, q2),
             cirq.PhaseGradientGate(num_qubits=2, exponent=0.5)(q0, q1),
             cirq.WaitGate(duration=cirq.Duration(nanos=10), num_qubits=2)(q0, q1),
             cirq.ControlledGate(sub_gate=cirq.Y)(q0, q1),
@@ -293,10 +298,12 @@ def test_noise_classes():
                 (0.5, np.array([[0, 1], [1, 0]], dtype=np.complex64)),
             ]
         )(0)
+        bc.PauliMeasurementGate(observable=(cirq.X, cirq.Z), key="xz")(0, 1)
         bc.PhaseDampingChannel(gamma=0.5)(0)
         bc.PhaseFlipChannel(p=0.5)(0)
         bc.ResetChannel(dimension=2)(0)
         bc.RandomGateChannel(sub_gate=cirq.X, probability=0.5)(0)
+        bc.StatePreparationChannel(target_state=np.array([0, 1]), name="RZ")(0)
 
     q0, q1 = cirq.LineQubit.range(2)
     assert bc.build(noise_classes)() == cirq.Circuit(
@@ -318,10 +325,12 @@ def test_noise_classes():
                     (0.5, np.array([[0, 1], [1, 0]], dtype=np.complex64)),
                 ]
             )(q0),
+            cirq.PauliMeasurementGate(observable=[cirq.X, cirq.Z], key="xz")(q0, q1),
             cirq.PhaseDampingChannel(gamma=0.5)(q0),
             cirq.PhaseFlipChannel(p=0.5)(q0),
             cirq.ResetChannel(dimension=2)(q0),
             cirq.RandomGateChannel(sub_gate=cirq.X, probability=0.5)(q0),
+            cirq.StatePreparationChannel(target_state=np.array([0, 1]), name="RZ")(q0),
         ]
     )
 
@@ -358,7 +367,11 @@ def test_n_qubit_gate_functions():
 
     q0, q1 = cirq.LineQubit.range(2)
     assert bc.build(n_qubit_gate_functions)() == cirq.Circuit(
-        [cirq.measure(q0, q1, key="x"), cirq.qft(q0, q1, inverse=True), cirq.wait(q0, q1, nanos=10)]
+        [
+            cirq.measure(q0, q1, key="x"),
+            cirq.qft(q0, q1, inverse=True),
+            cirq.wait(q0, q1, nanos=10),
+        ]
     )
 
 

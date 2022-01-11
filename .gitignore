@@ -130,3 +130,7 @@ dmypy.json
 
 # Visual studio
 .vscode/
+
+# Intellij
+.idea/
+*.iml

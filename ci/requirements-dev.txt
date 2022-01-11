@@ -5,3 +5,4 @@ black[jupyter]
 pymore
 mypy
 pylint
+twine

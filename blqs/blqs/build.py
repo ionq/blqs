@@ -140,9 +140,7 @@ def _build(func: Callable, build_config: Optional[BuildConfig] = None) -> Callab
         except Exception as e:
             # If there is an exception, chain the exception in such a way as to indicated
             # the original file and line number is given.
-            line_map = _ast.construct_line_map(
-                transformed_gast, transformed_source_code
-            )
+            line_map = _ast.construct_line_map(transformed_gast, transformed_source_code)
             exceptions._raise_with_line_mapping(e, func, line_map, filename)
 
     return wrapper
@@ -222,12 +220,8 @@ class _BuildTransformer(gast.NodeTransformer):
             decorators.DecoratorSpec(module=__blqs, method=build_with_config),
             *self._build_config.additional_decorator_specs,
         ]
-        module_aliases = decorators._compute_module_aliases(
-            decorator_specs, self._func.__globals__
-        )
-        method_aliases = decorators._compute_method_aliases(
-            decorator_specs, self._func.__globals__
-        )
+        module_aliases = decorators._compute_module_aliases(decorator_specs, self._func.__globals__)
+        method_aliases = decorators._compute_method_aliases(decorator_specs, self._func.__globals__)
 
         return decorators._remove_decorators(
             decorator_list, module_aliases=module_aliases, method_aliases=method_aliases
@@ -352,9 +346,7 @@ class _BuildTransformer(gast.NodeTransformer):
             elif isinstance(target, gast.List):
                 names.extend(gast.Constant(t.id, None) for t in target.elts)
             else:
-                raise ValueError(
-                    "Invalid target type: this should not happen"
-                )  # coverage: ignore
+                raise ValueError("Invalid target type: this should not happen")  # coverage: ignore
         return gast.Tuple(names, gast.Load())
 
     def visit_Delete(self, node):

@@ -92,6 +92,7 @@ MatrixGate = cirq_blqs_op.create_cirq_blqs_op(cirq.MatrixGate)
 MutableDensePauliString = cirq_blqs_op.create_cirq_blqs_op(cirq.MutableDensePauliString)
 QubitPermutationGate = cirq_blqs_op.create_cirq_blqs_op(cirq.QubitPermutationGate)
 QuantumFourierTransformGate = cirq_blqs_op.create_cirq_blqs_op(cirq.QuantumFourierTransformGate)
+ParallelGate = cirq_blqs_op.create_cirq_blqs_op(cirq.ParallelGate)
 PhaseGradientGate = cirq_blqs_op.create_cirq_blqs_op(cirq.PhaseGradientGate)
 WaitGate = cirq_blqs_op.create_cirq_blqs_op(cirq.WaitGate)
 ControlledGate = cirq_blqs_op.create_cirq_blqs_op(cirq.ControlledGate)
@@ -116,7 +117,12 @@ def wait(
     millis: Union[int, float, sympy.Basic] = 0,
 ):
     wait_fn = functools.partial(
-        cirq.wait, duration=duration, picos=picos, nanos=nanos, micros=micros, millis=millis
+        cirq.wait,
+        duration=duration,
+        picos=picos,
+        nanos=nanos,
+        micros=micros,
+        millis=millis,
     )
     return cirq_blqs_op.CirqBlqsOp(wait_fn, "wait")(*targets)
 
@@ -131,10 +137,12 @@ GeneralizedAmplitudeDampingChannel = cirq_blqs_op.create_cirq_blqs_op(
 )
 KrausChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.KrausChannel)
 MixedUnitaryChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.MixedUnitaryChannel)
+PauliMeasurementGate = cirq_blqs_op.create_cirq_blqs_op(cirq.PauliMeasurementGate)
 PhaseDampingChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.PhaseDampingChannel)
 PhaseFlipChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.PhaseFlipChannel)
 ResetChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.ResetChannel)
 RandomGateChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.RandomGateChannel)
+StatePreparationChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.StatePreparationChannel)
 
 # Noise functions.
 asymmetric_depolarize = cirq_blqs_op.create_cirq_blqs_op(cirq.asymmetric_depolarize)

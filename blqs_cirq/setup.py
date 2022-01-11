@@ -30,9 +30,7 @@ long_description = io.open("README.md", encoding="utf-8").read()
 requirements = open("requirements.txt").readlines()
 requirements = [r.strip() for r in requirements]
 
-packages = ["blqs_cirq"] + [
-    "blqs_cirq." + package for package in find_packages(where="blqs_cirq")
-]
+packages = ["blqs_cirq"] + ["blqs_cirq." + package for package in find_packages(where="blqs_cirq")]
 
 setup(
     name=name,

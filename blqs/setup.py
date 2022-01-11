@@ -39,12 +39,28 @@ setup(
     version=__version__,
     url="https://github.com/ionq/blqs",
     author="The Blqs Developers",
-    author_email="bacon@ionq.com",
+    author_email="dabacon@gmail.com",
     python_requires=(">=3.7.0"),
     install_requires=requirements,
-    licence="Apache 2",
+    license="Apache 2",
     description=description,
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=packages,
 )
+
+# Instruction for release
+# 1. Create distribution:
+#   python setup.py sdist bdist_wheel
+# 2. Check the distribution:
+#   twine check dist/*
+# 3. Upload to test pypi:
+#   twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+# 4. Visit https://test.pypi.org/project/blqs/ and check that it can install.
+# You will need to install requirement since most of these are not on test pypi:
+#   pip install -r requirements.txt
+# Followed by pip instructions from website
+#   pip install -i https://test.pypi.org/simple/ blqs
+# 5. Upload to prod pypi:
+#   twine upload dist/*
+# 6. Confirm on https://pypi.org/project/blqs/ and test install using pip.

@@ -32,7 +32,7 @@ on the last two qubits storing the result in the `m` key.
 
 Cirq comes with a large number of standard quantum gates and is easily
 extensible to add your own gates. Circuit objects can then be used in other
-ways by Cirq. For example they can be optimized (compiled) into other circuits.
+ways by Cirq. For example, they can be optimized (compiled) into other circuits.
 Or they can be simulated using built in Cirq simulator or externally available
 simulators. They can also be sent to a quantum computer to run the
 actual program.
@@ -55,7 +55,7 @@ print(circuit)
 > 2: ───H───
 ```
 This is nice as it allows for mixing of native python with the actual circuit
-construction.  However it is still a bit awkard.
+construction.  However, it is still a bit awkward.
 
 Another important construction in Cirq are the basic of control flow (this
 is currently, as of Cirq v0.12 a work in progress).  For example one can add
@@ -104,12 +104,12 @@ My using the `blqs_cirq.build` annotation on a function, we have turned
 it into a function that will return the `cirq.Circuit` corresponding to
 the imperatively written circuit inside the function.  Further we have
 used the `blqs_cirq` gates, `H` and `CX`, directly corresponding to the
-Cirq gates, to construct the circuit.  Finally note that instead of
+Cirq gates, to construct the circuit.  Finally, note that instead of
 using line qubits, we have used simple integers.  If we example the circuit
 that has been constructed we can see that it has converted these `int`s
 to `cirq.LineQubit`s.
 
-Similarly we can use blqs_cirq to write `cirq.CircuitOperation`s in a
+Similarly, we can use blqs_cirq to write `cirq.CircuitOperation`s in a
 cleaner form
 ```python
 @bc.build

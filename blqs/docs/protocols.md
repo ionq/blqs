@@ -25,14 +25,14 @@ class SupportsIsReadable(Protocol):
 ```
 When the conditional part of an `if` statement implements the
 `_is_readable_` method, then blqs captures the code in the conditional code
-for this statement in a `blqs.If` statement. In particular it captures
+for this statement in a `blqs.If` statement. In particular, it captures
 the portion which is true for the conditional in the `if_block` method
 and the portion which is false for the conditional in the  `else_block`
 method. See the example below.
 
 Note that python also contains an `elif` statement. These are treated just as
-they are in python, as an if statement inside of an else. A terminal else is then
-associated with that inner if statement.
+they are in python, as an if statement inside an else statement. A terminal else 
+is then  associated with that inner if statement.
 
 #### If example
 
@@ -243,8 +243,8 @@ class SupportsReadableTargets(Protocol):
     def _readable_targets_(self) -> Tuple:
         """Returns the readable targets of the object."""
 ```
-The *is readable* protocol is describe above and has objects that implement
-the `_is_readable_` method.  When either of these protocol is implemented
+The *is readable* protocol is described above and has objects that implement
+the `_is_readable_` method.  When either of these protocols is implemented
 by the value in a python assign statement, blqs will capture this into an
 `blqs.Assign` statement.  The assign object captures the names of the variables
 being assigned. This is accessible vi the `assign_names` method of the assign
@@ -252,7 +252,7 @@ object.  It also captures the readable targets, and these are accessible via
 the `value` method of the object.  Note that this supports assigning single
 variables, but also assigning tuples, i.e. `a, b = 1, 2`.  In addition
 to the assign statement, the actual variables being assign to are also
-correctly assigned with the right hand side (the readable targets).
+correctly assigned with the right-hand side (the readable targets).
 
 #### Assignment example
 

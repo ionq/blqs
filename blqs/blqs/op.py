@@ -11,7 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
 from blqs import instruction
+
+
+if TYPE_CHECKING:
+    import blqs  # coverage: ignore
 
 
 class Op:
@@ -35,7 +42,7 @@ class Op:
     def __str__(self):
         return str(self._name)
 
-    def __call__(self, *targets) -> "instruction.Instruction":
+    def __call__(self, *targets) -> blqs.Instruction:
         return instruction.Instruction(self, *targets)
 
     def __eq__(self, other):

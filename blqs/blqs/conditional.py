@@ -11,11 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
 from blqs import block, protocols, statement
 
 
+if TYPE_CHECKING:
+    import blqs  # coverage: ignore
+
+
 class If(statement.Statement):
-    def __init__(self, condition: protocols.SupportsIsReadable):
+    def __init__(self, condition: blqs.SupportsIsReadable):
         super().__init__()
         assert protocols.is_readable(condition), (
             "If's condition parameter must be readable. See "
@@ -25,13 +32,13 @@ class If(statement.Statement):
         self._if_block = block.Block(parent_statement=self)
         self._else_block = block.Block(parent_statement=self)
 
-    def condition(self) -> protocols.SupportsIsReadable:
+    def condition(self) -> blqs.SupportsIsReadable:
         return self._condition
 
-    def if_block(self) -> block.Block:
+    def if_block(self) -> blqs.Block:
         return self._if_block
 
-    def else_block(self) -> block.Block:
+    def else_block(self) -> blqs.Block:
         return self._else_block
 
     def __str__(self):

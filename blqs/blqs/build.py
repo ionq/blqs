@@ -31,7 +31,17 @@ from blqs import decorators, exceptions, _ast, _namer, _template
 
 @dataclasses.dataclass
 class BuildConfig:
-    """Configuration for the build compilation."""
+    """Configuration for the build compilation.
+
+    Attributes:
+        support_if: Whether to support capturing `if` statements.
+        support_for: Whether to support capturing `for` statements.
+        support_while: Whether to support capturing `while` statements.
+        support_assign: Whether to support capturing assignments.
+        support_delete: Whether to support capturing `del` statements.
+        additional_decorator_specs: A list of `blqs.DecoratorSpec`s that are removed
+            during the build. See `blqs.DecoratorSpec` for more information.
+    """
 
     support_if: bool = True
     support_for: bool = True

@@ -11,10 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from __future__ import annotations
+
 import textwrap
-from typing import Iterable, Tuple
+from typing import Iterable, Iterator, List, TYPE_CHECKING, Tuple
 
 from blqs import block_stack, statement
+
+if TYPE_CHECKING:
+    import blqs  # coverage: ignore
 
 
 class Block(statement.Statement):
@@ -59,7 +64,7 @@ class Block(statement.Statement):
         The key benefit of this third method is that you can use it write idiomatic python code
         which is also converted over to appropriate blqs constructions (or not).
 
-    Once constructed, `Block`s maybe interated over and accessed by index or slice.
+    Once constructed, `Block`s maybe iterated over and accessed by index or slice.
     `Block`s do not support mutation of their elements (though if those elements are
     references, the objects these reference refer to can be mutated).
 
@@ -69,7 +74,7 @@ class Block(statement.Statement):
     See also `blqs.Program` for a top level `Block`.
     """
 
-    def __init__(self, parent_statement=None):
+    def __init__(self, parent_statement: blqs.Statement = None):
         """Construction a block.
 
         Args:
@@ -83,19 +88,19 @@ class Block(statement.Statement):
         self._statements: List[statement.Statement] = []
 
     @classmethod
-    def of(clz, *statements) -> "Block":
-        """Static constructor for `Blocks`.
+    def of(clz, *statements) -> Block:
+        """Static constructor for `blqs.Block`s.
 
         Example:
         ```
-        blqs.Block.of("a", "b")
+        blqs.Block.of(statement1, statement2)
         ```
         """
         b = clz()
         b.extend(statements)
         return b
 
-    def __enter__(self):
+    def __enter__(self) -> Block:
         block_stack.push_new_block(self)
         return self
 
@@ -112,16 +117,19 @@ class Block(statement.Statement):
     def __setitem__(self, index, value):
         raise NotImplementedError("Block elements cannot be modified.")
 
-    def append(self, statement: statement.Statement):
-        self._statements.append(statement)
+    def __iter__(self) -> Iterator[blqs.Statement]:
+        return iter(self._statements)
 
-    def extend(self, statements: Iterable[statement.Statement]):
+    def append(self, stmt: blqs.Statement):
+        self._statements.append(stmt)
+
+    def extend(self, statements: Iterable[blqs.Statement]):
         self._statements.extend(statements)
 
     def __len__(self) -> int:
         return len(self._statements)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return textwrap.indent("\n".join(str(e) for e in self), "  ")
 
     def __eq__(self, other):

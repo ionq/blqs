@@ -61,7 +61,9 @@ def test_remove_decorator_attribute():
     ) == [nonmatch_module_node]
     with pytest.raises(ValueError, match="decorator"):
         decorators._remove_decorators(
-            [match_node, nonmatch_node], module_aliases=["module"], method_aliases=["match"]
+            [match_node, nonmatch_node],
+            module_aliases=["module"],
+            method_aliases=["match"],
         )
 
 
@@ -83,7 +85,9 @@ def test_remove_decorator_call_name():
 
 def test_remove_decorator_call_attribute():
     match_node = gast.Call(
-        gast.Attribute(gast.Name("module", gast.Load(), None, None), "match", gast.Load()), [], []
+        gast.Attribute(gast.Name("module", gast.Load(), None, None), "match", gast.Load()),
+        [],
+        [],
     )
     nonmatch_node = gast.Call(
         gast.Attribute(gast.Name("module", gast.Load(), None, None), "nonmatch", gast.Load()),
@@ -110,7 +114,9 @@ def test_remove_decorator_call_attribute():
     ) == [nonmatch_module_node]
     with pytest.raises(ValueError, match="decorator"):
         decorators._remove_decorators(
-            [match_node, nonmatch_node], module_aliases=["module"], method_aliases=["match"]
+            [match_node, nonmatch_node],
+            module_aliases=["module"],
+            method_aliases=["match"],
         )
 
 

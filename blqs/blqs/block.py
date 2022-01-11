@@ -89,7 +89,7 @@ class Block(statement.Statement):
 
     @classmethod
     def of(clz, *statements) -> Block:
-        """Static constructor for `blq.Block`s.
+        """Static constructor for `blqs.Block`s.
 
         Example:
         ```

@@ -100,7 +100,7 @@ git commit -m "My commit message"
 git push origin yourbranchname
 ```
 
-4. Navigate to `https://githbut.com/ionq/blqs` and you should see the option
+6. Navigate to `https://githbut.com/ionq/blqs` and you should see the option
 to create a pull request from your forked branch.  Create this.  A reviewer
 will review your code and may make suggestions for changes to your code.  You
 can make those changes locally, commit them, and then push a new version of your
@@ -111,5 +111,5 @@ git commit -m "Describe changes"
 git push origin yourbranchname
 ```
 
-5. Once your PR is approved, it will be merged into the main branch. Congrats
+7. Once your PR is approved, it will be merged into the main branch. Congrats
 on contributing to blqs!

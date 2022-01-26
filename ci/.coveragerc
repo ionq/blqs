@@ -3,4 +3,4 @@ exclude_lines =
     coverage: ignore
     pragma: no cover
     if TYPE_CHECKING:
-omit = *test.py,sample_testing.py
+omit = *test.py,*testing_samples.py

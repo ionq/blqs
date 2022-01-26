@@ -19,7 +19,7 @@ import cirq
 
 import blqs
 
-from blqs_cirq import insert_strategy, protocols, qubits, repeat
+from blqs_cirq import insert_strategy, moment, protocols, qubits, repeat
 
 
 @dataclasses.dataclass
@@ -36,6 +36,7 @@ class BuildConfig:
         support_circuit_operation: Whether or not `CircuitOperation` or `Repeat` ops are supported.
             If they are included and support is off, a `ValueError` is thrown.
         support_insert_strategy: Whether or not `InsertStrategy` is supported.
+        support_moment: Whether or not `Moment` is supported.
 
     """
 
@@ -44,6 +45,7 @@ class BuildConfig:
     blqs_build_config: Optional[blqs.BuildConfig] = None
     support_circuit_operation: bool = True
     support_insert_strategy: bool = True
+    support_moment: bool = True
 
 
 def build(func: Callable) -> Callable:
@@ -110,7 +112,7 @@ def _build(func: Callable, build_config: Optional[BuildConfig] = None) -> Callab
     return wrapper
 
 
-def _build_circuit(program, build_config, inside_insert_strategy=False):
+def _build_circuit(program, build_config, inside_insert_strategy=False, inside_moment=False):
     circuit = cirq.Circuit()
     for statement in program:
         if isinstance(statement, blqs.Instruction):
@@ -137,6 +139,8 @@ def _build_circuit(program, build_config, inside_insert_strategy=False):
             if build_config.support_insert_strategy:
                 if inside_insert_strategy:
                     raise ValueError("InsertStrategies cannot be nested, as the this is ambiguous.")
+                if inside_moment:
+                    raise ValueError("InsertStrategy cannot be used inside a Moment.")
                 ops = [
                     _build_circuit(
                         [statement], build_config, inside_insert_strategy=True
@@ -146,7 +150,20 @@ def _build_circuit(program, build_config, inside_insert_strategy=False):
                 circuit.append(ops, strategy=statement.strategy())
             else:
                 raise ValueError(
-                    "Encountered InsertStrategy block, but support for such block is "
+                    "Encountered InsertStrategy block, but support for such blocks is "
+                    "disabled in the build config."
+                )
+        elif isinstance(statement, moment.Moment):
+            if inside_moment:
+                raise ValueError("Moments cannot be nested.")
+            if build_config.support_moment:
+                ops = _build_circuit(
+                    statement.statements(), build_config, inside_moment=True
+                ).all_operations()
+                circuit.append(cirq.Moment(ops))
+            else:
+                raise ValueError(
+                    "Encountered Moment block, but support for Moments is "
                     "disabled in the build config."
                 )
         else:

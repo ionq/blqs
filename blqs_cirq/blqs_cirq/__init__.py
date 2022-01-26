@@ -118,6 +118,10 @@ from blqs_cirq.insert_strategy import (
     InsertStrategy,
 )
 
+from blqs_cirq.moment import (
+    Moment,
+)
+
 from blqs_cirq.protocols import (
     decode,
     SupportsDecoding,

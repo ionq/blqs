@@ -22,9 +22,9 @@ if TYPE_CHECKING:
 
 class Instruction(statement.Statement):
     def __init__(self, op: blqs.Op, *targets):
-        super().__init__()
         self._op = op
         self._targets = tuple(targets)
+        super().__init__()
 
     def op(self) -> blqs.Op:
         return self._op

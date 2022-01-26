@@ -70,7 +70,10 @@ def test_circuit_operation_fields():
         param_resolver={sympy.Symbol("x"): 0.1},
     ) as co:
         bc.HPowGate(exponent=sympy.Symbol("x"))(1)
-    assert co.circuit_op_kwargs() == {"repetitions": 3, "param_resolver": {sympy.Symbol("x"): 0.1}}
+    assert co.circuit_op_kwargs() == {
+        "repetitions": 3,
+        "param_resolver": {sympy.Symbol("x"): 0.1},
+    }
     assert co.circuit_op_block() == blqs.Block.of(bc.HPowGate(exponent=sympy.Symbol("x"))(1))
 
 
@@ -119,6 +122,11 @@ def test_circuit_operation_equality():
     equals_tester.add_equality_group(
         bc.CircuitOperation(
             qubit_map={cirq.LineQubit(1): cirq.LineQubit(0)},
+        )
+    )
+    equals_tester.add_equality_group(
+        bc.CircuitOperation(
+            qubit_map={cirq.LineQubit(1): cirq.LineQubit(2)},
         )
     )
     with bc.CircuitOperation() as co:

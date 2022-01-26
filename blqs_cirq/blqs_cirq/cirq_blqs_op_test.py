@@ -25,6 +25,12 @@ def test_cirq_blqs_op_equality():
     equals_tester.add_equality_group(bc.CirqBlqsOp(cirq.X, op_name="x"))
 
 
+def test_cirq_blqs_instruction_equality():
+    equals_tester = pymore.EqualsTester()
+    equals_tester.make_equality_group(lambda: bc.CirqBlqsOp(cirq.H)(0))
+    equals_tester.add_equality_group(bc.CirqBlqsOp(cirq.X)(0))
+
+
 def test_cirq_blqs_op_fields():
     op = bc.CirqBlqsOp(cirq.X)
     assert op.gate() == cirq.X
@@ -58,7 +64,8 @@ def test_cirq_blqs_op_delegated_controlled():
     op = bc.CirqBlqsOp(cirq.X)
     delegated = op.controlled(1, control_values=[0], control_qid_shape=(3,))
     expected = bc.CirqBlqsOp(
-        gate=cirq.X.controlled(1, control_values=[0], control_qid_shape=(3,)), op_name="X"
+        gate=cirq.X.controlled(1, control_values=[0], control_qid_shape=(3,)),
+        op_name="X",
     )
     assert delegated == expected
 

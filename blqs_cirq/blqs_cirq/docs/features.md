@@ -75,6 +75,31 @@ print(program)
 For access to more of the parameters of `cirq.CircuitOperation` beyond just
 `repetitions`, one can use the `blqs_cirq.CircuitOperation` context manager.
 
+## Moments
+
+In cirq, `cirq.Moment` objects are the basic building blocks of a `cirq.Circuit` and
+represent a set of operation occoring at one moment in time.  Moments act on disjoint
+qubits.  In order to facilitate building by moments, blqs_cirq supports a new
+`blqs.Block` that builds a Moment.
+
+```python
+@bc.build
+def my_program():
+    with bc.Moment():
+        bc.H(0)
+    with bc.Moment():
+        bc.H(1)
+program = my_program()
+print(program)
+> prints
+> 0: ───H───────
+>
+> 1: ───────H───
+```
+Note that if you attempt to build an invalid moment, for example by acting on 
+the same qubits within a moment, this will fail when you call the built function.  Also
+nesting Moments or InsertStrategies (below) is not allowed (as it does not make sense).
+
 ## Insert strategy
 
 When creating `cirq.Circuit`s one can use different `cirq.InsertStrategy`s. The

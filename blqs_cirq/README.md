@@ -47,6 +47,17 @@ def my_circuit():
         H(0)
         CX(0, 1)
 ```
+As more control operations are added to Cirq these will be added to blqs_cirq.
+
+* Simple building of Moments.  For example, the code below builds two moments:
+```python
+@bc.build
+def my_circuit():
+    with Moment():
+        bc.H(0)
+    with Moment():
+        bc.H(1)
+```
 
 * Support for Cirq's insertion strategies:
 ```python

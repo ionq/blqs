@@ -71,7 +71,7 @@ def test_build_insert_strategy_nesting_disallowed():
         bc.build(fn)()
 
 
-def test_build_insert_strategy_disabled():
+def test_build_with_config_insert_strategy_disabled():
     def fn():
         with bc.InsertStrategy(cirq.InsertStrategy.NEW):
             bc.X(0)
@@ -133,6 +133,62 @@ def test_build_repeat():
     )
 
 
+def test_build_with_config_circuit_op_disabled():
+    def fn():
+        with bc.Repeat(3):
+            bc.H(0)
+
+    build_config = bc.BuildConfig(support_circuit_operation=False)
+    with pytest.raises(ValueError, match="CircuitOperation"):
+        bc.build_with_config(build_config)(fn)()
+
+
+def test_build_moment():
+    def fn():
+        with bc.Moment():
+            bc.CX(1, 2)
+        with bc.Moment():
+            bc.X(0)
+
+    q0, q1, q2 = cirq.LineQubit.range(3)
+    assert bc.build(fn)() == cirq.Circuit(
+        [
+            cirq.Moment([cirq.CX(q1, q2)]),
+            cirq.Moment([cirq.X(q0)]),
+        ]
+    )
+
+
+def test_build_moment_moment_invalid():
+    def fn():
+        with bc.Moment():
+            with bc.Moment():
+                bc.H(0)
+
+    with pytest.raises(ValueError, match="Moments cannot be nested"):
+        bc.build(fn)()
+
+
+def test_build_moment_insert_strategy_invalid():
+    def fn():
+        with bc.Moment():
+            with bc.InsertStrategy(strategy=cirq.InsertStrategy.NEW):
+                bc.H(0)
+
+    with pytest.raises(ValueError, match="InsertStrategy cannot be used"):
+        bc.build(fn)()
+
+
+def test_build_with_config_moment_disabled():
+    def fn():
+        with bc.Moment():
+            bc.H(0)
+
+    build_config = bc.BuildConfig(support_moment=False)
+    with pytest.raises(ValueError, match="Moment"):
+        bc.build_with_config(build_config)(fn)()
+
+
 def test_build_with_config_program_output():
     def fn():
         bc.H(0)
@@ -154,17 +210,7 @@ def test_build_with_config_qubit_decoder():
     assert bc.build_with_config(build_config)(fn)() == cirq.Circuit([cirq.H(cirq.NamedQubit("0"))])
 
 
-def test_build_with_config_circuit_op_disable():
-    def fn():
-        with bc.Repeat(3):
-            bc.H(0)
-
-    build_config = bc.BuildConfig(support_circuit_operation=False)
-    with pytest.raises(ValueError, match="CircuitOperation"):
-        bc.build_with_config(build_config)(fn)()
-
-
-def test_build_with_config_if_disable():
+def test_build_with_config_if_disabled():
     def fn():
         if blqs.Iterable("range", blqs.Register("a")):
             bc.H(0)

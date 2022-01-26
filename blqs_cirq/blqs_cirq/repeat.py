@@ -31,9 +31,9 @@ class CircuitOperation(blqs.Statement):
     """
 
     def __init__(self, **circuit_op_kwargs):
-        super().__init__()
         self._circuit_op_block = blqs.Block(parent_statement=self)
         self._circuit_op_kwargs = circuit_op_kwargs
+        super().__init__()
 
     def circuit_op_kwargs(self) -> Dict:
         return self._circuit_op_kwargs
@@ -46,7 +46,7 @@ class CircuitOperation(blqs.Statement):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        return self._circuit_op_block.__exit__(exc_type, exc_value, traceback)
+        self._circuit_op_block.__exit__(exc_type, exc_value, traceback)
 
     def __str__(self):
         return f"with CircuitOperation({self._circuit_op_kwargs or ''}):\n{self._circuit_op_block}"
@@ -60,7 +60,7 @@ class CircuitOperation(blqs.Statement):
         )
 
     def __hash__(self):
-        return hash((self._circuit_op_block, frozenset(self._circuit_op_block)))
+        return hash((self._circuit_op_block, frozenset(self._circuit_op_kwargs)))
 
 
 class Repeat(CircuitOperation):
@@ -71,6 +71,7 @@ class Repeat(CircuitOperation):
     with blqs_cirq.Repeat(10):
         H(0)
         Z(1)
+    ```
     """
 
     def __init__(self, repetitions: int):

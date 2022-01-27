@@ -12,7 +12,7 @@ overloading these built in constructions.
 Example:
 ```python
 import blqs
-H, M, CX = blqs.Operand('H'), blqs.Operand('M'), blqs.Operand('CX')
+H, M, CX = blqs.Op('H'), blqs.Op('M'), blqs.Op('CX')
 
 @blqs.build
 def hello_blqs():

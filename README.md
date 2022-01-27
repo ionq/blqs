@@ -36,8 +36,8 @@ In blqs instead one can define functions that return programs.
 ```python
 import blqs
 
-H = blqs.Operand('H')
-CX = blqs.Operand('CX')
+H = blqs.Op('H')
+CX = blqs.Op('CX')
 
 @blqs.build
 def hello_blqs():
@@ -57,7 +57,7 @@ function annotation turns the `hello_blqs` function into a builder that,
 More interestingly, blqs programs can also take native python functionality,
 like `if` statements, and capture them in blqs objects:
 ```python
-M = blqs.Operand('M')
+M = blqs.Op('M')
 
 @blqs.build
 def hello_if_blqs():

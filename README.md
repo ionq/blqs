@@ -15,9 +15,9 @@ domain specific language that uses native python code for "if" statements or "fo
 This repo contains two packages:
 
 * [blqs](blqs) The base blqs framework ([installation instructions](blqs/README.md#installation), 
-[introductory documentation](blqs/docs/intro.md))
-* [blqs_cirq](blqs_cirq) An application of blqs to [Cirq](https://quantumai.google/cirq),
-([installation instructions](blqs_cirq/README.md#installation)
+[introductory documentation](blqs/docs/intro.md)).
+* [blqs_cirq](blqs_cirq) An application of blqs to [Cirq](https://quantumai.google/cirq)
+([installation instructions](blqs_cirq/README.md#installation), 
 [introductory documentation](blqs_cirq/docs/intro.md)).
   
 # Motivating example
@@ -32,7 +32,7 @@ q0, q1 = cirq.LineQubit.range(2)
 circuit.append(cirq.H(q0))
 circuit.append(cirq.CX(q0, q1))
 ```
-In blqs instead one can define functions that return programs.
+In blqs instead one can define functions that return programs:
 ```python
 import blqs
 

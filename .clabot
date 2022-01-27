@@ -1,4 +1,4 @@
 {
-  "contributors": [ "dabacon" ],
+  "contributors": [ "dabacon", "mjk" ],
   "message": "We require contributors to sign our Contributor License Agreement, and we dont have one on file for your github username. In order for us to review and merge your code, please contact @dabacon to sign the CLA."
 }

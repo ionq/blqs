@@ -5,7 +5,7 @@ We welcome contributions to blqs.
 First let's get the legal work out of the way. To contribute to blqs,
 one needs to sign a Contributor License Agreement. This ensures that you
 have agreed that you have the right to contribute the code you would like
-to contribute. To get sign the CLA, please contact @dabacon.
+to contribute. To receive IonQ's CLA, please contact @mjk or email opensource@ionq.com.
 
 ## Setup for development
 

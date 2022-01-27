@@ -14,9 +14,9 @@ domain specific language that uses native python code for "if" statements or "fo
 
 This repo contains two packages:
 
-* [blqs](blqs) The base blqs framework ([installation instructions](blqs/README.md#installation) 
+* [blqs](blqs) The base blqs framework ([installation instructions](blqs/README.md#installation), 
 [introductory documentation](blqs/docs/intro.md))
-* [blqs_cirq](blqs_cirq) An application of blqs to [Cirq](https://quantumai.google/cirq)
+* [blqs_cirq](blqs_cirq) An application of blqs to [Cirq](https://quantumai.google/cirq),
 ([installation instructions](blqs_cirq/README.md#installation)
 [introductory documentation](blqs_cirq/docs/intro.md)).
   
@@ -36,8 +36,8 @@ In blqs instead one can define functions that return programs.
 ```python
 import blqs
 
-H = blqs.Operand('H')
-CX = blqs.Operand('CX')
+H = blqs.Op('H')
+CX = blqs.Op('CX')
 
 @blqs.build
 def hello_blqs():
@@ -57,7 +57,7 @@ function annotation turns the `hello_blqs` function into a builder that,
 More interestingly, blqs programs can also take native python functionality,
 like `if` statements, and capture them in blqs objects:
 ```python
-M = blqs.Operand('M')
+M = blqs.Op('M')
 
 @blqs.build
 def hello_if_blqs():
@@ -120,4 +120,4 @@ setup with a development environment and for info on the CLA see [here](ci/dev.m
 
 # License
 
-Both blqs and blqs_cirq are licensed under Apache 2.0.
+Both blqs and blqs_cirq are [licensed](LICENSE) under Apache 2.0.

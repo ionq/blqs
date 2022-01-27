@@ -12,12 +12,14 @@ domain specific language that uses native python code for "if" statements or "fo
 
 # Packages
 
-This repo contains two packages (see links for documentation):
+This repo contains two packages:
 
-* [blqs](blqs) The base blqs framework ([installation instructions](blqs/README.md#installation))
+* [blqs](blqs) The base blqs framework ([installation instructions](blqs/README.md#installation) 
+[introductory documentation](blqs/docs/intro.md))
 * [blqs_cirq](blqs_cirq) An application of blqs to [Cirq](https://quantumai.google/cirq)
-([installation instructions](blqs_cirq/README.md#installation)).
-
+([installation instructions](blqs_cirq/README.md#installation)
+[introductory documentation](blqs_cirq/docs/intro.md)).
+  
 # Motivating example
 
 Here is a motivating example.  In many traditional quantum programming frameworks one writes

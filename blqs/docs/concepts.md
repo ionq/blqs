@@ -257,7 +257,7 @@ have the `_is_readable_` method.
 Classes that implement methods, such as `_is_readable_`, which then allows
 these classes to have different behavior are an example of a protocol, also
 known as structural subtyping. In structure subtyping an element is considered
-of the same type if has the same feature. What this means for us is that
+of the same type if it has the same feature. What this means for us is that
 any class that implements `_is_readable_` according to the contract of
 the protocol (in this care returning a bool and taking no args), implements
 the `SupportsIsReadable` protocol. At runtime this can be used to determine

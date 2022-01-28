@@ -111,7 +111,7 @@ def _remove_decorators(
         # Technically there are more cases here since a decorator is an expression, and
         # some expressions could evaluate to the above styles.
     else:
-        # No matching dectorators found.
+        # No matching decorators found.
         return decorators
     if len(decorators) == 1:
         return []

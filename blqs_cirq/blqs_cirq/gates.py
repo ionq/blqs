@@ -109,7 +109,7 @@ def qft(*qubits, without_reverse=False, inverse=False) -> blqs.Instruction:
 
 
 def wait(
-    *targets: "cirq.Qid",
+    *targets,
     duration: "cirq.DURATION_LIKE" = None,
     picos: Union[int, float, sympy.Basic] = 0,
     nanos: Union[int, float, sympy.Basic] = 0,

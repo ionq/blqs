@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING
 
 from blqs import _stack
 
@@ -28,7 +28,7 @@ class _BlockStack(_stack.ThreadLocalStack["blqs.Block"]):
 _default_block_stack = _BlockStack()
 
 
-def get_current_block() -> "blqs.Block":
+def get_current_block() -> Optional["blqs.Block"]:
     """Gets the block that is currently at the top of the global default stack of blocks.
 
     There is a global default stack of blocks. This returns the current top of the

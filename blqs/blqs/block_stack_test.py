@@ -17,7 +17,7 @@ import blqs
 
 
 def test_block_stack():
-    assert blqs.get_current_block() == None
+    assert blqs.get_current_block() is None
 
     b = blqs.Block.of("b")
     c = blqs.Block.of("c")

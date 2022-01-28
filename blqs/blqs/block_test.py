@@ -96,10 +96,10 @@ def test_block_context_manager_captures():
 
 
 def test_block_context_manager_default_blocks():
-    assert blqs.get_current_block() == None
+    assert blqs.get_current_block() is None
     with blqs.Block() as b:
         assert blqs.get_current_block() == b
-    assert blqs.get_current_block() == None
+    assert blqs.get_current_block() is None
 
     with blqs.Block() as c:
         assert blqs.get_current_block() == c
@@ -126,4 +126,4 @@ def test_block_statements_immutable():
 
 def test_block_parent_statement():
     blqs.Block(parent_statement=True)
-    assert blqs.get_current_block() == None
+    assert blqs.get_current_block() is None

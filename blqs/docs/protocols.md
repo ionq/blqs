@@ -170,12 +170,12 @@ class SupportsIsReadable(Protocol):
 ```
 When the conditional part of an `while` statement conditional supports the
 *is readable* protocol, then blqs captures the code in the conditional code
-for this statement in a `blqs.While` statement. In particular it captures
+for this statement in a `blqs.While` statement. In particular, it captures
 the portion in the while loop and this is accessed via the `loop_block` of
 the `blqs.While` object.  The `blqs.While` also capture the conditional itself,
 in the `conditional` method.
 
-In addition while loops in python can also have an else clause. In python the else
+In addition, while loops in python can also have an else clause. In python the else
 portion executes if the while statement terminates without breaking out of the
 conditional (i.e. by the conditional going false).  Blqs will also capture any
 else statements in `blqs.While` object and this is accessible via the `else_block`
@@ -225,7 +225,7 @@ print(while_statement.else_block())
 Notice that the conditional is just an object that is readable. It is very
 common to have conditionals in while statements that are expressions that
 evaluate to a Truthy or Falsy value. Because python supports overriding
-many of the operators used in creating expressions, i.e. `>`, `<`, `==`, etc,
+many of the operators used in creating expressions, i.e. `>`, `<`, `==`, etc.,
 when you encounter this case you should likely use python's overloading
 to capture these expressions.
 
@@ -251,7 +251,7 @@ being assigned. This is accessible vi the `assign_names` method of the assign
 object.  It also captures the readable targets, and these are accessible via
 the `value` method of the object.  Note that this supports assigning single
 variables, but also assigning tuples, i.e. `a, b = 1, 2`.  In addition
-to the assign statement, the actual variables being assign to are also
+to the assign statement, the actual variables being assigned to are also
 correctly assigned with the right-hand side (the readable targets).
 
 #### Assignment example
@@ -312,7 +312,7 @@ This shorthand can be useful for building instructions with "return values".
 ## Del Statements
 
 Delete statements can be captured in blqs if the variables being deleted
-corresponds to objects supporting the *is deletable* protocol.  Classes that
+corresponds with objects supporting the *is deletable* protocol.  Classes that
 implement the  *is deletable* protocol implement the method `_is_deletable_`
 and return true. The explicit protocol is
 ```
@@ -324,8 +324,8 @@ class SupportsIsDeletable(Protocol):
 ```
 Blqs will capture the variables in a `del` statement in a `blqs.Delete` statement.
 This will capture all objects that support the *is deletable* protocol, and
-will delete all of the objects that do not.  Note that both can exist in a
-single `del` statement.  When it capture, the variable names that are deleted
+will delete all the objects that do not.  Note that both can exist in a
+single `del` statement.  When it captures, the variable names that are deleted
 are captured in the `blqs.Delete` statement and accessible via the `delete_names`
 method.
 
@@ -356,7 +356,7 @@ for statement in program:
 > <class 'blqs.assignment.Assign'>
 > <class 'blqs.delete.Delete'>
 ```
-And that it has captured the name of the variable being delted
+And that it has captured the name of the variable being deleted
 ```python
 del_statement = program[1]
 print(del_statement.delete_names())

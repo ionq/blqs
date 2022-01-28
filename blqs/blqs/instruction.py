@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import Tuple, TYPE_CHECKING
 
 from blqs import protocols, statement
 
@@ -21,18 +21,26 @@ if TYPE_CHECKING:
 
 
 class Instruction(statement.Statement):
+    """An instruction is a combination of `blqs.Op` and a list of targets.
+
+    Typically Instructions are constructed by creating a `blqs.Op` and calling this object
+    on the targets.
+    """
+
     def __init__(self, op: blqs.Op, *targets):
         super().__init__()
         self._op = op
         self._targets = tuple(targets)
 
     def op(self) -> blqs.Op:
+        """The `blqs.Op` for this instruction."""
         return self._op
 
-    def targets(self):
+    def targets(self) -> Tuple:
+        """A tuple of the targets for this instruction."""
         return self._targets
 
-    def _readable_targets_(self):
+    def _readable_targets_(self) -> Tuple:
         return tuple(t for t in self._targets if protocols.is_readable(t))
 
     def __str__(self):

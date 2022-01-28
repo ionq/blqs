@@ -77,7 +77,7 @@ def build(func: Callable):
 
 
 def build_with_config(build_config: BuildConfig) -> Callable:
-    """A factory for producting a `blqs.build` decorator with the given configuration.
+    """A factory for producing a `blqs.build` decorator with the given configuration.
 
     Typical use is in creating a decorator with the given config
         ```

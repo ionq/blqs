@@ -17,7 +17,7 @@ class Register:
     """A register containing a value.
 
     Registers implement protocols `blqs.SupportsIsReadable`, `blqs.SupportsIsWritable` and
-    `blqs.SupporstIsDeletable`.
+    `blqs.SupportsIsDeletable`.
     """
 
     def __init__(

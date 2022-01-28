@@ -9,7 +9,7 @@ to contribute. To receive IonQ's CLA, please contact @mjk or email opensource@io
 
 ## Setup for development
 
-In order to setup for development of blqs, we recommend the following workflow:
+In order to set up for development of blqs, we recommend the following workflow:
 
 1. Fork the blqs repo.  Navigate to the top level of the blqs repo,
 [https://github.com/ionq/blqs](https://github.com/ionq/blqs) and click
@@ -23,7 +23,7 @@ cd blqs
 ```
 
 3. At this point you will have a remote in your forked git repo called `origin`. 
-Add a remote called `upstream` which points to the original github repo.
+Add a remote called `upstream` which points to the original GitHub repo.
 ```
 git remote add upstream https://github.com/ionq/blqs.git
 ```
@@ -42,7 +42,7 @@ can be installed on linux machines using
 apt-get install virtualenvwrapper
 ```
 See [virtualenvwrapper docs](https://virtualenvwrapper.readthedocs.io/en/latest/)
-for more details of isntalling virtualenvwrapper. Next create a virtualenv:
+for more details of installing virtualenvwrapper. Next create a virtualenv:
 ```
 mkvirtualenv blqs
 ```
@@ -54,7 +54,7 @@ pip install -r blqs/requirements.txt
 pip install -r blqs/ci/requirements-dev.txt
 cat blqs_cirq/requirements.txt | grep -v blqs | xargs pip install
 ```
-Finally add the blqs and blqs_cirq paths to your virtualenv
+Finally, add the blqs and blqs_cirq paths to your virtualenv
 ```
 add2virtualenv blqs
 add2virtualenv blqs_cirq
@@ -91,7 +91,7 @@ Now proceed to create your changes and commit them.
 ```
 To run tests, to run lint, check types, and check format. If your file is not
 formatted, you can run `./ci/format.sh`.  If your code passes all test,
-you are ready to subit a pull requestion.
+you are ready to submit a pull request.
 
 5. Commit your changes, and push your branch to your fork at `origin`
 ```

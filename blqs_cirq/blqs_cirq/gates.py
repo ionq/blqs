@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from __future__ import annotations
 
 import functools
 from typing import Dict, Optional, Tuple, Union
@@ -110,7 +111,7 @@ def qft(*qubits, without_reverse=False, inverse=False) -> blqs.Instruction:
 
 def wait(
     *targets,
-    duration: "cirq.DURATION_LIKE" = None,
+    duration: cirq.DURATION_LIKE = None,
     picos: Union[int, float, sympy.Basic] = 0,
     nanos: Union[int, float, sympy.Basic] = 0,
     micros: Union[int, float, sympy.Basic] = 0,

@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from __future__ import annotations
+
 import functools
 import inspect
 
@@ -61,11 +63,11 @@ class CirqBlqsOp(blqs.Op):
         else:
             return super().__getattribute__(name)
 
-    def __pow__(self, power) -> "blqs_cirq.CirqBlqsOp":
+    def __pow__(self, power) -> blqs_cirq.CirqBlqsOp:
         delegate = cast(cirq.Gate, self._gate).__pow__(power)
         return CirqBlqsOp(delegate, op_name=self._name)
 
-    def with_probability(self, probability: "cirq.TParamVal") -> "blqs_cirq.CirqBlqsOp":
+    def with_probability(self, probability: cirq.TParamVal) -> blqs_cirq.CirqBlqsOp:
         delegate = cast(cirq.Gate, self._gate).with_probability(probability)
         return CirqBlqsOp(delegate, op_name=self._name)
 
@@ -74,7 +76,7 @@ class CirqBlqsOp(blqs.Op):
         num_controls: int = None,
         control_values: Optional[Sequence[Union[int, Collection[int]]]] = None,
         control_qid_shape: Optional[Tuple[int, ...]] = None,
-    ) -> "blqs_cirq.CirqBlqsOp":
+    ) -> blqs_cirq.CirqBlqsOp:
         delegate = cast(cirq.Gate, self._gate).controlled(
             num_controls, control_values, control_qid_shape
         )

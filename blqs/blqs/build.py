@@ -193,7 +193,7 @@ class _BuildTransformer(gast.NodeTransformer):
             return inner_fn
         """
         var_defs = [
-            _template.replace(f"var_name = None", var_name=var)
+            _template.replace("var_name = None", var_name=var)
             for var in self._func.__code__.co_freevars
         ]
         self._outer_fn_name = self._namer.new_name("outer_fn")

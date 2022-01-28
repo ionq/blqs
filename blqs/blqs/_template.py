@@ -13,7 +13,7 @@
 # limitations under the License.
 import textwrap
 
-from typing import Dict, Iterable
+from typing import Iterable
 
 import gast
 
@@ -45,7 +45,7 @@ class ReplacementTransformer(gast.NodeTransformer):
         return visited_node
 
 
-def replace(template: str, **replacements: Dict) -> Iterable:
+def replace(template: str, **replacements) -> Iterable:
     """A simple templating system.
 
     Rules:

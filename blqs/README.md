@@ -24,7 +24,7 @@ def hello_blqs():
     else:
         CX(1, 0)
 ```
-Then if we call this method, we will produce a `blqs.Program` that includes both statements,
+Then, if we call this method, we will produce a `blqs.Program` that includes both statements,
 like `H(0)` but also the `if` and `else` statements.
 ```python
 program = hello_blqs()

@@ -38,7 +38,7 @@ setup(
     url="https://github.com/ionq/blqs_cirq",
     author="The Blqs Developers",
     author_email="dabacon@gmail.com",
-    python_requires=(">=3.7.0"),
+    python_requires=">=3.7.0",
     install_requires=requirements,
     license="Apache 2",
     description=description,

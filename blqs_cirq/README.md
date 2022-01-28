@@ -28,12 +28,12 @@ def my_circuit():
 circuit = my_circuit()
 ```
 
-Blqs provides supports for all of the gates in Cirq, along with all of the various ways to use
+Blqs provides supports for all the gates in Cirq, along with all the various ways to use
 these gates to create operations.
 
 But wait, there is more.  Blqs_cirq supports
 
-* Simplification of qubit specification.  Instead of creating `LineQubit` or `NamedQubit`, etc,
+* Simplification of qubit specification.  Instead of creating `LineQubit` or `NamedQubit`, etc.,
 one can simply use integers (converted to `LineQubit`s), 2-tuples or 2-lists (converted to
 `GridQubit`s) or strings (converted to `NamedQubits`). Custom conversions are also possible.
 

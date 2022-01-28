@@ -15,7 +15,7 @@
 
 import threading
 
-from typing import Generic, TypeVar
+from typing import Generic, List, Optional, TypeVar
 
 T = TypeVar("T")
 
@@ -24,7 +24,7 @@ class ThreadLocalStack(threading.local, Generic[T]):
     def __init__(self):
         self._stack: List[T] = []
 
-    def peek(self) -> T:
+    def peek(self) -> Optional[T]:
         return self._stack[-1] if self._stack else None
 
     def push(self, value: T):

@@ -83,7 +83,7 @@ def test_loop_vars():
             return True
 
         def _loop_vars_(self):
-            return ("a", "b")
+            return "a", "b"
 
     assert blqs.loop_vars(Iterable()) == ("a", "b")
 

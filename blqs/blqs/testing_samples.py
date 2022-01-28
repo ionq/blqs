@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This file is for testing and is linespace sensitive. That is the lines on which the
+# This file is for testing and is line space sensitive. That is the lines on which the
 # code is defined matters for these tests. If you need to add new test code, please add
 # it to the end.
 import functools

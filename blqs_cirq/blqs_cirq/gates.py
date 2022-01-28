@@ -92,9 +92,7 @@ MeasurementGate = cirq_blqs_op.create_cirq_blqs_op(cirq.MeasurementGate)
 MatrixGate = cirq_blqs_op.create_cirq_blqs_op(cirq.MatrixGate)
 MutableDensePauliString = cirq_blqs_op.create_cirq_blqs_op(cirq.MutableDensePauliString)
 QubitPermutationGate = cirq_blqs_op.create_cirq_blqs_op(cirq.QubitPermutationGate)
-QuantumFourierTransformGate = cirq_blqs_op.create_cirq_blqs_op(
-    cirq.QuantumFourierTransformGate
-)
+QuantumFourierTransformGate = cirq_blqs_op.create_cirq_blqs_op(cirq.QuantumFourierTransformGate)
 ParallelGate = cirq_blqs_op.create_cirq_blqs_op(cirq.ParallelGate)
 PhaseGradientGate = cirq_blqs_op.create_cirq_blqs_op(cirq.PhaseGradientGate)
 WaitGate = cirq_blqs_op.create_cirq_blqs_op(cirq.WaitGate)
@@ -107,9 +105,7 @@ def measure(*targets, key=None, invert_mask=()) -> blqs.Instruction:
 
 
 def qft(*qubits, without_reverse=False, inverse=False) -> blqs.Instruction:
-    qft_fn = functools.partial(
-        cirq.qft, without_reverse=without_reverse, inverse=inverse
-    )
+    qft_fn = functools.partial(cirq.qft, without_reverse=without_reverse, inverse=inverse)
     return cirq_blqs_op.CirqBlqsOp(qft_fn, "qft")(*qubits)
 
 
@@ -134,9 +130,7 @@ def wait(
 
 # Noise classes.
 AmplitudeDampingChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.AmplitudeDampingChannel)
-AsymmetricDepolarizingChannel = cirq_blqs_op.create_cirq_blqs_op(
-    cirq.AsymmetricDepolarizingChannel
-)
+AsymmetricDepolarizingChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.AsymmetricDepolarizingChannel)
 BitFlipChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.BitFlipChannel)
 DepolarizingChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.DepolarizingChannel)
 GeneralizedAmplitudeDampingChannel = cirq_blqs_op.create_cirq_blqs_op(
@@ -154,9 +148,7 @@ StatePreparationChannel = cirq_blqs_op.create_cirq_blqs_op(cirq.StatePreparation
 # Noise functions.
 asymmetric_depolarize = cirq_blqs_op.create_cirq_blqs_op(cirq.asymmetric_depolarize)
 depolarize = cirq_blqs_op.create_cirq_blqs_op(cirq.depolarize)
-generalized_amplitude_damp = cirq_blqs_op.create_cirq_blqs_op(
-    cirq.generalized_amplitude_damp
-)
+generalized_amplitude_damp = cirq_blqs_op.create_cirq_blqs_op(cirq.generalized_amplitude_damp)
 amplitude_damp = cirq_blqs_op.create_cirq_blqs_op(cirq.amplitude_damp)
 phase_damp = cirq_blqs_op.create_cirq_blqs_op(cirq.phase_damp)
 phase_flip = cirq_blqs_op.create_cirq_blqs_op(cirq.phase_flip)
@@ -165,9 +157,7 @@ bit_flip = cirq_blqs_op.create_cirq_blqs_op(cirq.bit_flip)
 
 # Special functions.
 def reset(qubit) -> blqs.Instruction:
-    return cirq_blqs_op.CirqBlqsOp(cirq.ResetChannel(getattr(qubit, "dimension", 2)))(
-        qubit
-    )
+    return cirq_blqs_op.CirqBlqsOp(cirq.ResetChannel(getattr(qubit, "dimension", 2)))(qubit)
 
 
 # Special single qubit gate classes
@@ -189,9 +179,7 @@ class SingleQubitCliffordGate(cirq_blqs_op.CirqBlqsOp):
     def from_xz_map(
         x_to: Tuple[cirq.Pauli, bool], z_to: Tuple[cirq.Pauli, bool]
     ) -> cirq_blqs_op.CirqBlqsOp:
-        return cirq_blqs_op.CirqBlqsOp(
-            cirq.SingleQubitCliffordGate.from_xz_map(x_to, z_to)
-        )
+        return cirq_blqs_op.CirqBlqsOp(cirq.SingleQubitCliffordGate.from_xz_map(x_to, z_to))
 
     @staticmethod
     def from_single_map(
@@ -228,9 +216,7 @@ class SingleQubitCliffordGate(cirq_blqs_op.CirqBlqsOp):
         )
 
     @staticmethod
-    def from_quarter_turns(
-        pauli: cirq.Pauli, quarter_turns: int
-    ) -> cirq_blqs_op.CirqBlqsOp:
+    def from_quarter_turns(pauli: cirq.Pauli, quarter_turns: int) -> cirq_blqs_op.CirqBlqsOp:
         return cirq_blqs_op.CirqBlqsOp(
             cirq.SingleQubitCliffordGate.from_quarter_turns(
                 pauli=pauli, quarter_turns=quarter_turns

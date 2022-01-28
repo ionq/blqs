@@ -60,7 +60,7 @@ def replace(template: str, **replacements) -> Iterable:
     Args:
         template: A string containing python code. The code can have placeholder names
             that will be replaced by this call.
-        replacements: Keyword arguments from the placeholder name in the code to the `gast.Node`,
+        **replacements: Keyword arguments from the placeholder name in the code to the `gast.Node`,
             a sequence of the `gast.Node`s representing the code that should be replaced,
             or a string, which is used to replace an `id` or `name` as described above.
 

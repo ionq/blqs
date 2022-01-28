@@ -76,6 +76,9 @@ def _remove_decorators(
         decorators: The list of AST nodes coming from a function type.
         module_aliases: The matching module aliases to remove.
         method_aliases: The matching method names to remove.
+
+    Raises:
+        ValueError: If there is a decorator after the blqs build decorator.
     """
     if len(decorators) == 0:
         return decorators

@@ -52,7 +52,7 @@ def test_cirq_blqs_op_doc_delegation():
 
 def test_cirq_blqs_op_delegated_power():
     op = bc.CirqBlqsOp(cirq.X)
-    assert op ** 0.1 == bc.CirqBlqsOp(gate=cirq.X ** 0.1, op_name="X")
+    assert op**0.1 == bc.CirqBlqsOp(gate=cirq.X**0.1, op_name="X")
 
 
 def test_cirq_blqs_op_delegated_with_probability():

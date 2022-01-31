@@ -11,7 +11,7 @@ circuit.append(cirq.H(q0))
 circuit.append(cirq.CX(q0, q1))
 circuit.append(measure(q0, key='a'))
 ```
-Blqs-cirq makes it so that you can write this more like a normal imperative
+Blqs_cirq makes it so that you can write this more like a normal imperative
 program
 ```python
 import blqs_cirq as bc

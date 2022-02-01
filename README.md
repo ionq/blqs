@@ -1,6 +1,8 @@
 # blqs: Building Blocks for Domain Specific Languages
 
-![example workflow](https://github.com/ionq/blqs/actions/workflows/blqs-ci.yml/badge.svg)
+![Continuous integration](https://github.com/ionq/blqs/actions/workflows/blqs-ci.yml/badge.svg)
+blqs: [![blqs PyPI version](https://badge.fury.io/py/blqs.svg)](https://badge.fury.io/py/blqs)
+blqs_cirq: [![blqs_cirq PyPI version](https://badge.fury.io/py/blqs-cirq.svg)](https://badge.fury.io/py/blqs-cirq) 
 
 Blqs (pronounced "blocks") is a framework for building (internal) domain specific languages
 in Python. It was inspired by TensorFlow's

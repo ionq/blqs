@@ -14,7 +14,7 @@
 from __future__ import annotations
 
 import functools
-from typing import Dict, Optional, Tuple, Union
+from typing import Dict, Optional, Sequence, Tuple, Union
 
 import cirq
 import numpy as np
@@ -22,6 +22,9 @@ import sympy
 
 import blqs
 from blqs_cirq import cirq_blqs_op
+
+# Zero qubit gates.
+GlobalPhaseGate = cirq_blqs_op.create_cirq_blqs_op(cirq.GlobalPhaseGate)
 
 # Single qubit gate constants.
 H = cirq_blqs_op.create_cirq_blqs_op(cirq.H)
@@ -85,6 +88,7 @@ CSwapGate = cirq_blqs_op.create_cirq_blqs_op(cirq.CSwapGate)
 ThreeQubitDiagonalGate = cirq_blqs_op.create_cirq_blqs_op(cirq.ThreeQubitDiagonalGate)
 
 # N qubit gate classes.
+BooleanHamiltonianGate = cirq_blqs_op.create_cirq_blqs_op(cirq.BooleanHamiltonianGate)
 DiagonalGate = cirq_blqs_op.create_cirq_blqs_op(cirq.DiagonalGate)
 DensePauliString = cirq_blqs_op.create_cirq_blqs_op(cirq.DensePauliString)
 IdentityGate = cirq_blqs_op.create_cirq_blqs_op(cirq.IdentityGate)
@@ -94,6 +98,7 @@ MutableDensePauliString = cirq_blqs_op.create_cirq_blqs_op(cirq.MutableDensePaul
 QubitPermutationGate = cirq_blqs_op.create_cirq_blqs_op(cirq.QubitPermutationGate)
 QuantumFourierTransformGate = cirq_blqs_op.create_cirq_blqs_op(cirq.QuantumFourierTransformGate)
 ParallelGate = cirq_blqs_op.create_cirq_blqs_op(cirq.ParallelGate)
+PauliStringPhasorGate = cirq_blqs_op.create_cirq_blqs_op(cirq.PauliStringPhasorGate)
 PhaseGradientGate = cirq_blqs_op.create_cirq_blqs_op(cirq.PhaseGradientGate)
 WaitGate = cirq_blqs_op.create_cirq_blqs_op(cirq.WaitGate)
 ControlledGate = cirq_blqs_op.create_cirq_blqs_op(cirq.ControlledGate)
@@ -226,10 +231,10 @@ class SingleQubitCliffordGate(cirq_blqs_op.CirqBlqsOp):
     @staticmethod
     def from_unitary(u: np.ndarray) -> Optional[cirq_blqs_op.CirqBlqsOp]:
         gate = cirq.SingleQubitCliffordGate.from_unitary(u=u)
-        return cirq_blqs_op.CirqBlqsOp(gate) if gate is not None else None
+        return None if gate is None else cirq_blqs_op.CirqBlqsOp(gate)
 
 
-# Special two qubit gate classes
+# Special two qubit gate classes.
 
 
 class PauliInteractionGate(cirq_blqs_op.CirqBlqsOp):
@@ -239,3 +244,29 @@ class PauliInteractionGate(cirq_blqs_op.CirqBlqsOp):
 
     CZ = cirq_blqs_op.CirqBlqsOp(cirq.PauliInteractionGate.CZ)
     CNOT = cirq_blqs_op.CirqBlqsOp(cirq.PauliInteractionGate.CNOT)
+
+
+# Special n qubit gate classes.
+
+
+class CliffordGate(cirq_blqs_op.CirqBlqsOp):
+
+    I = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.I)
+    X = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.X)
+    H = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.H)
+    S = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.S)
+    CNOT = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.CNOT)
+    CZ = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.CZ)
+    SWAP = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.SWAP)
+
+    @classmethod
+    def from_clifford_tableau(cls, tableau: cirq.CliffordTableau) -> cirq_blqs_op.CirqBlqsOp:
+        gate = cirq.CliffordGate.from_clifford_tableau(tableau)
+        return cirq_blqs_op.CirqBlqsOp(gate)
+
+    @classmethod
+    def from_op_list(
+        cls, operations: Sequence[cirq.Operation], qubit_order: Sequence[cirq.Qid]
+    ) -> cirq_blqs_op.CirqBlqsOp:
+        gate = cirq.CliffordGate.from_op_list(operations, qubit_order)
+        return cirq_blqs_op.CirqBlqsOp(gate)

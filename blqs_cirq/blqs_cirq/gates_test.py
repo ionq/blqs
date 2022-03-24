@@ -36,7 +36,7 @@ def test_all_gate_subclasses():
         cirq.ops.eigen_gate.EigenGate,
         cirq.ops.pauli_gates.Pauli,
         # Private gates.
-        cirq.optimizers.two_qubit_to_fsim._BGate,
+        cirq.transformers.analytical_decompositions.two_qubit_to_fsim._BGate,
         cirq.ops.raw_types._InverseCompositeGate,
         cirq.circuits.qasm_output.QasmUGate,
         cirq.circuits.qasm_output.QasmTwoQubitGate,
@@ -45,9 +45,6 @@ def test_all_gate_subclasses():
         cirq.ion.ion_gates.MSGate,
         # Gate features
         cirq.ops.gate_features.SingleQubitGate,
-        cirq.ops.gate_features.SupportsOnEachGate,
-        cirq.ops.gate_features.ThreeQubitGate,
-        cirq.ops.gate_features.TwoQubitGate,
         # Testing gate features
         cirq.testing.gate_features.ThreeQubitGate,
         cirq.testing.gate_features.TwoQubitGate,
@@ -74,6 +71,15 @@ def test_all_gate_subclasses():
         if clz in excluded_cirq_classes:
             continue
         assert hasattr(bc, clz.__name__)
+
+
+def test_zero_qubit_gate_classes():
+    def zero_qubit_gate_classes():
+        bc.GlobalPhaseGate(coefficient=1j)()
+
+    assert bc.build(zero_qubit_gate_classes)() == cirq.Circuit(
+        [cirq.GlobalPhaseGate(coefficient=1j)()]
+    )
 
 
 def test_single_qubit_gate_constants():
@@ -247,32 +253,36 @@ def test_three_qubit_gate_classes():
 
 def test_n_qubit_gate_classes():
     def n_qubit_gate_classes():
+        bc.BooleanHamiltonianGate(["a", "b"], ["a"], 0.1)(0, 1)
         bc.DiagonalGate([0, 0.5, 0, 0.5])(0, 1)
         bc.DensePauliString("XXX")(0, 1, 2)
         bc.IdentityGate(num_qubits=3)(0, 1, 2)
         bc.MeasurementGate(num_qubits=3, key="x")(0, 1, 2)
         bc.MatrixGate(np.eye(4))(0, 1)
         bc.MutableDensePauliString("XXX")(0, 1, 2)
+        bc.ParallelGate(sub_gate=cirq.Y, num_copies=3)(0, 1, 2)
+        bc.PauliStringPhasorGate(cirq.DensePauliString("X", coefficient=-1))(0)
+        bc.PhaseGradientGate(num_qubits=2, exponent=0.5)(0, 1)
         bc.QubitPermutationGate([1, 0])(0, 1)
         bc.QuantumFourierTransformGate(num_qubits=2)(0, 1)
-        bc.ParallelGate(sub_gate=cirq.Y, num_copies=3)(0, 1, 2)
-        bc.PhaseGradientGate(num_qubits=2, exponent=0.5)(0, 1)
         bc.WaitGate(duration=cirq.Duration(nanos=10), num_qubits=2)(0, 1)
         bc.ControlledGate(sub_gate=cirq.Y)(0, 1)
 
     q0, q1, q2 = cirq.LineQubit.range(3)
     assert bc.build(n_qubit_gate_classes)() == cirq.Circuit(
         [
+            cirq.BooleanHamiltonianGate(["a", "b"], ["a"], 0.1)(q0, q1),
             cirq.DiagonalGate([0, 0.5, 0, 0.5])(q0, q1),
             cirq.DensePauliString("XXX")(q0, q1, q2),
             cirq.IdentityGate(num_qubits=3)(q0, q1, q2),
             cirq.MeasurementGate(num_qubits=3, key="x")(q0, q1, q2),
             cirq.MatrixGate(np.eye(4))(q0, q1),
             cirq.MutableDensePauliString("XXX")(q0, q1, q2),
+            cirq.ParallelGate(sub_gate=cirq.Y, num_copies=3)(q0, q1, q2),
+            cirq.PauliStringPhasorGate(cirq.DensePauliString("X", coefficient=-1))(q0),
+            cirq.PhaseGradientGate(num_qubits=2, exponent=0.5)(q0, q1),
             cirq.QubitPermutationGate([1, 0])(q0, q1),
             cirq.QuantumFourierTransformGate(num_qubits=2)(q0, q1),
-            cirq.ParallelGate(sub_gate=cirq.Y, num_copies=3)(q0, q1, q2),
-            cirq.PhaseGradientGate(num_qubits=2, exponent=0.5)(q0, q1),
             cirq.WaitGate(duration=cirq.Duration(nanos=10), num_qubits=2)(q0, q1),
             cirq.ControlledGate(sub_gate=cirq.Y)(q0, q1),
         ]
@@ -460,6 +470,33 @@ def test_pauli_interaction_gates():
             cirq.PauliInteractionGate.CZ(q0, q1),
             # pylint: disable=not-callable
             cirq.PauliInteractionGate.CNOT(q0, q1),
+        ]
+    )
+
+
+def test_clifford_gates():
+    q0, q1 = cirq.LineQubit.range(2)
+
+    def clifford_gates():
+        bc.CliffordGate.H(0)
+        bc.CliffordGate.from_clifford_tableau(cirq.CliffordGate.X.clifford_tableau)(0)
+        bc.CliffordGate.from_op_list([cirq.CNOT(q0, q1)], [q0, q1])(0, 1)
+        bc.CliffordGate.X(0)
+        bc.CliffordGate.CNOT(0, 1)
+        bc.CliffordGate.S(0)
+        bc.CliffordGate.CZ(0, 1)
+        bc.CliffordGate.SWAP(0, 1)
+
+    assert bc.build(clifford_gates)() == cirq.Circuit(
+        [
+            cirq.CliffordGate.H(q0),
+            cirq.CliffordGate.from_clifford_tableau(cirq.CliffordGate.X.clifford_tableau)(q0),
+            cirq.CliffordGate.from_op_list([cirq.CNOT(q0, q1)], [q0, q1])(q0, q1),
+            cirq.CliffordGate.X(q0),
+            cirq.CliffordGate.CNOT(q0, q1),
+            cirq.CliffordGate.S(q0),
+            cirq.CliffordGate.CZ(q0, q1),
+            cirq.CliffordGate.SWAP(q0, q1),
         ]
     )
 

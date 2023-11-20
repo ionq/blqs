@@ -15,7 +15,6 @@ import blqs
 
 
 def test_statement_in_block():
-
     with blqs.Block() as b:
         s1 = blqs.Statement()
         s2 = blqs.Statement()

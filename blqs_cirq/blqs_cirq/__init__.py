@@ -67,6 +67,7 @@ from blqs_cirq.gates import (
     measure,
     MixedUnitaryChannel,
     ms,
+    MSGate,
     MutableDensePauliString,
     ParallelGate,
     PauliInteractionGate,

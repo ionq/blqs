@@ -64,6 +64,7 @@ ZZ = cirq_blqs_op.create_cirq_blqs_op(cirq.ZZ)
 FSimGate = cirq_blqs_op.create_cirq_blqs_op(cirq.FSimGate)
 CZPowGate = cirq_blqs_op.create_cirq_blqs_op(cirq.CZPowGate)
 CXPowGate = cirq_blqs_op.create_cirq_blqs_op(cirq.CXPowGate)
+MSGate = cirq_blqs_op.create_cirq_blqs_op(cirq.ops.MSGate)
 XXPowGate = cirq_blqs_op.create_cirq_blqs_op(cirq.XXPowGate)
 YYPowGate = cirq_blqs_op.create_cirq_blqs_op(cirq.YYPowGate)
 ZZPowGate = cirq_blqs_op.create_cirq_blqs_op(cirq.ZZPowGate)
@@ -102,6 +103,7 @@ PauliStringPhasorGate = cirq_blqs_op.create_cirq_blqs_op(cirq.PauliStringPhasorG
 PhaseGradientGate = cirq_blqs_op.create_cirq_blqs_op(cirq.PhaseGradientGate)
 WaitGate = cirq_blqs_op.create_cirq_blqs_op(cirq.WaitGate)
 ControlledGate = cirq_blqs_op.create_cirq_blqs_op(cirq.ControlledGate)
+
 
 # N qubit gate functions.
 def measure(*targets, key=None, invert_mask=()) -> blqs.Instruction:
@@ -167,7 +169,6 @@ def reset(qubit) -> blqs.Instruction:
 
 # Special single qubit gate classes
 class SingleQubitCliffordGate(cirq_blqs_op.CirqBlqsOp):
-
     I = cirq_blqs_op.CirqBlqsOp(cirq.SingleQubitCliffordGate.I)
     H = cirq_blqs_op.CirqBlqsOp(cirq.SingleQubitCliffordGate.H)
     X = cirq_blqs_op.CirqBlqsOp(cirq.SingleQubitCliffordGate.X)
@@ -239,7 +240,6 @@ class SingleQubitCliffordGate(cirq_blqs_op.CirqBlqsOp):
 
 class PauliInteractionGate(cirq_blqs_op.CirqBlqsOp):
     def __init__(self, *args, **kwargs):
-
         super().__init__(gate=cirq.PauliInteractionGate(*args, **kwargs))
 
     CZ = cirq_blqs_op.CirqBlqsOp(cirq.PauliInteractionGate.CZ)
@@ -250,7 +250,6 @@ class PauliInteractionGate(cirq_blqs_op.CirqBlqsOp):
 
 
 class CliffordGate(cirq_blqs_op.CirqBlqsOp):
-
     I = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.I)
     X = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.X)
     H = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.H)

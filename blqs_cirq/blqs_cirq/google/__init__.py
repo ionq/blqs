@@ -15,5 +15,6 @@
 from blqs_cirq.google import experimental
 
 from blqs_cirq.google.google_gates import (
+    InternalGate,
     SycamoreGate,
 )

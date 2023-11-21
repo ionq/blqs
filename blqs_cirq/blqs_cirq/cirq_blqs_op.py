@@ -41,7 +41,7 @@ GateLikeType = Union[cirq.Gate, Callable[[], cirq.Gate], functools.partial]
 class CirqBlqsOp(blqs.Op):
     """A `blqs.Op` corresponding to a `cirq.Gate`."""
 
-    def __init__(self, gate: GateLikeType, op_name: str = None):
+    def __init__(self, gate: GateLikeType, op_name: Optional[str] = None):
         """Construct a CirqBlqsOp.
 
         Args:
@@ -73,7 +73,7 @@ class CirqBlqsOp(blqs.Op):
 
     def controlled(
         self,
-        num_controls: int = None,
+        num_controls: Optional[int] = None,
         control_values: Optional[Sequence[Union[int, Collection[int]]]] = None,
         control_qid_shape: Optional[Tuple[int, ...]] = None,
     ) -> blqs_cirq.CirqBlqsOp:

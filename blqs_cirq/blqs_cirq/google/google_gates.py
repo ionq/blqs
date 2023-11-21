@@ -18,3 +18,4 @@ import cirq_google
 from blqs_cirq import cirq_blqs_op
 
 SycamoreGate = cirq_blqs_op.create_cirq_blqs_op(cirq_google.SycamoreGate)
+InternalGate = cirq_blqs_op.create_cirq_blqs_op(cirq_google.InternalGate)

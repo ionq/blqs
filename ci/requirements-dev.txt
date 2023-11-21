@@ -3,6 +3,6 @@ pytest-cov
 black
 black[jupyter]
 pymore
-mypy==0.930
+mypy==1.2.0
 pylint
 twine

@@ -14,7 +14,7 @@
 from __future__ import annotations
 
 import textwrap
-from typing import Iterable, Iterator, List, TYPE_CHECKING, Tuple
+from typing import Iterable, Iterator, List, Optional, TYPE_CHECKING, Tuple
 
 from blqs import block_stack, statement
 
@@ -74,7 +74,7 @@ class Block(statement.Statement):
     See also `blqs.Program` for a top level `Block`.
     """
 
-    def __init__(self, parent_statement: blqs.Statement = None):
+    def __init__(self, parent_statement: Optional[blqs.Statement] = None):
         """Construction a block.
 
         Args:

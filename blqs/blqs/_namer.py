@@ -11,13 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Sequence
+from typing import Optional, Sequence
 
 
 class Namer:
     """Produces new names for symbols that do not conflict with other symbols."""
 
-    def __init__(self, used_names: Sequence[str] = None):
+    def __init__(self, used_names: Optional[Sequence[str]] = None):
         """Initialize the Namer.
 
         The namer is stateful, it records all new names that were created by the namer.

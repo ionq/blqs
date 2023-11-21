@@ -32,23 +32,26 @@ def test_all_gate_subclasses():
         cirq.ops.pauli_gates._PauliY,
         cirq.ops.pauli_gates._PauliZ,
         # Private parent gates.
+        cirq.ops.arithmetic_operation.ArithmeticGate,
         cirq.ops.dense_pauli_string.BaseDensePauliString,
         cirq.ops.eigen_gate.EigenGate,
         cirq.ops.pauli_gates.Pauli,
         # Private gates.
         cirq.transformers.analytical_decompositions.two_qubit_to_fsim._BGate,
+        cirq.transformers.measurement_transformers._ConfusionChannel,
+        cirq.transformers.routing.visualize_routed_circuit._SwapPrintGate,
+        cirq.transformers.measurement_transformers._ModAdd,
         cirq.ops.raw_types._InverseCompositeGate,
         cirq.circuits.qasm_output.QasmUGate,
         cirq.circuits.qasm_output.QasmTwoQubitGate,
-        cirq.circuits.quil_output.QuilOneQubitGate,
-        cirq.circuits.quil_output.QuilTwoQubitGate,
-        cirq.ion.ion_gates.MSGate,
-        # Gate features
-        cirq.ops.gate_features.SingleQubitGate,
         # Testing gate features
+        cirq.testing.gate_features.SingleQubitGate,
         cirq.testing.gate_features.ThreeQubitGate,
         cirq.testing.gate_features.TwoQubitGate,
+        cirq.testing.sample_gates.PhaseUsingCleanAncilla,
+        cirq.testing.sample_gates.PhaseUsingDirtyAncilla,
         # Interop gates
+        cirq.interop.quirk.cells.arithmetic_cells.QuirkArithmeticGate,
         cirq.interop.quirk.cells.qubit_permutation_cells.QuirkQubitPermutationGate,
         # Contrib gates.
         # When cirq.contrib is removed these cases should be removed.
@@ -64,6 +67,7 @@ def test_all_gate_subclasses():
         # Google gates
         # When cirq.google is remove these cases should be removed.
         cirq_google.ops.sycamore_gate.SycamoreGate,
+        cirq_google.ops.internal_gate.InternalGate,
         cirq_google.experimental.ops.CouplerPulse,
     }
 

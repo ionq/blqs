@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import cirq
+import cirq.testing
 import pymore
 import pytest
 
@@ -71,7 +72,7 @@ def test_cirq_blqs_op_delegated_controlled():
 
 
 def test_cirq_blqs_op_doc_delegation_no_documentation():
-    class NoDocumentationGate(cirq.SingleQubitGate):
+    class NoDocumentationGate(cirq.testing.SingleQubitGate):
         pass
 
     op = bc.CirqBlqsOp(NoDocumentationGate())

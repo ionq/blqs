@@ -21,7 +21,7 @@ T = TypeVar("T")
 
 
 class ThreadLocalStack(threading.local, Generic[T]):
-    def __init__(self):
+    def __init__(self) -> None:
         self._stack: List[T] = []
 
     def peek(self) -> Optional[T]:

@@ -40,11 +40,15 @@ def test_all_gate_subclasses_in_cirq_google():
 def test_google_gates():
     def google_gates():
         bcg.SycamoreGate()(0, 1)
+        bcg.InternalGate(gate_name="MyGate", gate_module="my_module", num_qubits=2)(0, 1)
 
     q0, q1 = cirq.LineQubit.range(2)
 
     assert bc.build(google_gates)() == cirq.Circuit(
         [
             cirq_google.SycamoreGate()(q0, q1),
+            cirq_google.InternalGate(gate_name="MyGate", gate_module="my_module", num_qubits=2)(
+                q0, q1
+            ),
         ]
     )

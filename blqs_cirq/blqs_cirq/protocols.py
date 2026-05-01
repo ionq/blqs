@@ -16,7 +16,7 @@ from typing import Any, TypeVar, Union
 try:
     from typing import Protocol
 except ImportError:  # coverage: ignore
-    from typing_extensions import Protocol  # type:ignore
+    from typing_extensions import Protocol  # type: ignore
 
 
 F = TypeVar("F", contravariant=True)

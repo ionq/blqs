@@ -107,13 +107,23 @@ def _build(func: Callable, build_config: Optional[BuildConfig] = None) -> Callab
     def _ensure_built():
         if cache:
             return
+        # Get source.
         source_code = textwrap.dedent(inspect.getsource(func))
+
+        # Parse it.
         root = gast.parse(source_code)
+
+        # Transform the function via the transform below.
+        # This creates an outer function, which when call returns the transformed function.
+        # This pattern is used to correctly capture closures.
         transformer = _BuildTransformer(func, build_config or BuildConfig())
         transformed_gast, outer_fn_name = transformer.transform(root)
+
+        # Convert back to ast and get the code, preserving annotations.
         transformed_ast = _ast.gast_to_ast(transformed_gast)
         transformed_source_code = astunparse.unparse(transformed_ast).strip()
 
+        # Write a temp file with the new source code.
         with tempfile.NamedTemporaryFile(
             mode="w", suffix=".py", delete=False, encoding="utf-8"
         ) as f:
@@ -121,12 +131,15 @@ def _build(func: Callable, build_config: Optional[BuildConfig] = None) -> Callab
             filename = f.name
             f.write(transformed_source_code)
 
+        # Import this new code into the temp module.
         spec = importlib.util.spec_from_file_location(module_name, filename)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
         sys.modules[module_name] = module
 
+        # Get the outer function, and call it, returning the inner function.
         new_func = getattr(module, outer_fn_name)()  # pylint: disable=not-callable
+        # Set this inner function up with the correct globals and closure.
         cache["final_func"] = types.FunctionType(
             code=new_func.__code__, globals=func.__globals__, closure=func.__closure__
         )
@@ -144,6 +157,8 @@ def _build(func: Callable, build_config: Optional[BuildConfig] = None) -> Callab
         try:
             return cache["final_func"](*args, **kwargs)  # pylint: disable=not-callable
         except Exception as e:
+            # If there is an exception, chain the exception in such a way as to indicated
+            # the original file and line number is given.
             if "line_map" not in cache:
                 cache["line_map"] = _ast.construct_line_map(
                     cache["transformed_gast"], cache["transformed_source_code"]

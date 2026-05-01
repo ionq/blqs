@@ -102,7 +102,7 @@ def test_while_str():
     with loop.loop_block():
         op = blqs.Op("MOV")
         op(0, 1)
-    assert str(loop) == "while R(a):\n  MOV 0, 1\n"
+    assert str(loop) == "while R(a):\n  MOV 0, 1"
     with loop.else_block():
         op = blqs.Op("H")
         op(0)

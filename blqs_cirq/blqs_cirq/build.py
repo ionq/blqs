@@ -95,17 +95,25 @@ def _build(func: Callable, build_config: Optional[BuildConfig] = None) -> Callab
     """
     build_config = build_config or BuildConfig()
 
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        import blqs_cirq as __blqs_cirq
+    # Build the inner blqs config once, without mutating any user-supplied
+    # BuildConfig — `dataclasses.replace` returns a fresh object. Then run
+    # `blqs.build_with_config` here at decoration time so the AST rewrite isn't
+    # repeated on every call.
+    import blqs_cirq as __blqs_cirq
 
-        blqs_build_config = build_config.blqs_build_config or blqs.BuildConfig()
-        blqs_build_config.additional_decorator_specs = [
+    user_blqs_config = build_config.blqs_build_config or blqs.BuildConfig()
+    blqs_build_config = dataclasses.replace(
+        user_blqs_config,
+        additional_decorator_specs=[
             blqs.DecoratorSpec(module=__blqs_cirq, method=build),
             blqs.DecoratorSpec(module=__blqs_cirq, method=build_with_config),
-            *blqs_build_config.additional_decorator_specs,
-        ]
-        blqs_func = blqs.build_with_config(blqs_build_config)(func)
+            *user_blqs_config.additional_decorator_specs,
+        ],
+    )
+    blqs_func = blqs.build_with_config(blqs_build_config)(func)
+
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
         program = blqs_func(*args, **kwargs)
         return _build_circuit(program, build_config) if build_config.output_circuit else program
 

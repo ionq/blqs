@@ -399,6 +399,17 @@ def test_build_delete_native_multiple():
     assert transformed_fn() == blqs.Program.of()
 
 
+def test_build_delete_native_actually_unbinds():
+    def fn():
+        a = 1
+        del a
+        return a
+
+    transformed_fn = blqs.build(fn)
+    with pytest.raises((NameError, UnboundLocalError)):
+        transformed_fn()
+
+
 def test_build_with_config_support_if():
     def if_fn():
         if blqs.Register("a"):

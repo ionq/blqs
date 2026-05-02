@@ -1,6 +1,6 @@
 pytest
 pytest-cov
-black
+black==22.3.0
 black[jupyter]
 pymore
 mypy==1.2.0

@@ -96,12 +96,10 @@ def _build(func: Callable, build_config: Optional[BuildConfig] = None) -> Callab
 
     This method is not intended to be called directly, use build or build_with_config above.
     """
-    # The AST rewrite (parse, transform, write tempfile, import as module, build
-    # final_func) is expensive but only depends on `func` and `build_config`, so
-    # it's done once on the first call and cached. Doing it lazily — rather than
-    # at decoration time — keeps any rewrite errors at call time, which some
-    # callers rely on (e.g. functions stacked with another decorator on top of
-    # `@blqs.build` raise `ValueError` on call, not at import).
+    # The AST rewrite depends only on `func` and `build_config`, so build it once
+    # and cache it. Doing this lazily (not at decoration time) keeps rewrite errors
+    # at call time, which some callers rely on (e.g. a decorator stacked on top of
+    # `@blqs.build` raises `ValueError` on call, not at import).
     cache: dict = {}
 
     def _ensure_built():
@@ -143,10 +141,9 @@ def _build(func: Callable, build_config: Optional[BuildConfig] = None) -> Callab
         cache["final_func"] = types.FunctionType(
             code=new_func.__code__, globals=func.__globals__, closure=func.__closure__
         )
-        # Defer line-map construction: it's only needed on exceptions, and
-        # `construct_line_map` has a known assertion that can fire on otherwise
-        # well-formed rewrites (preserved as-is from the original behavior, which
-        # only constructed it inside the exception handler).
+        # Defer line-map construction to the exception handler: it's only needed on
+        # errors, and `construct_line_map` has a known assertion that can fire on
+        # otherwise well-formed rewrites (matching the original behavior).
         cache["transformed_gast"] = transformed_gast
         cache["transformed_source_code"] = transformed_source_code
         cache["filename"] = filename
@@ -280,9 +277,9 @@ class _BuildTransformer(gast.NodeTransformer):
         if not self._build_config.support_for:
             return node
 
-        # Bind the iterable expression to a local once. The original code re-evaluated
-        # `iter` for the is_iterable / For() / loop_vars() / for-loop slots, which
-        # double-runs side effects (e.g. on generators or open()).
+        # Bind the iterable to a local once. The original re-evaluated `iter` in each
+        # slot (is_iterable / For() / loop_vars() / the loop), double-running side
+        # effects on generators and the like.
         template = """
         iter_value = iter
         is_iterable = blqs.is_iterable(iter_value)
@@ -314,9 +311,9 @@ class _BuildTransformer(gast.NodeTransformer):
         if not self._build_config.support_while:
             return node
 
-        # Track the loop's exit reason with a flag instead of re-evaluating `test`
-        # after the loop. The original `if not test or is_readable` re-ran the test
-        # expression, doubling side effects for non-trivial conditions.
+        # Track the exit reason with a flag instead of re-evaluating `test` after the
+        # loop. The original `if not test or is_readable` re-ran `test`, doubling side
+        # effects for non-trivial conditions.
         template = """
         is_readable = blqs.is_readable(test)
         while_statement = blqs.While(test) if is_readable else None
@@ -350,8 +347,7 @@ class _BuildTransformer(gast.NodeTransformer):
 
         target_names = self._target_names(node.targets)
         if target_names is None:
-            # Targets include non-Name expressions (e.g. `obj.x = ...`); leave
-            # this assignment alone so native Python semantics apply.
+            # Non-Name targets (e.g. `obj.x = ...`); leave alone for native semantics.
             return node
 
         template = """
@@ -376,11 +372,10 @@ class _BuildTransformer(gast.NodeTransformer):
         return new_nodes
 
     def _target_names(self, targets):
-        """Return a `gast.Tuple` of name Constants for `targets`, or None.
+        """Return a `gast.Tuple` of the target names, or None.
 
-        Returns None when any target is something other than a `Name` (or a
-        `Tuple`/`List` of `Name`s) — e.g. `obj.x` or `arr[0]`. Callers should
-        skip the rewrite in that case so native Python semantics apply.
+        None means a target is not a `Name` (or a `Tuple`/`List` of `Name`s) —
+        e.g. `obj.x` or `arr[0]` — and callers should skip the rewrite.
         """
         names = []
         for target in targets:
@@ -422,10 +417,9 @@ class _BuildTransformer(gast.NodeTransformer):
         target_tuple = gast.Tuple(flat_targets, gast.Load())
         target_values_name = self._namer.new_name("target_values")
 
-        # Capture the live values of all targets first; the per-target conditional
-        # native `del` below may unbind some of them, after which referencing the
-        # original names would fail with NameError. We need them later for the
-        # is_deletable filter that builds the captured `Delete(...)` statement.
+        # Capture the targets' values first: the per-target `del` below may unbind
+        # some of them, and the is_deletable filter that builds `Delete(...)` needs
+        # the values afterward.
         new_nodes = list(
             _template.replace(
                 "target_values = target_tuple",
@@ -434,10 +428,9 @@ class _BuildTransformer(gast.NodeTransformer):
             )
         )
 
-        # Per-target conditional native `del` for non-deletable values. The
-        # original code emitted `del standard_targets`, which deleted the helper
-        # tuple instead of the user's bindings — so `del a` (where `a` is a
-        # plain int) didn't actually unbind `a`.
+        # Natively `del` each non-deletable value. The original emitted
+        # `del standard_targets`, deleting the helper tuple rather than the user's
+        # bindings — so `del a` (a plain int) never actually unbound `a`.
         for target in flat_targets:
             check_template = """
             if not blqs.is_deletable(target):

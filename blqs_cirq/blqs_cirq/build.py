@@ -95,10 +95,9 @@ def _build(func: Callable, build_config: Optional[BuildConfig] = None) -> Callab
     """
     build_config = build_config or BuildConfig()
 
-    # Build the inner blqs config once, without mutating any user-supplied
-    # BuildConfig — `dataclasses.replace` returns a fresh object. Then run
-    # `blqs.build_with_config` here at decoration time so the AST rewrite isn't
-    # repeated on every call.
+    # Build the inner blqs config once. `dataclasses.replace` returns a fresh object
+    # rather than mutating the user's BuildConfig, and running `build_with_config`
+    # here (at decoration time) keeps the AST rewrite off the per-call path.
     import blqs_cirq as __blqs_cirq
 
     user_blqs_config = build_config.blqs_build_config or blqs.BuildConfig()

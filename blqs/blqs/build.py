@@ -96,10 +96,8 @@ def _build(func: Callable, build_config: Optional[BuildConfig] = None) -> Callab
 
     This method is not intended to be called directly, use build or build_with_config above.
     """
-    # The AST rewrite depends only on `func` and `build_config`, so build it once
-    # and cache it. Doing this lazily (not at decoration time) keeps rewrite errors
-    # at call time, which some callers rely on (e.g. a decorator stacked on top of
-    # `@blqs.build` raises `ValueError` on call, not at import).
+    # Build the rewrite once and cache it; it depends only on `func` and
+    # `build_config`. Done lazily so errors surface on call, not at import.
     cache: dict = {}
 
     def _ensure_built():
@@ -141,9 +139,7 @@ def _build(func: Callable, build_config: Optional[BuildConfig] = None) -> Callab
         cache["final_func"] = types.FunctionType(
             code=new_func.__code__, globals=func.__globals__, closure=func.__closure__
         )
-        # Defer line-map construction to the exception handler: it's only needed on
-        # errors, and `construct_line_map` has a known assertion that can fire on
-        # otherwise well-formed rewrites (matching the original behavior).
+        # Stash what the line map needs; build it lazily (only on error).
         cache["transformed_gast"] = transformed_gast
         cache["transformed_source_code"] = transformed_source_code
         cache["filename"] = filename
@@ -154,10 +150,8 @@ def _build(func: Callable, build_config: Optional[BuildConfig] = None) -> Callab
         try:
             return cache["final_func"](*args, **kwargs)  # pylint: disable=not-callable
         except Exception as e:
-            # Re-raise with a cause pointing at the original source location. The line
-            # map depends only on the (already-fixed) transformed source, so it is the
-            # same for every exception this wrapper raises — building it once and
-            # reusing it is correct.
+            # Re-raise pointing at the original source. The line map is the same
+            # for every exception, so build it once.
             if "line_map" not in cache:
                 cache["line_map"] = _ast.construct_line_map(
                     cache["transformed_gast"], cache["transformed_source_code"]
@@ -279,10 +273,8 @@ class _BuildTransformer(gast.NodeTransformer):
         if not self._build_config.support_for:
             return node
 
-        # Evaluate the iterable expression once and reuse the bound value. The
-        # original re-evaluated `iter` in each slot (is_iterable / For() /
-        # loop_vars() / the loop), double-running side effects on generators
-        # and the like.
+        # Evaluate the iterable once. The original re-ran `iter` in each slot,
+        # doubling side effects (e.g. on generators).
         template = """
         iter_value = iter
         is_iterable = blqs.is_iterable(iter_value)
@@ -314,9 +306,8 @@ class _BuildTransformer(gast.NodeTransformer):
         if not self._build_config.support_while:
             return node
 
-        # Record whether the loop finished normally (vs. broke) in a flag, so the
-        # else-block decision doesn't re-evaluate `test` after the loop. Re-running
-        # `test` there would double its side effects for non-trivial conditions.
+        # Flag the loop's exit reason so the else block doesn't re-run `test`,
+        # which would double its side effects.
         template = """
         is_readable = blqs.is_readable(test)
         while_statement = blqs.While(test) if is_readable else None
@@ -350,8 +341,7 @@ class _BuildTransformer(gast.NodeTransformer):
 
         target_names = self._target_names(node.targets)
         if target_names is None:
-            # Non-Name targets (e.g. `obj.x = ...`): return the node unrewritten so
-            # it runs as a plain Python assignment (no blqs capture).
+            # Non-Name target (e.g. `obj.x`): skip the rewrite, run natively.
             return node
 
         template = """
@@ -414,17 +404,14 @@ class _BuildTransformer(gast.NodeTransformer):
 
         target_names = self._target_names(node.targets)
         if target_names is None:
-            # Non-Name targets (e.g. `del obj.x`): return the node unrewritten so it
-            # runs as a plain Python `del` (no blqs capture).
+            # Non-Name target (e.g. `del obj.x`): skip the rewrite, run natively.
             return node
 
         flat_targets = self._flat_targets(node.targets)
         target_tuple = gast.Tuple(flat_targets, gast.Load())
         target_values_name = self._namer.new_name("target_values")
 
-        # Capture the targets' values first: the per-target `del` below may unbind
-        # some of them, and the is_deletable filter that builds `Delete(...)` needs
-        # the values afterward.
+        # Capture values first: the `del`s below unbind names the filter needs.
         new_nodes = list(
             _template.replace(
                 "target_values = target_tuple",
@@ -433,9 +420,8 @@ class _BuildTransformer(gast.NodeTransformer):
             )
         )
 
-        # Emit a native `del` for each non-deletable value. The previous code emitted
-        # `del standard_targets`, which deleted the helper tuple rather than the
-        # user's bindings, so `del a` (a plain int) never actually unbound `a`.
+        # Natively `del` non-deletable values. The original deleted the helper
+        # tuple, so `del a` (a plain int) never unbound `a`.
         for target in flat_targets:
             check_template = """
             if not blqs.is_deletable(target):

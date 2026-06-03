@@ -97,8 +97,7 @@ def _build(func: Callable, build_config: Optional[BuildConfig] = None) -> Callab
 
     import blqs_cirq as __blqs_cirq
 
-    # Prepend the blqs_cirq decorator specs without mutating the user's config:
-    # `dataclasses.replace` returns a fresh BuildConfig.
+    # `dataclasses.replace` gives a fresh config without mutating the user's.
     user_blqs_config = build_config.blqs_build_config or blqs.BuildConfig()
     blqs_build_config = dataclasses.replace(
         user_blqs_config,
@@ -108,8 +107,7 @@ def _build(func: Callable, build_config: Optional[BuildConfig] = None) -> Callab
             *user_blqs_config.additional_decorator_specs,
         ],
     )
-    # Run the blqs build here (at decoration time) so the AST rewrite isn't repeated
-    # on every call.
+    # Build once here, not per call.
     blqs_func = blqs.build_with_config(blqs_build_config)(func)
 
     @functools.wraps(func)

@@ -410,6 +410,70 @@ def test_build_delete_native_actually_unbinds():
         transformed_fn()
 
 
+def test_build_for_evaluates_iterable_once():
+    calls = []
+
+    def make_iter():
+        calls.append(1)
+        return [0]
+
+    def fn():
+        for _ in make_iter():
+            blqs.Op("H")(0)
+
+    blqs.build(fn)()
+    assert calls == [1]
+
+
+def test_build_while_does_not_reevaluate_test_after_loop():
+    state = {"i": 0}
+    reads = []
+
+    def cond():
+        reads.append(state["i"])
+        return state["i"] < 2
+
+    def fn():
+        while cond():
+            blqs.Op("H")(0)
+            state["i"] += 1
+
+    blqs.build(fn)()
+    # `is_readable(cond())` checks once up front (i=0), then the loop tests at
+    # i=0,1,2. The fixed code does not evaluate `cond()` again after the loop; the
+    # old code re-ran it once more, appending a trailing 2.
+    assert reads == [0, 0, 1, 2]
+
+
+def test_build_assign_to_attribute_is_native():
+    class C:
+        pass
+
+    c = C()
+
+    def fn():
+        c.x = 5
+
+    # Attribute targets aren't rewritten; the assignment runs as plain Python.
+    blqs.build(fn)()
+    assert c.x == 5
+
+
+def test_build_delete_attribute_is_native():
+    class C:
+        pass
+
+    c = C()
+    c.x = 5
+
+    def fn():
+        del c.x
+
+    # Attribute targets aren't rewritten; the `del` runs as plain Python.
+    blqs.build(fn)()
+    assert not hasattr(c, "x")
+
+
 def test_build_with_config_support_if():
     def if_fn():
         if blqs.Register("a"):

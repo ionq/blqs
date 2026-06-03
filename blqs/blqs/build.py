@@ -154,8 +154,10 @@ def _build(func: Callable, build_config: Optional[BuildConfig] = None) -> Callab
         try:
             return cache["final_func"](*args, **kwargs)  # pylint: disable=not-callable
         except Exception as e:
-            # If there is an exception, chain the exception in such a way as to indicated
-            # the original file and line number is given.
+            # Re-raise with a cause pointing at the original source location. The line
+            # map depends only on the (already-fixed) transformed source, so it is the
+            # same for every exception this wrapper raises — building it once and
+            # reusing it is correct.
             if "line_map" not in cache:
                 cache["line_map"] = _ast.construct_line_map(
                     cache["transformed_gast"], cache["transformed_source_code"]
@@ -277,9 +279,10 @@ class _BuildTransformer(gast.NodeTransformer):
         if not self._build_config.support_for:
             return node
 
-        # Bind the iterable to a local once. The original re-evaluated `iter` in each
-        # slot (is_iterable / For() / loop_vars() / the loop), double-running side
-        # effects on generators and the like.
+        # Evaluate the iterable expression once and reuse the bound value. The
+        # original re-evaluated `iter` in each slot (is_iterable / For() /
+        # loop_vars() / the loop), double-running side effects on generators
+        # and the like.
         template = """
         iter_value = iter
         is_iterable = blqs.is_iterable(iter_value)
@@ -311,9 +314,9 @@ class _BuildTransformer(gast.NodeTransformer):
         if not self._build_config.support_while:
             return node
 
-        # Track the exit reason with a flag instead of re-evaluating `test` after the
-        # loop. The original `if not test or is_readable` re-ran `test`, doubling side
-        # effects for non-trivial conditions.
+        # Record whether the loop finished normally (vs. broke) in a flag, so the
+        # else-block decision doesn't re-evaluate `test` after the loop. Re-running
+        # `test` there would double its side effects for non-trivial conditions.
         template = """
         is_readable = blqs.is_readable(test)
         while_statement = blqs.While(test) if is_readable else None
@@ -347,7 +350,8 @@ class _BuildTransformer(gast.NodeTransformer):
 
         target_names = self._target_names(node.targets)
         if target_names is None:
-            # Non-Name targets (e.g. `obj.x = ...`); leave alone for native semantics.
+            # Non-Name targets (e.g. `obj.x = ...`): return the node unrewritten so
+            # it runs as a plain Python assignment (no blqs capture).
             return node
 
         template = """
@@ -410,7 +414,8 @@ class _BuildTransformer(gast.NodeTransformer):
 
         target_names = self._target_names(node.targets)
         if target_names is None:
-            # Non-Name targets (e.g. `del obj.x`); leave alone for native semantics.
+            # Non-Name targets (e.g. `del obj.x`): return the node unrewritten so it
+            # runs as a plain Python `del` (no blqs capture).
             return node
 
         flat_targets = self._flat_targets(node.targets)
@@ -428,9 +433,9 @@ class _BuildTransformer(gast.NodeTransformer):
             )
         )
 
-        # Natively `del` each non-deletable value. The original emitted
-        # `del standard_targets`, deleting the helper tuple rather than the user's
-        # bindings — so `del a` (a plain int) never actually unbound `a`.
+        # Emit a native `del` for each non-deletable value. The previous code emitted
+        # `del standard_targets`, which deleted the helper tuple rather than the
+        # user's bindings, so `del a` (a plain int) never actually unbound `a`.
         for target in flat_targets:
             check_template = """
             if not blqs.is_deletable(target):

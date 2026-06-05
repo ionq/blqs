@@ -103,6 +103,7 @@ PauliStringPhasorGate = cirq_blqs_op.create_cirq_blqs_op(cirq.PauliStringPhasorG
 PhaseGradientGate = cirq_blqs_op.create_cirq_blqs_op(cirq.PhaseGradientGate)
 WaitGate = cirq_blqs_op.create_cirq_blqs_op(cirq.WaitGate)
 ControlledGate = cirq_blqs_op.create_cirq_blqs_op(cirq.ControlledGate)
+UniformSuperpositionGate = cirq_blqs_op.create_cirq_blqs_op(cirq.UniformSuperpositionGate)
 
 
 # N qubit gate functions.

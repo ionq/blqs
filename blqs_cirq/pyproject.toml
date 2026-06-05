@@ -1,0 +1,46 @@
+[project]
+name = "blqs-cirq"
+dynamic = ["version"]
+description = "A library for writing imperative quantum computing programs in Cirq."
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
+authors = [{ name = "The Blqs Developers" }]
+keywords = ["dsl", "quantum", "cirq", "quantum-computing"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Typing :: Typed",
+]
+dependencies = [
+    "blqs",
+    "cirq>=1.6,<2",
+    "cirq-google>=1.6,<2",
+]
+
+[project.urls]
+Homepage = "https://github.com/ionq/blqs"
+Repository = "https://github.com/ionq/blqs"
+Issues = "https://github.com/ionq/blqs/issues"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "blqs_cirq/_version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["blqs_cirq"]
+
+[tool.uv.sources]
+blqs = { workspace = true }

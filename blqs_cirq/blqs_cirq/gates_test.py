@@ -48,6 +48,7 @@ def test_all_gate_subclasses():
         cirq.testing.gate_features.SingleQubitGate,
         cirq.testing.gate_features.ThreeQubitGate,
         cirq.testing.gate_features.TwoQubitGate,
+        cirq.testing.gate_features.DoesNotSupportSerializationGate,
         cirq.testing.sample_gates.PhaseUsingCleanAncilla,
         cirq.testing.sample_gates.PhaseUsingDirtyAncilla,
         # Interop gates
@@ -68,6 +69,9 @@ def test_all_gate_subclasses():
         # When cirq.google is remove these cases should be removed.
         cirq_google.ops.sycamore_gate.SycamoreGate,
         cirq_google.ops.internal_gate.InternalGate,
+        cirq_google.ops.willow_gate.WillowGate,
+        cirq_google.ops.analog_detune_gates.AnalogDetuneQubit,
+        cirq_google.ops.analog_detune_gates.AnalogDetuneCouplerOnly,
         cirq_google.experimental.ops.CouplerPulse,
     }
 

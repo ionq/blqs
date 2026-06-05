@@ -15,6 +15,9 @@
 from blqs_cirq.google import experimental
 
 from blqs_cirq.google.google_gates import (
+    AnalogDetuneCouplerOnly,
+    AnalogDetuneQubit,
     InternalGate,
     SycamoreGate,
+    WillowGate,
 )

@@ -103,6 +103,7 @@ from blqs_cirq.gates import (
     TOFFOLI,
     ThreeQubitDiagonalGate,
     TwoQubitDiagonalGate,
+    UniformSuperpositionGate,
     wait,
     WaitGate,
     X,

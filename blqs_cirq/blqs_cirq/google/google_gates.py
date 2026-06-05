@@ -19,3 +19,6 @@ from blqs_cirq import cirq_blqs_op
 
 SycamoreGate = cirq_blqs_op.create_cirq_blqs_op(cirq_google.SycamoreGate)
 InternalGate = cirq_blqs_op.create_cirq_blqs_op(cirq_google.InternalGate)
+WillowGate = cirq_blqs_op.create_cirq_blqs_op(cirq_google.WillowGate)
+AnalogDetuneQubit = cirq_blqs_op.create_cirq_blqs_op(cirq_google.AnalogDetuneQubit)
+AnalogDetuneCouplerOnly = cirq_blqs_op.create_cirq_blqs_op(cirq_google.AnalogDetuneCouplerOnly)

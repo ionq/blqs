@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 from blqs import block, protocols, statement
@@ -24,8 +25,7 @@ class For(statement.Statement):
     def __init__(self, iterable: blqs.SupportsIterable):
         super().__init__()
         assert protocols.is_iterable(iterable), (
-            "For's iterable parameter must be iterable. "
-            f"See {protocols.SupportsIterable.__name__}."
+            f"For's iterable parameter must be iterable. See {protocols.SupportsIterable.__name__}."
         )
         self._iterable = iterable
         self._loop_block = block.Block(parent_statement=self)

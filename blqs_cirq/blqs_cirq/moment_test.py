@@ -74,9 +74,8 @@ def test_moment_target_overlap():
 
 def test_moment_repeat():
     def fn():
-        with bc.Moment():
-            with bc.Repeat(repetitions=10):
-                bc.H(0)
+        with bc.Moment(), bc.Repeat(repetitions=10):
+            bc.H(0)
 
     h = cirq.Circuit([cirq.H(cirq.LineQubit(0))])
 

@@ -1,10 +1,13 @@
 # Workspace root for the blqs monorepo. This is a virtual project (no
 # [project] table): it is not published itself, it only groups the two
-# distributions `blqs` and `blqs-cirq` and holds shared dev tooling.
+# distributions `blqs` and `blqs-cirq` and holds shared dev tooling + config.
 #
 # Common commands (run from this directory):
-#   uv sync            # create .venv and install both packages editable + dev deps
-#   uv run pytest      # run the test suite for both packages
+#   uv sync                  # create .venv, install both packages editable + dev deps
+#   uv run pytest            # run the test suite for both packages (with coverage gate)
+#   uv run ruff check        # lint
+#   uv run ruff format       # format
+#   uv run ty check          # type check
 
 [tool.uv.workspace]
 members = ["blqs", "blqs_cirq"]
@@ -13,7 +16,46 @@ members = ["blqs", "blqs_cirq"]
 dev = [
     "pytest>=8",
     "pytest-cov>=5",
+    "ruff>=0.14",
+    "ty>=0.0.1a1",
 ]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+# testing_samples.py is excluded from lint AND format: its tests assert exact
+# line numbers, so reformatting or re-sorting imports would shift them and
+# break the traceback/line-map tests (see the header comment in that file).
+# Tutorial notebooks use deliberately loose demo code; don't lint them.
+extend-exclude = ["**/testing_samples.py", "*.ipynb"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+
+[tool.ruff.lint.per-file-ignores]
+# __init__.py re-exports the public API; those imports are intentional.
+"__init__.py" = ["F401"]
+# Tests deliberately exercise dynamic dispatch and AST rewriting: type(...) ==
+# comparisons (E721), loose zip (B905), and names that only exist after build()
+# rewrites the function body (F821).
+"*_test.py" = ["E721", "B905", "F821"]
+# `I` is the identity gate (a quantum-computing convention), not an ambiguous name.
+"**/gates.py" = ["E741"]
 
 [tool.pytest.ini_options]
 testpaths = ["blqs", "blqs_cirq"]
+addopts = "--cov=blqs --cov=blqs_cirq --cov-report=term-missing --cov-fail-under=99"
+
+[tool.coverage.run]
+branch = true
+omit = ["*_test.py", "*/testing_samples.py"]
+
+[tool.coverage.report]
+exclude_also = ["pragma: no cover", "coverage: ignore", "if TYPE_CHECKING:"]
+
+[tool.ty.environment]
+python-version = "3.11"
+root = ["blqs", "blqs_cirq"]
+
+[tool.ty.src]
+exclude = ["**/*_test.py", "**/testing_samples.py"]

@@ -25,7 +25,7 @@ def test_is_readable():
         def _is_readable_(self):
             return False
 
-    assert not blqs.is_readable((NotReadable()))
+    assert not blqs.is_readable(NotReadable())
 
     assert not blqs.is_readable("a")
 
@@ -41,7 +41,7 @@ def test_is_writable():
         def _is_writable_(self):
             return False
 
-    assert not blqs.is_writable((NotWritable()))
+    assert not blqs.is_writable(NotWritable())
 
     assert not blqs.is_writable("a")
 

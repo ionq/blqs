@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Any, TypeVar, Union
+from typing import Any, TypeVar
 
 try:
     from typing import Protocol
@@ -34,7 +34,7 @@ class SupportsDecoding(Protocol[F, T]):
         T: the type decoding to.
     """
 
-    def _decode_(self, val: F) -> Union[T, NotImplementedType]:
+    def _decode_(self, val: F) -> T | NotImplementedType:
         """Decode the given value from the `F` type to the `T` type.
 
         If the value cannot be decoded, then this should return `NotImplemented`.
@@ -44,7 +44,7 @@ class SupportsDecoding(Protocol[F, T]):
 def decode(
     decoder: SupportsDecoding[F, T],
     val: F,
-    default: Union[T, NotImplementedType] = NotImplemented,
+    default: T | NotImplementedType = NotImplemented,
 ) -> T:
     """Use the given decoder to decode a value or return a default.
 

@@ -14,7 +14,8 @@
 import dataclasses
 import inspect
 import types
-from typing import Any, Callable, Dict, Iterable, Sequence, Set
+from collections.abc import Callable, Iterable, Sequence
+from typing import Any
 
 import gast
 
@@ -85,30 +86,26 @@ def _remove_decorators(
 
     for d in decorators:
         # @build style decorator.
-        if isinstance(d, gast.Name) and d.id in method_aliases:
-            break
-        # @blqs.build style decorator.
-        elif (
-            isinstance(d, gast.Attribute)
-            and d.attr in method_aliases
-            and isinstance(d.value, gast.Name)
-            and d.value.id in module_aliases
-        ):
-            break
-        # @build_with_config(config) style decorator.
-        elif (
-            isinstance(d, gast.Call)
-            and isinstance(d.func, gast.Name)
-            and d.func.id in method_aliases
-        ):
-            break
-        # @blqs.build_with_config(config) style decorator.
-        elif (
-            isinstance(d, gast.Call)
-            and isinstance(d.func, gast.Attribute)
-            and d.func.attr in method_aliases
-            and isinstance(d.func.value, gast.Name)
-            and d.func.value.id in module_aliases
+        if (
+            (isinstance(d, gast.Name) and d.id in method_aliases)
+            or (
+                isinstance(d, gast.Attribute)
+                and d.attr in method_aliases
+                and isinstance(d.value, gast.Name)
+                and d.value.id in module_aliases
+            )
+            or (
+                isinstance(d, gast.Call)
+                and isinstance(d.func, gast.Name)
+                and d.func.id in method_aliases
+            )
+            or (
+                isinstance(d, gast.Call)
+                and isinstance(d.func, gast.Attribute)
+                and d.func.attr in method_aliases
+                and isinstance(d.func.value, gast.Name)
+                and d.func.value.id in module_aliases
+            )
         ):
             break
         # Technically there are more cases here since a decorator is an expression, and
@@ -125,20 +122,22 @@ def _remove_decorators(
     )
 
 
-def _compute_module_aliases(match_decorators, variables: Dict[str, Any]) -> Set:
+def _compute_module_aliases(match_decorators, variables: dict[str, Any]) -> set:
     valid_modules = set(d.module for d in match_decorators)
 
-    get_aliases = lambda predicate: {k for k, v in variables.items() if predicate(v)}
+    def get_aliases(predicate):
+        return {k for k, v in variables.items() if predicate(v)}
 
     module_aliases = get_aliases(lambda o: inspect.ismodule(o) and o in valid_modules)
     module_aliases.update(m.__name__ for m in valid_modules)
     return module_aliases
 
 
-def _compute_method_aliases(match_decorators, variables: Dict[str, Any]) -> Set:
+def _compute_method_aliases(match_decorators, variables: dict[str, Any]) -> set:
     valid_methods = set(d.method for d in match_decorators)
 
-    get_aliases = lambda predicate: {k for k, v in variables.items() if predicate(v)}
+    def get_aliases(predicate):
+        return {k for k, v in variables.items() if predicate(v)}
 
     method_aliases = get_aliases(lambda o: inspect.isfunction(o) and o in valid_methods)
     method_aliases.update(m.__name__ for m in valid_methods)

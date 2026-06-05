@@ -161,9 +161,8 @@ def test_build_moment():
 
 def test_build_moment_moment_invalid():
     def fn():
-        with bc.Moment():
-            with bc.Moment():
-                bc.H(0)
+        with bc.Moment(), bc.Moment():
+            bc.H(0)
 
     with pytest.raises(ValueError, match="Moments cannot be nested"):
         bc.build(fn)()
@@ -171,9 +170,8 @@ def test_build_moment_moment_invalid():
 
 def test_build_moment_insert_strategy_invalid():
     def fn():
-        with bc.Moment():
-            with bc.InsertStrategy(strategy=cirq.InsertStrategy.NEW):
-                bc.H(0)
+        with bc.Moment(), bc.InsertStrategy(strategy=cirq.InsertStrategy.NEW):
+            bc.H(0)
 
     with pytest.raises(ValueError, match="InsertStrategy cannot be used"):
         bc.build(fn)()

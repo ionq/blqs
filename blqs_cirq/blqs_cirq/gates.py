@@ -14,7 +14,7 @@
 from __future__ import annotations
 
 import functools
-from typing import Dict, Optional, Sequence, Tuple, Union
+from collections.abc import Sequence
 
 import cirq
 import numpy as np
@@ -120,10 +120,10 @@ def qft(*qubits, without_reverse=False, inverse=False) -> blqs.Instruction:
 def wait(
     *targets,
     duration: cirq.DURATION_LIKE = None,
-    picos: Union[int, float, sympy.Basic] = 0,
-    nanos: Union[int, float, sympy.Basic] = 0,
-    micros: Union[int, float, sympy.Basic] = 0,
-    millis: Union[int, float, sympy.Basic] = 0,
+    picos: int | float | sympy.Basic = 0,
+    nanos: int | float | sympy.Basic = 0,
+    micros: int | float | sympy.Basic = 0,
+    millis: int | float | sympy.Basic = 0,
 ):
     wait_fn = functools.partial(
         cirq.wait,
@@ -184,17 +184,17 @@ class SingleQubitCliffordGate(cirq_blqs_op.CirqBlqsOp):
 
     @staticmethod
     def from_xz_map(
-        x_to: Tuple[cirq.Pauli, bool], z_to: Tuple[cirq.Pauli, bool]
+        x_to: tuple[cirq.Pauli, bool], z_to: tuple[cirq.Pauli, bool]
     ) -> cirq_blqs_op.CirqBlqsOp:
         return cirq_blqs_op.CirqBlqsOp(cirq.SingleQubitCliffordGate.from_xz_map(x_to, z_to))
 
     @staticmethod
     def from_single_map(
-        pauli_map_to: Optional[Dict[cirq.Pauli, Tuple[cirq.Pauli, bool]]] = None,
+        pauli_map_to: dict[cirq.Pauli, tuple[cirq.Pauli, bool]] | None = None,
         *,
-        x_to: Optional[Tuple[cirq.Pauli, bool]] = None,
-        y_to: Optional[Tuple[cirq.Pauli, bool]] = None,
-        z_to: Optional[Tuple[cirq.Pauli, bool]] = None,
+        x_to: tuple[cirq.Pauli, bool] | None = None,
+        y_to: tuple[cirq.Pauli, bool] | None = None,
+        z_to: tuple[cirq.Pauli, bool] | None = None,
     ) -> cirq_blqs_op.CirqBlqsOp:
         return cirq_blqs_op.CirqBlqsOp(
             cirq.SingleQubitCliffordGate.from_single_map(
@@ -204,11 +204,11 @@ class SingleQubitCliffordGate(cirq_blqs_op.CirqBlqsOp):
 
     @staticmethod
     def from_double_map(
-        pauli_map_to: Optional[Dict[cirq.Pauli, Tuple[cirq.Pauli, bool]]] = None,
+        pauli_map_to: dict[cirq.Pauli, tuple[cirq.Pauli, bool]] | None = None,
         *,
-        x_to: Optional[Tuple[cirq.Pauli, bool]] = None,
-        y_to: Optional[Tuple[cirq.Pauli, bool]] = None,
-        z_to: Optional[Tuple[cirq.Pauli, bool]] = None,
+        x_to: tuple[cirq.Pauli, bool] | None = None,
+        y_to: tuple[cirq.Pauli, bool] | None = None,
+        z_to: tuple[cirq.Pauli, bool] | None = None,
     ) -> cirq_blqs_op.CirqBlqsOp:
         return cirq_blqs_op.CirqBlqsOp(
             cirq.SingleQubitCliffordGate.from_double_map(
@@ -231,7 +231,7 @@ class SingleQubitCliffordGate(cirq_blqs_op.CirqBlqsOp):
         )
 
     @staticmethod
-    def from_unitary(u: np.ndarray) -> Optional[cirq_blqs_op.CirqBlqsOp]:
+    def from_unitary(u: np.ndarray) -> cirq_blqs_op.CirqBlqsOp | None:
         gate = cirq.SingleQubitCliffordGate.from_unitary(u=u)
         return None if gate is None else cirq_blqs_op.CirqBlqsOp(gate)
 

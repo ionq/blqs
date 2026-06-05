@@ -15,79 +15,63 @@
 from blqs.assignment import (
     Assign,
 )
-
+from blqs.block import (
+    Block,
+)
 from blqs.block_stack import (
     get_current_block,
     pop_block,
     push_new_block,
 )
-
-from blqs.block import (
-    Block,
-)
-
 from blqs.build import (
+    BuildConfig,
     build,
     build_with_config,
-    BuildConfig,
 )
-
-
 from blqs.conditional import (
     If,
 )
-
 from blqs.decorators import (
     DecoratorSpec,
 )
-
 from blqs.delete import (
     Delete,
 )
-
 from blqs.exceptions import (
     GeneratedCodeException,
 )
-
 from blqs.instruction import (
     Instruction,
 )
-
 from blqs.iterable import (
     Iterable,
 )
-
 from blqs.loops import (
     For,
     While,
 )
-
 from blqs.op import (
     Op,
 )
-
+from blqs.program import (
+    Program,
+)
 from blqs.protocols import (
+    SupportsIsDeletable,
+    SupportsIsReadable,
+    SupportsIsWritable,
+    SupportsIterable,
+    SupportsReadableTargets,
     is_deletable,
     is_iterable,
     is_readable,
     is_writable,
     loop_vars,
     readable_targets,
-    SupportsIsDeletable,
-    SupportsIsReadable,
-    SupportsIsWritable,
-    SupportsIterable,
-    SupportsReadableTargets,
 )
-
-from blqs.program import (
-    Program,
-)
-
 from blqs.register import (
     Register,
 )
-
 from blqs.statement import (
     Statement,
 )

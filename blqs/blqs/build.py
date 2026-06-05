@@ -14,19 +14,19 @@
 import collections
 import dataclasses
 import functools
-import inspect
 import importlib
+import inspect
 import os
 import sys
+import tempfile
 import textwrap
 import types
-import tempfile
+from collections.abc import Callable, Sequence
 
-from typing import Callable, Optional, Sequence
 import astunparse
 import gast
 
-from blqs import decorators, exceptions, _ast, _namer, _template
+from blqs import _ast, _namer, _template, decorators, exceptions
 
 
 @dataclasses.dataclass
@@ -91,7 +91,7 @@ def build_with_config(build_config: BuildConfig) -> Callable:
     return functools.partial(_build, build_config=build_config)
 
 
-def _build(func: Callable, build_config: Optional[BuildConfig] = None) -> Callable:
+def _build(func: Callable, build_config: BuildConfig | None = None) -> Callable:
     """Turn the supplied function into a builder for the code the function contains.
 
     This method is not intended to be called directly, use build or build_with_config above.

@@ -1,6 +1,0 @@
-[report]
-exclude_lines =
-    coverage: ignore
-    pragma: no cover
-    if TYPE_CHECKING:
-omit = *test.py,*testing_samples.py

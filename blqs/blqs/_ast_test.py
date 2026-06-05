@@ -78,7 +78,7 @@ def test_gast_to_ast_annotations():
         def visit(self, node):
             new_node = super().visit(node)
             if type(new_node) == gast.Name:
-                setattr(new_node, "original_lineno", node.lineno)
+                new_node.original_lineno = node.lineno
             return new_node
 
     gast_nodes = gast.parse(textwrap.dedent(code))
@@ -109,7 +109,7 @@ def test_construct_line_map():
             new_node = super().visit(node)
             if hasattr(new_node, "lineno"):
                 self.original_linenos.add(new_node.lineno)
-                setattr(new_node, "original_lineno", 2 * new_node.lineno)
+                new_node.original_lineno = 2 * new_node.lineno
             return new_node
 
     source = textwrap.dedent(code)

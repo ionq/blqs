@@ -33,10 +33,6 @@ jobs:
   type-check:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    # Advisory: ty (alpha) currently reports diagnostics on blqs's dynamic
-    # dispatch and cirq/sympy stubs. Kept non-blocking until a dedicated
-    # type-annotation pass drives it to zero, then drop continue-on-error.
-    continue-on-error: true
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:

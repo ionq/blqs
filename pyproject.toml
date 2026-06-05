@@ -58,4 +58,22 @@ python-version = "3.11"
 root = ["blqs", "blqs_cirq"]
 
 [tool.ty.src]
-exclude = ["**/*_test.py", "**/testing_samples.py"]
+exclude = ["**/*_test.py", "**/testing_samples.py", "**/*.ipynb"]
+
+# blqs's build rewrite manipulates gast's dynamically-generated AST node classes
+# (gast.FunctionDef, gast.Name, node.body, ...). gast ships no usable types, so
+# those members are invisible to static analysis. Scope the unavoidable noise to
+# the AST-manipulation modules only.
+[[tool.ty.overrides]]
+include = ["blqs/blqs/build.py", "blqs/blqs/decorators.py", "blqs/blqs/_template.py"]
+[tool.ty.overrides.rules]
+unresolved-attribute = "ignore"
+not-subscriptable = "ignore"
+
+# cirq assigns gate constants (cirq.CliffordGate.X, cirq.PauliInteractionGate.CZ,
+# ...) dynamically, so they are absent from cirq's published types. These gate
+# constructions are still covered at runtime by the gate-mirror tests.
+[[tool.ty.overrides]]
+include = ["blqs_cirq/blqs_cirq/gates.py"]
+[tool.ty.overrides.rules]
+unresolved-attribute = "ignore"

@@ -59,9 +59,12 @@ uv run ty check               # type check
   enforce this. When a cirq upgrade adds gates, either wrap them (public cirq
   gates in `gates.py`, google gates in `google/`) or add them to the test
   exclusion set (private/testing gates).
-- **Type checking is advisory for now.** `ty` is wired into CI but non-blocking
-  while its diagnostics on the dynamic build core are worked down; new
-  hand-written code should still type-check cleanly where practical.
+- **Type checking with `ty` is a required gate** (`uv run ty check` must be
+  clean). Tests, sample programs, and notebooks are excluded. Two modules that
+  manipulate untyped dynamic objects have scoped rule overrides in
+  `pyproject.toml`: the gast AST nodes used by the build rewrite, and cirq's
+  dynamically-assigned gate constants. Prefer a real annotation over widening
+  those overrides.
 
 ## Pull requests
 

@@ -117,7 +117,7 @@ class CirqBlqsOpFactory:
             return super().__getattribute__(name)
 
     def __str__(self):
-        return str(self._cirq_gate_factory.__name__)
+        return str(getattr(self._cirq_gate_factory, "__name__", self._cirq_gate_factory))
 
     def __eq__(self, other):
         if not isinstance(other, type(self)):

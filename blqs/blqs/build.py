@@ -15,6 +15,7 @@ import collections
 import dataclasses
 import functools
 import importlib
+import importlib.util
 import inspect
 import os
 import sys
@@ -52,7 +53,7 @@ class BuildConfig:
     additional_decorator_specs: Sequence[decorators.DecoratorSpec] = ()
 
 
-def build(func: Callable):
+def build(func: types.FunctionType):
     """Turn the supplied function into a builder for the code the function contains.
 
     Typical use is as decorator:
@@ -91,7 +92,7 @@ def build_with_config(build_config: BuildConfig) -> Callable:
     return functools.partial(_build, build_config=build_config)
 
 
-def _build(func: Callable, build_config: BuildConfig | None = None) -> Callable:
+def _build(func: types.FunctionType, build_config: BuildConfig | None = None) -> Callable:
     """Turn the supplied function into a builder for the code the function contains.
 
     This method is not intended to be called directly, use build or build_with_config above.
@@ -129,6 +130,7 @@ def _build(func: Callable, build_config: BuildConfig | None = None) -> Callable:
 
         # Import this new code into the temp module.
         spec = importlib.util.spec_from_file_location(module_name, filename)
+        assert spec is not None and spec.loader is not None
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
         sys.modules[module_name] = module

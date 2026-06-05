@@ -120,10 +120,10 @@ def qft(*qubits, without_reverse=False, inverse=False) -> blqs.Instruction:
 def wait(
     *targets,
     duration: cirq.DURATION_LIKE = None,
-    picos: int | float | sympy.Basic = 0,
-    nanos: int | float | sympy.Basic = 0,
-    micros: int | float | sympy.Basic = 0,
-    millis: int | float | sympy.Basic = 0,
+    picos: int | float | sympy.Expr = 0,
+    nanos: int | float | sympy.Expr = 0,
+    micros: int | float | sympy.Expr = 0,
+    millis: int | float | sympy.Expr = 0,
 ):
     wait_fn = functools.partial(
         cirq.wait,

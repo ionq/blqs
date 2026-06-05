@@ -26,6 +26,17 @@ def test_eq():
     tester.make_equality_group(lambda: blqs.Op("b"))
 
 
+def test_eq_uses_strict_type():
+    class SubOp(blqs.Op):
+        pass
+
+    # A subclass instance is not equal to a base Op with the same name (and the
+    # comparison is symmetric), but same-type instances still compare by name.
+    assert blqs.Op("a") != SubOp("a")
+    assert SubOp("a") != blqs.Op("a")
+    assert SubOp("a") == SubOp("a")
+
+
 def test_name():
     assert blqs.Op("a").name() == "a"
 

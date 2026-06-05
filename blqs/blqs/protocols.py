@@ -16,7 +16,7 @@ from typing import Any, Tuple
 try:
     from typing import Protocol
 except ImportError:  # coverage: ignore
-    from typing_extensions import Protocol  # type:ignore
+    from typing_extensions import Protocol  # type: ignore
 
 
 class SupportsIsReadable(Protocol):
@@ -43,7 +43,7 @@ def is_readable(val: Any) -> bool:
 class SupportsIsWritable(Protocol):
     """A protocol for objects that are writable."""
 
-    def _is_writeable_(self) -> bool:
+    def _is_writable_(self) -> bool:
         """Returns whether the object is writable."""
 
 

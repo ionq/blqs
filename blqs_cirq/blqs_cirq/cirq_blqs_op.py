@@ -136,7 +136,7 @@ class CirqBlqsOpFactory:
 
 
 def create_cirq_blqs_op(
-    cirq_construct: Union[cirq.Gate, Type[cirq.Gate], Callable[..., cirq.Gate]]
+    cirq_construct: Union[cirq.Gate, Type[cirq.Gate], Callable[..., cirq.Gate]],
 ) -> Union[CirqBlqsOp, CirqBlqsOpFactory, Callable[..., CirqBlqsOp]]:
     """Construct a blqs object for the relevant cirq gate, class, or method.
 

@@ -16,7 +16,6 @@ from typing import TYPE_CHECKING
 
 from blqs import block, protocols, statement
 
-
 if TYPE_CHECKING:
     import blqs  # coverage: ignore
 
@@ -84,8 +83,8 @@ class While(statement.Statement):
         return self._else_block
 
     def __str__(self):
-        loop_str = f"while {self._condition}:\n{self._loop_block}\n"
-        else_str = f"else:\n{self._else_block}"
+        loop_str = f"while {self._condition}:\n{self._loop_block}"
+        else_str = f"\nelse:\n{self._else_block}"
         return loop_str + else_str if self._else_block else loop_str
 
     def __eq__(self, other):

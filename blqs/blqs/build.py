@@ -96,9 +96,13 @@ def _build(func: Callable, build_config: Optional[BuildConfig] = None) -> Callab
 
     This method is not intended to be called directly, use build or build_with_config above.
     """
+    # Build the rewrite once and cache it; it depends only on `func` and
+    # `build_config`. Done lazily so errors surface on call, not at import.
+    cache: dict = {}
 
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
+    def _ensure_built():
+        if cache:
+            return
         # Get source.
         source_code = textwrap.dedent(inspect.getsource(func))
 
@@ -132,16 +136,27 @@ def _build(func: Callable, build_config: Optional[BuildConfig] = None) -> Callab
         # Get the outer function, and call it, returning the inner function.
         new_func = getattr(module, outer_fn_name)()  # pylint: disable=not-callable
         # Set this inner function up with the correct globals and closure.
-        final_func = types.FunctionType(
+        cache["final_func"] = types.FunctionType(
             code=new_func.__code__, globals=func.__globals__, closure=func.__closure__
         )
+        # Stash what the line map needs; build it lazily (only on error).
+        cache["transformed_gast"] = transformed_gast
+        cache["transformed_source_code"] = transformed_source_code
+        cache["filename"] = filename
+
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        _ensure_built()
         try:
-            return final_func(*args, **kwargs)  # pylint: disable=not-callable
+            return cache["final_func"](*args, **kwargs)  # pylint: disable=not-callable
         except Exception as e:
-            # If there is an exception, chain the exception in such a way as to indicated
-            # the original file and line number is given.
-            line_map = _ast.construct_line_map(transformed_gast, transformed_source_code)
-            exceptions._raise_with_line_mapping(e, func, line_map, filename)
+            # Re-raise pointing at the original source. The line map is the same
+            # for every exception, so build it once.
+            if "line_map" not in cache:
+                cache["line_map"] = _ast.construct_line_map(
+                    cache["transformed_gast"], cache["transformed_source_code"]
+                )
+            exceptions._raise_with_line_mapping(e, func, cache["line_map"], cache["filename"])
 
     return wrapper
 
@@ -258,12 +273,15 @@ class _BuildTransformer(gast.NodeTransformer):
         if not self._build_config.support_for:
             return node
 
+        # Evaluate the iterable once. The original re-ran `iter` in each slot,
+        # doubling side effects (e.g. on generators).
         template = """
-        is_iterable = blqs.is_iterable(iter)
-        for_statement = blqs.For(iter) if is_iterable else None
-        loop_vars = blqs.loop_vars(iter) if is_iterable else None
+        iter_value = iter
+        is_iterable = blqs.is_iterable(iter_value)
+        for_statement = blqs.For(iter_value) if is_iterable else None
+        loop_vars = blqs.loop_vars(iter_value) if is_iterable else None
         for target in ([loop_vars if len(loop_vars) > 1 else loop_vars[0]]
-                       if is_iterable else iter):
+                       if is_iterable else iter_value):
             with for_statement.loop_block() if for_statement else contextlib.nullcontext():
                 loop_body
         else:
@@ -272,6 +290,7 @@ class _BuildTransformer(gast.NodeTransformer):
         """
         new_nodes = _template.replace(
             template,
+            iter_value=self._namer.new_name("iter_value"),
             is_iterable=self._namer.new_name("is_iterable"),
             for_statement=self._namer.new_name("for_statement"),
             loop_vars=self._namer.new_name("loop_vars"),
@@ -287,15 +306,20 @@ class _BuildTransformer(gast.NodeTransformer):
         if not self._build_config.support_while:
             return node
 
+        # Flag the loop's exit reason so the else block doesn't re-run `test`,
+        # which would double its side effects.
         template = """
         is_readable = blqs.is_readable(test)
         while_statement = blqs.While(test) if is_readable else None
+        loop_exited_normally = False
         while test or is_readable:
             with while_statement.loop_block() if while_statement else contextlib.nullcontext():
                 loop_body
             if is_readable:
                 break
-        if not test or is_readable:
+        else:
+            loop_exited_normally = True
+        if loop_exited_normally or is_readable:
             with while_statement.else_block() if while_statement else contextlib.nullcontext():
                 else_body
         """
@@ -303,6 +327,7 @@ class _BuildTransformer(gast.NodeTransformer):
             template,
             is_readable=self._namer.new_name("is_readable"),
             while_statement=self._namer.new_name("while_statement"),
+            loop_exited_normally=self._namer.new_name("loop_exited_normally"),
             test=node.test,
             loop_body=node.body,
             else_body=node.orelse if node.orelse else gast.Pass(),
@@ -312,6 +337,11 @@ class _BuildTransformer(gast.NodeTransformer):
     def visit_Assign(self, node):
         node = self.generic_visit(node)
         if not self._build_config.support_assign:
+            return node
+
+        target_names = self._target_names(node.targets)
+        if target_names is None:
+            # Non-Name target (e.g. `obj.x`): skip the rewrite, run natively.
             return node
 
         template = """
@@ -325,29 +355,47 @@ class _BuildTransformer(gast.NodeTransformer):
         else:
             targets = temp_value
         """
-        assign_names = self._target_names(node.targets)
         new_nodes = _template.replace(
             template,
             temp_value=self._namer.new_name("temp_value"),
             value=node.value,
             targets=node.targets,
             readable_targets=self._namer.new_name("readable_targets"),
-            assign_names=assign_names,
+            assign_names=target_names,
         )
         return new_nodes
 
     def _target_names(self, targets):
+        """Return a `gast.Tuple` of the target names, or None.
+
+        None means a target is not a `Name` (or a `Tuple`/`List` of `Name`s) —
+        e.g. `obj.x` or `arr[0]` — and callers should skip the rewrite.
+        """
         names = []
         for target in targets:
             if isinstance(target, gast.Name):
                 names.append(gast.Constant(target.id, None))
-            elif isinstance(target, gast.Tuple):
-                names.extend(gast.Constant(t.id, None) for t in target.elts)
-            elif isinstance(target, gast.List):
-                names.extend(gast.Constant(t.id, None) for t in target.elts)
+            elif isinstance(target, (gast.Tuple, gast.List)):
+                for t in target.elts:
+                    if not isinstance(t, gast.Name):
+                        return None
+                    names.append(gast.Constant(t.id, None))
             else:
-                raise ValueError("Invalid target type: this should not happen")  # coverage: ignore
+                return None
         return gast.Tuple(names, gast.Load())
+
+    def _flat_targets(self, targets):
+        """Flatten Tuple/List targets to a single list of Name nodes.
+
+        Pre: `_target_names(targets)` returned non-None, so every leaf is a Name.
+        """
+        flat = []
+        for target in targets:
+            if isinstance(target, gast.Name):
+                flat.append(target)
+            elif isinstance(target, (gast.Tuple, gast.List)):
+                flat.extend(target.elts)
+        return flat
 
     def visit_Delete(self, node):
         node = self.generic_visit(node)
@@ -355,23 +403,44 @@ class _BuildTransformer(gast.NodeTransformer):
             return node
 
         target_names = self._target_names(node.targets)
-        target_tuple = gast.Tuple(node.targets, gast.Load())
-        template = """
-        temp_value = target_tuple
-        standard_targets = tuple(val for val in temp_value if not blqs.is_deletable(val))
-        if len(standard_targets) > 0:
-            del standard_targets
-        deletable_names = tuple(name for val, name in zip(temp_value, target_names)
+        if target_names is None:
+            # Non-Name target (e.g. `del obj.x`): skip the rewrite, run natively.
+            return node
+
+        flat_targets = self._flat_targets(node.targets)
+        target_tuple = gast.Tuple(flat_targets, gast.Load())
+        target_values_name = self._namer.new_name("target_values")
+
+        # Capture values first: the `del`s below unbind names the filter needs.
+        new_nodes = list(
+            _template.replace(
+                "target_values = target_tuple",
+                target_values=target_values_name,
+                target_tuple=target_tuple,
+            )
+        )
+
+        # Natively `del` non-deletable values. The original deleted the helper
+        # tuple, so `del a` (a plain int) never unbound `a`.
+        for target in flat_targets:
+            check_template = """
+            if not blqs.is_deletable(target):
+                del target
+            """
+            new_nodes.extend(_template.replace(check_template, target=target))
+
+        delete_template = """
+        deletable_names = tuple(name for val, name in zip(target_values, target_names)
                                 if blqs.is_deletable(val))
         if len(deletable_names) > 0:
             blqs.Delete(deletable_names)
         """
-        new_nodes = _template.replace(
-            template,
-            temp_value=self._namer.new_name("temp_value"),
-            targets=node.targets,
-            standard_targets=self._namer.new_name("standard_targets"),
-            target_names=target_names,
-            target_tuple=target_tuple,
+        new_nodes.extend(
+            _template.replace(
+                delete_template,
+                target_values=target_values_name,
+                deletable_names=self._namer.new_name("deletable_names"),
+                target_names=target_names,
+            )
         )
         return new_nodes

@@ -16,7 +16,6 @@ from typing import TYPE_CHECKING
 
 from blqs import instruction
 
-
 if TYPE_CHECKING:
     import blqs  # coverage: ignore
 
@@ -46,7 +45,7 @@ class Op:
         return instruction.Instruction(self, *targets)
 
     def __eq__(self, other):
-        if not isinstance(self, type(other)):
+        if type(self) is not type(other):
             return NotImplemented
         return self._name == other._name
 

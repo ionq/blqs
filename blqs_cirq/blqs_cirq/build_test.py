@@ -197,6 +197,20 @@ def test_build_with_config_program_output():
     assert bc.build_with_config(build_config)(fn)() == blqs.Program.of(bc.H(0))
 
 
+def test_build_does_not_mutate_blqs_build_config():
+    blqs_config = blqs.BuildConfig()
+    build_config = bc.BuildConfig(blqs_build_config=blqs_config)
+
+    @bc.build_with_config(build_config)
+    def fn():
+        bc.H(0)
+
+    # Repeated calls must not accumulate decorator specs on the user's config.
+    fn()
+    fn()
+    assert blqs_config.additional_decorator_specs == ()
+
+
 def test_build_with_config_qubit_decoder():
     class IntToNamed:
         def _decode_(self, val):

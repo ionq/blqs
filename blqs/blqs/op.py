@@ -18,7 +18,7 @@ from typing import TYPE_CHECKING
 from blqs import instruction
 
 if TYPE_CHECKING:
-    import blqs  # coverage: ignore
+    import blqs
 
 
 class Op:

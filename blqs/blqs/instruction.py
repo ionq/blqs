@@ -18,7 +18,7 @@ from typing import TYPE_CHECKING
 from blqs import protocols, statement
 
 if TYPE_CHECKING:
-    import blqs  # coverage: ignore
+    import blqs
 
 
 class Instruction(statement.Statement):

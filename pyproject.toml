@@ -26,11 +26,13 @@ target-version = "py311"
 # testing_samples.py is excluded from lint AND format: its tests assert exact
 # line numbers, so reformatting or re-sorting imports would shift them and
 # break the traceback/line-map tests (see the header comment in that file).
-# Tutorial notebooks use deliberately loose demo code; don't lint them.
-extend-exclude = ["**/testing_samples.py", "*.ipynb"]
+extend-exclude = ["**/testing_samples.py"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+# Tutorial notebooks use deliberately loose demo code (install-guard imports,
+# demo loop variables); don't lint them. Formatting is still checked.
+exclude = ["*.ipynb"]
 
 [tool.ruff.lint.per-file-ignores]
 # __init__.py re-exports the public API; those imports are intentional.
@@ -51,12 +53,16 @@ branch = true
 omit = ["*_test.py", "*/testing_samples.py"]
 
 [tool.coverage.report]
-exclude_also = ["pragma: no cover", "coverage: ignore", "if TYPE_CHECKING:"]
+exclude_also = ["pragma: no cover", "if TYPE_CHECKING:"]
 
 [tool.ty.environment]
 python-version = "3.11"
 root = ["blqs", "blqs_cirq"]
 
+# Test files are excluded deliberately: they exercise the dynamic DSL (calling
+# CirqBlqsOp wrappers, blqs-rewritten function bodies), which ty cannot model
+# statically - including them yields ~300 structural false positives. Tests
+# stay covered by ruff lint and the 99% runtime coverage gate.
 [tool.ty.src]
 exclude = ["**/*_test.py", "**/testing_samples.py", "**/*.ipynb"]
 
@@ -69,11 +75,3 @@ include = ["blqs/blqs/build.py", "blqs/blqs/decorators.py", "blqs/blqs/_template
 [tool.ty.overrides.rules]
 unresolved-attribute = "ignore"
 not-subscriptable = "ignore"
-
-# cirq assigns gate constants (cirq.CliffordGate.X, cirq.PauliInteractionGate.CZ,
-# ...) dynamically, so they are absent from cirq's published types. These gate
-# constructions are still covered at runtime by the gate-mirror tests.
-[[tool.ty.overrides]]
-include = ["blqs_cirq/blqs_cirq/gates.py"]
-[tool.ty.overrides.rules]
-unresolved-attribute = "ignore"

@@ -43,7 +43,7 @@ To install blqs one can simply pip install the appropriate package
 ```
 pip install blqs
 ```
-See [requirements.txt](requirements.txt) for the dependencies that blqs will
+See the dependencies in [pyproject.toml](pyproject.toml) for what blqs will
 pull in.
 
 # Documentation

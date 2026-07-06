@@ -15,3 +15,13 @@ updates:
     groups:
       python:
         patterns: ["*"]
+
+  # Keeps the pre-commit ruff hook rev in step with the uv.lock ruff that CI
+  # runs; without this the two format checks can drift apart.
+  - package-ecosystem: "pre-commit"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      hooks:
+        patterns: ["*"]

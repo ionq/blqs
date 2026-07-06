@@ -19,7 +19,7 @@ from typing import TYPE_CHECKING
 from blqs import statement
 
 if TYPE_CHECKING:
-    import blqs  # coverage: ignore
+    import blqs
 
 
 class Assign(statement.Statement):

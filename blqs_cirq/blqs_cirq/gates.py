@@ -243,30 +243,34 @@ class PauliInteractionGate(cirq_blqs_op.CirqBlqsOp):
     def __init__(self, *args, **kwargs):
         super().__init__(gate=cirq.PauliInteractionGate(*args, **kwargs))
 
-    CZ = cirq_blqs_op.CirqBlqsOp(cirq.PauliInteractionGate.CZ)
-    CNOT = cirq_blqs_op.CirqBlqsOp(cirq.PauliInteractionGate.CNOT)
+    # cirq assigns these gate constants dynamically, so they are absent from
+    # cirq's published types; the gate-mirror tests cover them at runtime.
+    CZ = cirq_blqs_op.CirqBlqsOp(cirq.PauliInteractionGate.CZ)  # ty: ignore[unresolved-attribute]
+    CNOT = cirq_blqs_op.CirqBlqsOp(cirq.PauliInteractionGate.CNOT)  # ty: ignore[unresolved-attribute]
 
 
 # Special n qubit gate classes.
 
 
 class CliffordGate(cirq_blqs_op.CirqBlqsOp):
-    I = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.I)
-    X = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.X)
-    H = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.H)
-    S = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.S)
-    CNOT = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.CNOT)
-    CZ = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.CZ)
-    SWAP = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.SWAP)
+    # cirq assigns these gate constants dynamically, so they are absent from
+    # cirq's published types; the gate-mirror tests cover them at runtime.
+    I = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.I)  # ty: ignore[unresolved-attribute]
+    X = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.X)  # ty: ignore[unresolved-attribute]
+    H = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.H)  # ty: ignore[unresolved-attribute]
+    S = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.S)  # ty: ignore[unresolved-attribute]
+    CNOT = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.CNOT)  # ty: ignore[unresolved-attribute]
+    CZ = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.CZ)  # ty: ignore[unresolved-attribute]
+    SWAP = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.SWAP)  # ty: ignore[unresolved-attribute]
 
     @classmethod
     def from_clifford_tableau(cls, tableau: cirq.CliffordTableau) -> cirq_blqs_op.CirqBlqsOp:
-        gate = cirq.CliffordGate.from_clifford_tableau(tableau)
+        gate = cirq.CliffordGate.from_clifford_tableau(tableau)  # ty: ignore[unresolved-attribute]
         return cirq_blqs_op.CirqBlqsOp(gate)
 
     @classmethod
     def from_op_list(
         cls, operations: Sequence[cirq.Operation], qubit_order: Sequence[cirq.Qid]
     ) -> cirq_blqs_op.CirqBlqsOp:
-        gate = cirq.CliffordGate.from_op_list(operations, qubit_order)
+        gate = cirq.CliffordGate.from_op_list(operations, qubit_order)  # ty: ignore[unresolved-attribute]
         return cirq_blqs_op.CirqBlqsOp(gate)

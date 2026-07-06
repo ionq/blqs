@@ -73,7 +73,7 @@ def test_raise_with_line_mapping_no_traceback():
     e = ValueError("oh no")
 
     def func():
-        raise e  # coverage: ignore
+        raise e
 
     actual_lineno = inspect.getsourcelines(func)[-1]
     actual_filename = inspect.getsourcefile(func)

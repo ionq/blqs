@@ -22,7 +22,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "blqs",
+    "blqs>=0.1,<0.2",
     "cirq>=1.6,<2",
     "cirq-google>=1.6,<2",
 ]

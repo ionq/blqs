@@ -29,6 +29,8 @@ def gast_to_ast(gast_root: gast.AST):
     """Convert an abstract syntax tree from gast to one in ast, preserving annotations."""
     ast_root = gast.gast_to_ast(gast_root)
 
+    # The gast walk can be longer than the converted ast walk (e.g. for functions defined
+    # inside a class), so the zip must not be strict.
     for ast_node, gast_node in zip(walk_ast(ast_root), walk_ast(gast_root), strict=False):
         for annotation in ANNOTATIONS:
             lineno = getattr(gast_node, annotation, None)

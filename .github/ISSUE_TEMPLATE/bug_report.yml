@@ -31,6 +31,6 @@ body:
     id: versions
     attributes:
       label: Versions
-      description: Output of `python -c "import blqs; print(blqs.__version__)"` (and cirq if relevant) plus your Python version.
+      description: Output of `python -c "import blqs; print(blqs.__version__)"` (and `cirq.__version__` if relevant) plus the output of `python --version`.
     validations:
       required: true

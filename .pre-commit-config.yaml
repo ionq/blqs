@@ -1,7 +1,7 @@
 # Run `uvx pre-commit install` once to enable. Mirrors the lint/format gates in CI.
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.16
+    rev: v0.16.1
     hooks:
       - id: ruff-check
         args: [--fix]

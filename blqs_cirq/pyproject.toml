@@ -24,7 +24,7 @@ classifiers = [
 ]
 dependencies = [
     "blqs>=0.1,<0.2",
-    "cirq>=1.6,<2",
+    "cirq>=1.7.0,<2",
     "cirq-google>=1.6,<2",
 ]
 

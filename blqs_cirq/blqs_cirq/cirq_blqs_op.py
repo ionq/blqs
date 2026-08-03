@@ -15,17 +15,10 @@ from __future__ import annotations
 
 import functools
 import inspect
-
+from collections.abc import Callable, Collection, Sequence
 from typing import (
-    cast,
-    Collection,
-    Callable,
-    Optional,
-    Sequence,
-    Tuple,
-    Type,
     TYPE_CHECKING,
-    Union,
+    cast,
 )
 
 import cirq
@@ -35,13 +28,13 @@ import blqs
 if TYPE_CHECKING:
     import blqs_cirq
 
-GateLikeType = Union[cirq.Gate, Callable[[], cirq.Gate], functools.partial]
+GateLikeType = cirq.Gate | Callable[[], cirq.Gate] | functools.partial
 
 
 class CirqBlqsOp(blqs.Op):
     """A `blqs.Op` corresponding to a `cirq.Gate`."""
 
-    def __init__(self, gate: GateLikeType, op_name: Optional[str] = None):
+    def __init__(self, gate: GateLikeType, op_name: str | None = None):
         """Construct a CirqBlqsOp.
 
         Args:
@@ -73,9 +66,9 @@ class CirqBlqsOp(blqs.Op):
 
     def controlled(
         self,
-        num_controls: Optional[int] = None,
-        control_values: Optional[Sequence[Union[int, Collection[int]]]] = None,
-        control_qid_shape: Optional[Tuple[int, ...]] = None,
+        num_controls: int | None = None,
+        control_values: Sequence[int | Collection[int]] | None = None,
+        control_qid_shape: tuple[int, ...] | None = None,
     ) -> blqs_cirq.CirqBlqsOp:
         delegate = cast(cirq.Gate, self._gate).controlled(
             num_controls, control_values, control_qid_shape
@@ -104,7 +97,7 @@ class CirqBlqsOpFactory:
 
     def __init__(
         self,
-        cirq_gate_factory: Union[Type, Callable[..., cirq.Gate]],
+        cirq_gate_factory: type | Callable[..., cirq.Gate],
     ):
         self._cirq_gate_factory = cirq_gate_factory
 
@@ -124,7 +117,7 @@ class CirqBlqsOpFactory:
             return super().__getattribute__(name)
 
     def __str__(self):
-        return str(self._cirq_gate_factory.__name__)
+        return str(getattr(self._cirq_gate_factory, "__name__", self._cirq_gate_factory))
 
     def __eq__(self, other):
         if not isinstance(other, type(self)):
@@ -136,8 +129,8 @@ class CirqBlqsOpFactory:
 
 
 def create_cirq_blqs_op(
-    cirq_construct: Union[cirq.Gate, Type[cirq.Gate], Callable[..., cirq.Gate]],
-) -> Union[CirqBlqsOp, CirqBlqsOpFactory, Callable[..., CirqBlqsOp]]:
+    cirq_construct: cirq.Gate | type[cirq.Gate] | Callable[..., cirq.Gate],
+) -> CirqBlqsOp | CirqBlqsOpFactory | Callable[..., CirqBlqsOp]:
     """Construct a blqs object for the relevant cirq gate, class, or method.
 
     Note that this will not work for methods that require qubit targets and parameters to construct

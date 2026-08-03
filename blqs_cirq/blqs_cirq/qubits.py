@@ -37,9 +37,12 @@ class DefaultQubitDecoder(protocols.SupportsDecoding[Any, cirq.Qid]):
             return cirq.LineQubit(val)
         elif isinstance(val, str):
             return cirq.NamedQubit(val)
-        elif isinstance(val, (tuple, list)):
-            if len(val) == 2 and all(isinstance(x, int) for x in val):
-                return cirq.GridQubit(*val)
+        elif (
+            isinstance(val, (tuple, list))
+            and len(val) == 2
+            and all(isinstance(x, int) for x in val)
+        ):
+            return cirq.GridQubit(*val)
         return cirq.NamedQubit(str(val))
 
 

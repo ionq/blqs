@@ -13,12 +13,11 @@
 # limitations under the License.
 import dataclasses
 import functools
-from typing import Optional, Callable
+from collections.abc import Callable
 
 import cirq
 
 import blqs
-
 from blqs_cirq import insert_strategy, moment, protocols, qubits, repeat
 
 
@@ -42,7 +41,7 @@ class BuildConfig:
 
     output_circuit: bool = True
     qubit_decoder: qubits.DefaultQubitDecoder = qubits.DEFAULT_QUBIT_DECODER
-    blqs_build_config: Optional[blqs.BuildConfig] = None
+    blqs_build_config: blqs.BuildConfig | None = None
     support_circuit_operation: bool = True
     support_insert_strategy: bool = True
     support_moment: bool = True
@@ -88,7 +87,7 @@ def build_with_config(build_config: BuildConfig):
     return functools.partial(_build, build_config=build_config)
 
 
-def _build(func: Callable, build_config: Optional[BuildConfig] = None) -> Callable:
+def _build(func: Callable, build_config: BuildConfig | None = None) -> Callable:
     """Turn the supplied function into a circuit for the code the function contains.
 
     This method is not intended to be called directly, use build or build_with_config above.

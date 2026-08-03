@@ -14,7 +14,7 @@
 from __future__ import annotations
 
 import functools
-from typing import Dict, Optional, Sequence, Tuple, Union
+from collections.abc import Sequence
 
 import cirq
 import numpy as np
@@ -103,6 +103,7 @@ PauliStringPhasorGate = cirq_blqs_op.create_cirq_blqs_op(cirq.PauliStringPhasorG
 PhaseGradientGate = cirq_blqs_op.create_cirq_blqs_op(cirq.PhaseGradientGate)
 WaitGate = cirq_blqs_op.create_cirq_blqs_op(cirq.WaitGate)
 ControlledGate = cirq_blqs_op.create_cirq_blqs_op(cirq.ControlledGate)
+UniformSuperpositionGate = cirq_blqs_op.create_cirq_blqs_op(cirq.UniformSuperpositionGate)
 
 
 # N qubit gate functions.
@@ -119,10 +120,10 @@ def qft(*qubits, without_reverse=False, inverse=False) -> blqs.Instruction:
 def wait(
     *targets,
     duration: cirq.DURATION_LIKE = None,
-    picos: Union[int, float, sympy.Basic] = 0,
-    nanos: Union[int, float, sympy.Basic] = 0,
-    micros: Union[int, float, sympy.Basic] = 0,
-    millis: Union[int, float, sympy.Basic] = 0,
+    picos: int | float | sympy.Expr = 0,
+    nanos: int | float | sympy.Expr = 0,
+    micros: int | float | sympy.Expr = 0,
+    millis: int | float | sympy.Expr = 0,
 ):
     wait_fn = functools.partial(
         cirq.wait,
@@ -183,17 +184,17 @@ class SingleQubitCliffordGate(cirq_blqs_op.CirqBlqsOp):
 
     @staticmethod
     def from_xz_map(
-        x_to: Tuple[cirq.Pauli, bool], z_to: Tuple[cirq.Pauli, bool]
+        x_to: tuple[cirq.Pauli, bool], z_to: tuple[cirq.Pauli, bool]
     ) -> cirq_blqs_op.CirqBlqsOp:
         return cirq_blqs_op.CirqBlqsOp(cirq.SingleQubitCliffordGate.from_xz_map(x_to, z_to))
 
     @staticmethod
     def from_single_map(
-        pauli_map_to: Optional[Dict[cirq.Pauli, Tuple[cirq.Pauli, bool]]] = None,
+        pauli_map_to: dict[cirq.Pauli, tuple[cirq.Pauli, bool]] | None = None,
         *,
-        x_to: Optional[Tuple[cirq.Pauli, bool]] = None,
-        y_to: Optional[Tuple[cirq.Pauli, bool]] = None,
-        z_to: Optional[Tuple[cirq.Pauli, bool]] = None,
+        x_to: tuple[cirq.Pauli, bool] | None = None,
+        y_to: tuple[cirq.Pauli, bool] | None = None,
+        z_to: tuple[cirq.Pauli, bool] | None = None,
     ) -> cirq_blqs_op.CirqBlqsOp:
         return cirq_blqs_op.CirqBlqsOp(
             cirq.SingleQubitCliffordGate.from_single_map(
@@ -203,11 +204,11 @@ class SingleQubitCliffordGate(cirq_blqs_op.CirqBlqsOp):
 
     @staticmethod
     def from_double_map(
-        pauli_map_to: Optional[Dict[cirq.Pauli, Tuple[cirq.Pauli, bool]]] = None,
+        pauli_map_to: dict[cirq.Pauli, tuple[cirq.Pauli, bool]] | None = None,
         *,
-        x_to: Optional[Tuple[cirq.Pauli, bool]] = None,
-        y_to: Optional[Tuple[cirq.Pauli, bool]] = None,
-        z_to: Optional[Tuple[cirq.Pauli, bool]] = None,
+        x_to: tuple[cirq.Pauli, bool] | None = None,
+        y_to: tuple[cirq.Pauli, bool] | None = None,
+        z_to: tuple[cirq.Pauli, bool] | None = None,
     ) -> cirq_blqs_op.CirqBlqsOp:
         return cirq_blqs_op.CirqBlqsOp(
             cirq.SingleQubitCliffordGate.from_double_map(
@@ -230,7 +231,7 @@ class SingleQubitCliffordGate(cirq_blqs_op.CirqBlqsOp):
         )
 
     @staticmethod
-    def from_unitary(u: np.ndarray) -> Optional[cirq_blqs_op.CirqBlqsOp]:
+    def from_unitary(u: np.ndarray) -> cirq_blqs_op.CirqBlqsOp | None:
         gate = cirq.SingleQubitCliffordGate.from_unitary(u=u)
         return None if gate is None else cirq_blqs_op.CirqBlqsOp(gate)
 
@@ -242,30 +243,34 @@ class PauliInteractionGate(cirq_blqs_op.CirqBlqsOp):
     def __init__(self, *args, **kwargs):
         super().__init__(gate=cirq.PauliInteractionGate(*args, **kwargs))
 
-    CZ = cirq_blqs_op.CirqBlqsOp(cirq.PauliInteractionGate.CZ)
-    CNOT = cirq_blqs_op.CirqBlqsOp(cirq.PauliInteractionGate.CNOT)
+    # cirq assigns these gate constants dynamically, so they are absent from
+    # cirq's published types; the gate-mirror tests cover them at runtime.
+    CZ = cirq_blqs_op.CirqBlqsOp(cirq.PauliInteractionGate.CZ)  # ty: ignore[unresolved-attribute]
+    CNOT = cirq_blqs_op.CirqBlqsOp(cirq.PauliInteractionGate.CNOT)  # ty: ignore[unresolved-attribute]
 
 
 # Special n qubit gate classes.
 
 
 class CliffordGate(cirq_blqs_op.CirqBlqsOp):
-    I = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.I)
-    X = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.X)
-    H = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.H)
-    S = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.S)
-    CNOT = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.CNOT)
-    CZ = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.CZ)
-    SWAP = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.SWAP)
+    # cirq assigns these gate constants dynamically, so they are absent from
+    # cirq's published types; the gate-mirror tests cover them at runtime.
+    I = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.I)  # ty: ignore[unresolved-attribute]
+    X = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.X)  # ty: ignore[unresolved-attribute]
+    H = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.H)  # ty: ignore[unresolved-attribute]
+    S = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.S)  # ty: ignore[unresolved-attribute]
+    CNOT = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.CNOT)  # ty: ignore[unresolved-attribute]
+    CZ = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.CZ)  # ty: ignore[unresolved-attribute]
+    SWAP = cirq_blqs_op.CirqBlqsOp(cirq.CliffordGate.SWAP)  # ty: ignore[unresolved-attribute]
 
     @classmethod
     def from_clifford_tableau(cls, tableau: cirq.CliffordTableau) -> cirq_blqs_op.CirqBlqsOp:
-        gate = cirq.CliffordGate.from_clifford_tableau(tableau)
+        gate = cirq.CliffordGate.from_clifford_tableau(tableau)  # ty: ignore[unresolved-attribute]
         return cirq_blqs_op.CirqBlqsOp(gate)
 
     @classmethod
     def from_op_list(
         cls, operations: Sequence[cirq.Operation], qubit_order: Sequence[cirq.Qid]
     ) -> cirq_blqs_op.CirqBlqsOp:
-        gate = cirq.CliffordGate.from_op_list(operations, qubit_order)
+        gate = cirq.CliffordGate.from_op_list(operations, qubit_order)  # ty: ignore[unresolved-attribute]
         return cirq_blqs_op.CirqBlqsOp(gate)

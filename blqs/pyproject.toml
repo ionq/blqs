@@ -1,0 +1,43 @@
+[project]
+name = "blqs"
+dynamic = ["version"]
+description = "Python building blocks for internal domain specific languages."
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
+authors = [{ name = "The Blqs Developers" }]
+keywords = ["dsl", "metaprogramming", "ast", "compiler", "quantum"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Libraries",
+    "Typing :: Typed",
+]
+dependencies = [
+    "astunparse",
+    "gast",
+    "pymore",
+]
+
+[project.urls]
+Homepage = "https://github.com/ionq/blqs"
+Repository = "https://github.com/ionq/blqs"
+Issues = "https://github.com/ionq/blqs/issues"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "blqs/_version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["blqs"]

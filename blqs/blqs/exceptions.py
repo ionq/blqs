@@ -12,15 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import inspect
-
-from typing import Any, Dict, Optional
+from typing import Any
 
 
 class GeneratedCodeException(Exception):
     def __init__(
         self,
-        linenos_dict: Dict[int, int],
-        original_filename: Optional[str],
+        linenos_dict: dict[int, int],
+        original_filename: str | None,
         generated_filename: str,
     ):
         """An exception raised when blqs generated code throws an exception.
@@ -52,10 +51,10 @@ class GeneratedCodeException(Exception):
             f"\nand map the line numbers for that file according to\n\t{linemap_str}"
         )
 
-    def linenos_dict(self) -> Dict[int, int]:
+    def linenos_dict(self) -> dict[int, int]:
         return self._linenos_dict
 
-    def original_filename(self) -> Optional[str]:
+    def original_filename(self) -> str | None:
         return self._original_filename
 
     def generated_filename(self) -> str:
@@ -63,7 +62,7 @@ class GeneratedCodeException(Exception):
 
 
 def _raise_with_line_mapping(
-    e: Exception, obj: Any, line_map: Dict[int, int], generated_filename: str
+    e: Exception, obj: Any, line_map: dict[int, int], generated_filename: str
 ):
     """Raise the given exception with information about the original location of the exception.
 

@@ -1,0 +1,27 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      actions:
+        patterns: ["*"]
+
+  - package-ecosystem: "uv"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      python:
+        patterns: ["*"]
+
+  # Keeps the pre-commit ruff hook rev in step with the uv.lock ruff that CI
+  # runs; without this the two format checks can drift apart.
+  - package-ecosystem: "pre-commit"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      hooks:
+        patterns: ["*"]

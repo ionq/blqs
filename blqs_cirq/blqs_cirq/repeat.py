@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Dict
 
 import blqs
 
@@ -35,7 +34,7 @@ class CircuitOperation(blqs.Statement):
         self._circuit_op_kwargs = circuit_op_kwargs
         super().__init__()
 
-    def circuit_op_kwargs(self) -> Dict:
+    def circuit_op_kwargs(self) -> dict:
         return self._circuit_op_kwargs
 
     def circuit_op_block(self) -> blqs.Block:

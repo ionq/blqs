@@ -14,12 +14,13 @@
 from __future__ import annotations
 
 import textwrap
-from typing import Iterable, Iterator, List, Optional, TYPE_CHECKING, Tuple
+from collections.abc import Iterable, Iterator
+from typing import TYPE_CHECKING
 
 from blqs import block_stack, statement
 
 if TYPE_CHECKING:
-    import blqs  # coverage: ignore
+    import blqs
 
 
 class Block(statement.Statement):
@@ -74,7 +75,7 @@ class Block(statement.Statement):
     See also `blqs.Program` for a top level `Block`.
     """
 
-    def __init__(self, parent_statement: Optional[blqs.Statement] = None):
+    def __init__(self, parent_statement: blqs.Statement | None = None):
         """Construction a block.
 
         Args:
@@ -85,7 +86,7 @@ class Block(statement.Statement):
         """
         if not parent_statement:
             super().__init__()
-        self._statements: List[statement.Statement] = []
+        self._statements: list[statement.Statement] = []
 
     @classmethod
     def of(cls, *statements) -> Block:
@@ -107,7 +108,7 @@ class Block(statement.Statement):
     def __exit__(self, exc_type, exc_value, traceback):
         block_stack.pop_block()
 
-    def statements(self) -> Tuple[statement.Statement, ...]:
+    def statements(self) -> tuple[statement.Statement, ...]:
         """The statements that make up a block, returned as an immutable tuple."""
         return tuple(self._statements)
 

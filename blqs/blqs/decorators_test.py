@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import types
-import pytest
+
 import gast
+import pytest
 
 import blqs
 from blqs import decorators

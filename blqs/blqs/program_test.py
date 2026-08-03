@@ -23,9 +23,8 @@ def test_program_str():
 
 
 def test_program_not_at_top_block_stack():
-    with blqs.Block():
-        with pytest.raises(AssertionError, match="stack is empty"):
-            blqs.Program()
+    with blqs.Block(), pytest.raises(AssertionError, match="stack is empty"):
+        blqs.Program()
 
 
 def test_program_equality():

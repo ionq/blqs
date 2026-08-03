@@ -11,12 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from blqs import _stack
 
 if TYPE_CHECKING:
-    import blqs  # coverage: ignore
+    import blqs
 
 
 class _BlockStack(_stack.ThreadLocalStack["blqs.Block"]):

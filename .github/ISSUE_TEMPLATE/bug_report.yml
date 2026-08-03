@@ -1,0 +1,36 @@
+name: Bug report
+description: Report a problem with blqs or blqs-cirq
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: package
+    attributes:
+      label: Package
+      options:
+        - blqs
+        - blqs-cirq
+        - not sure
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal reproducible example
+      description: The smallest code snippet that reproduces the issue.
+      render: python
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: Output of `python -c "import blqs; print(blqs.__version__)"` (and `cirq.__version__` if relevant) plus the output of `python --version`.
+    validations:
+      required: true

@@ -1,0 +1,57 @@
+name: Release
+
+# Publishes one distribution per tag via PyPI Trusted Publishing (OIDC, no
+# tokens). Tag scheme (the two dists version independently):
+#   blqs-vX.Y.Z        -> publishes the `blqs` package
+#   blqs-cirq-vX.Y.Z   -> publishes the `blqs-cirq` package
+# The tag version must match that package's blqs*/_version.py or the run fails.
+#
+# One-time setup on PyPI: configure a Trusted Publisher for each project
+# (owner ionq, repo blqs, workflow release.yml, environment pypi).
+
+on:
+  push:
+    tags:
+      - "blqs-v*"
+      - "blqs-cirq-v*"
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: pypi
+    permissions:
+      id-token: write # required for Trusted Publishing
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+
+      - name: Resolve package from tag and verify version
+        id: resolve
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          if [[ "$tag" == blqs-cirq-v* ]]; then
+            pkg="blqs-cirq"; dir="blqs_cirq"; ver="${tag#blqs-cirq-v}"
+          elif [[ "$tag" == blqs-v* ]]; then
+            pkg="blqs"; dir="blqs"; ver="${tag#blqs-v}"
+          else
+            echo "::error::Unrecognized tag '$tag'"; exit 1
+          fi
+          actual="$(grep -oE '__version__ = "[^"]+"' "$dir/$dir/_version.py" | cut -d'"' -f2)"
+          if [[ "$ver" != "$actual" ]]; then
+            echo "::error::Tag version '$ver' != $dir/_version.py '$actual'"; exit 1
+          fi
+          echo "package=$pkg" >> "$GITHUB_OUTPUT"
+          echo "Releasing $pkg $ver"
+
+      - uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
+
+      - name: Build the distribution
+        run: uv build --package "${{ steps.resolve.outputs.package }}" --out-dir dist
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b # v1.14.0

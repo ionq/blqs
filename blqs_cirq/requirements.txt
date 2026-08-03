@@ -1,3 +1,0 @@
-blqs
-cirq==1.2.0
-cirq-google==1.2.0

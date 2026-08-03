@@ -11,12 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Any, Tuple
-
-try:
-    from typing import Protocol
-except ImportError:  # coverage: ignore
-    from typing_extensions import Protocol  # type: ignore
+from typing import Any, Protocol
 
 
 class SupportsIsReadable(Protocol):
@@ -67,7 +62,7 @@ class SupportsIterable(Protocol):
     def _is_iterable_(self) -> bool:
         """Returns whether the object is iterable."""
 
-    def _loop_vars_(self) -> Tuple:
+    def _loop_vars_(self) -> tuple:
         """Returns the object's loop variables.
 
         These variables will be assigned to the variables of the for loop. In other words,
@@ -91,7 +86,7 @@ def is_iterable(val: Any) -> bool:
     return hasattr(val, "_is_iterable_") and val._is_iterable_() and hasattr(val, "_loop_vars_")
 
 
-def loop_vars(val: Any) -> Tuple:
+def loop_vars(val: Any) -> tuple:
     """Return the loop variables for an iterable object.
 
     This raises an assertion error if the value does not return true from `is_iterable`.
@@ -106,11 +101,11 @@ class SupportsReadableTargets(Protocol):
     Readable targets can be used for the right hand side of an assignment.
     """
 
-    def _readable_targets_(self) -> Tuple:
+    def _readable_targets_(self) -> tuple:
         """Returns the readable targets of the object."""
 
 
-def readable_targets(val: Any) -> Tuple:
+def readable_targets(val: Any) -> tuple:
     """Determine the readable targets of an object.
 
     An object has readable targets if either

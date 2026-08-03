@@ -12,26 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import ast
-from typing import Dict, Union
 
 import gast
 
 ANNOTATIONS = ["original_lineno"]
 
 
-def walk_ast(node: Union[ast.AST, gast.AST]):
+def walk_ast(node: ast.AST | gast.AST):
     """Walk an abstract syntax tree in depth first order."""
     yield node
     for n in gast.iter_child_nodes(node):
-        for m in walk_ast(n):
-            yield m
+        yield from walk_ast(n)
 
 
 def gast_to_ast(gast_root: gast.AST):
     """Convert an abstract syntax tree from gast to one in ast, preserving annotations."""
     ast_root = gast.gast_to_ast(gast_root)
 
-    for ast_node, gast_node in zip(walk_ast(ast_root), walk_ast(gast_root)):
+    # The gast walk can be longer than the converted ast walk (e.g. for functions defined
+    # inside a class), so the zip must not be strict.
+    for ast_node, gast_node in zip(walk_ast(ast_root), walk_ast(gast_root), strict=False):
         for annotation in ANNOTATIONS:
             lineno = getattr(gast_node, annotation, None)
             if lineno is not None:
@@ -39,7 +39,7 @@ def gast_to_ast(gast_root: gast.AST):
     return ast_root
 
 
-def construct_line_map(annotated_ast: gast.AST, source_code: str) -> Dict[int, int]:
+def construct_line_map(annotated_ast: gast.AST, source_code: str) -> dict[int, int]:
     """Construct a map from the line number in generated code to the original line of the code.
 
     Args:
@@ -53,16 +53,15 @@ def construct_line_map(annotated_ast: gast.AST, source_code: str) -> Dict[int, i
             that generated the code.
     """
     new_ast = gast.parse(source_code)
-    line_map: Dict[int, int] = {}
+    line_map: dict[int, int] = {}
 
-    for old, new in zip(walk_ast(annotated_ast), walk_ast(new_ast)):
-        if hasattr(old, "original_lineno"):
+    for old, new in zip(walk_ast(annotated_ast), walk_ast(new_ast), strict=False):
+        if hasattr(old, "original_lineno") and hasattr(new, "lineno"):
             # We could walk parents for nodes that don't have line numbers like Load, but it
             # seems like these are always children of nodes that supply relevant line map info.
-            if hasattr(new, "lineno"):
-                if new.lineno in line_map:
-                    assert (
-                        line_map[new.lineno] == old.original_lineno
-                    ), "Inconsistent line mapping, this should not occur. Please file a bug."
-                line_map[new.lineno] = old.original_lineno
+            if new.lineno in line_map:
+                assert line_map[new.lineno] == old.original_lineno, (
+                    "Inconsistent line mapping, this should not occur. Please file a bug."
+                )
+            line_map[new.lineno] = old.original_lineno
     return line_map

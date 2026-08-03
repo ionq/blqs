@@ -118,7 +118,7 @@ frameworks can be built on top of it.
 We welcome contributions! In order to contribute we require that a Contributor
 License Agreement (CLA) be signed by the contributor or any organization
 (business, school) that retains rights to your contributed code. To get
-setup with a development environment and for info on the CLA see [here](ci/dev.md).
+setup with a development environment and for info on the CLA see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 # License
 

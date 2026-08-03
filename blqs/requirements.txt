@@ -1,6 +1,0 @@
-astunparse
-astor
-gast
-pytype
-pymore
-typing-extensions; python_version < '3.8'

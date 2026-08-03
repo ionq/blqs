@@ -12,12 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from __future__ import annotations
-from typing import Tuple, TYPE_CHECKING
+
+from typing import TYPE_CHECKING
 
 from blqs import protocols, statement
 
 if TYPE_CHECKING:
-    import blqs  # coverage: ignore
+    import blqs
 
 
 class Instruction(statement.Statement):
@@ -36,11 +37,11 @@ class Instruction(statement.Statement):
         """The `blqs.Op` for this instruction."""
         return self._op
 
-    def targets(self) -> Tuple:
+    def targets(self) -> tuple:
         """A tuple of the targets for this instruction."""
         return self._targets
 
-    def _readable_targets_(self) -> Tuple:
+    def _readable_targets_(self) -> tuple:
         return tuple(t for t in self._targets if protocols.is_readable(t))
 
     def __str__(self):

@@ -16,7 +16,7 @@ import blqs
 
 
 class CircuitOperation(blqs.Statement):
-    """A statement which contains information relevant to construction a cirq.CircuitOperation.
+    """A statement which contains information relevant to construction of a cirq.CircuitOperation.
 
     A `cirq.CircuitOperation` is a subcircuit which can be nested.  To create these one typically
     does something like

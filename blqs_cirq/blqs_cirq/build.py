@@ -28,7 +28,7 @@ class BuildConfig:
     Attributes:
         output_circuit: Whether or not to output a `cirq.Circuit`. If `False` outputs
             a `blqs.Program`.
-        qubit_decoder: Is applied to the targets of a operation, making it simpler to
+        qubit_decoder: Is applied to the targets of an operation, making it simpler to
             write simple qubit strings like `0` in place of Cirq's more verbose `cirq.LineQubit(0)`,
             for example.
         blqs_build_config: If supplied an extra config passed to the build stage of blqs.

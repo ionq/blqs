@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 class Block(statement.Statement):
     """An append only container of statements.
 
-    Blocks are a basic building blocks of blqs. They correspond to a body of a block of
+    Blocks are basic building blocks of blqs. They correspond to a body of a block of
     code.
 
     Blocks can be constructed in a variety of fashions.
@@ -62,7 +62,7 @@ class Block(statement.Statement):
         b = my_block()
         ```
 
-        The key benefit of this third method is that you can use it write idiomatic python code
+        The key benefit of this third method is that you can use it to write idiomatic python code
         which is also converted over to appropriate blqs constructions (or not).
 
     Once constructed, `Block`s maybe iterated over and accessed by index or slice.
@@ -76,7 +76,7 @@ class Block(statement.Statement):
     """
 
     def __init__(self, parent_statement: blqs.Statement | None = None):
-        """Construction a block.
+        """Constructs a block.
 
         Args:
             parent_statement: If set to not None, this block is not treated as a statement

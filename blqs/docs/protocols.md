@@ -317,7 +317,7 @@ implement the  *is deletable* protocol implement the method `_is_deletable_`
 and return true. The explicit protocol is
 ```
 class SupportsIsDeletable(Protocol):
-    """A protocol for object that can be deleted."""
+    """A protocol for objects that can be deleted."""
 
     def _is_deletable_(self) -> bool:
         """Returns whether the object is deletable."""

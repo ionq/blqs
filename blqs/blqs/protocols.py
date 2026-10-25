@@ -114,7 +114,7 @@ def readable_targets(val: Any) -> tuple:
             will be those returned by the `_readable_targets_` property.
 
         * it implements the SupportsIsReadableProtocol, in which case the readable targets will
-            be the this object itself (as a single element of a tuple).
+            be this object itself (as a single element of a tuple).
     """
     if hasattr(val, "_readable_targets_"):
         return val._readable_targets_()
@@ -124,7 +124,7 @@ def readable_targets(val: Any) -> tuple:
 
 
 class SupportsIsDeletable(Protocol):
-    """A protocol for object that can be deleted.
+    """A protocol for objects that can be deleted.
 
     Deletable objects can be used in a delete command.
     """

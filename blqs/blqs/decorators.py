@@ -32,8 +32,8 @@ class DecoratorSpec:
     Here is an example usage of defining a new decorator.
         ```
         def my_decorator(func):
-            @functools.warps(func)
-            def wrapper(*arg, **kwargs)):
+            @functools.wraps(func)
+            def wrapper(*arg, **kwargs):
                 # To avoid circular import, we import the module where my_decorator is defined here.
                 import your_module as __your_module
                 # Pass in the decorator spec.
